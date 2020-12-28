@@ -1,8 +1,9 @@
 {
-	"name": "new-reliable",
-	"displayName": "New Reliable",
+	"name": "vscode-test-explorer-liveshare",
+	"displayName": "Twitch Highlighter",
 	"description": "It's like 'Ol Reliable but ~new~",
 	"version": "0.0.1",
+	"publisher": "hbenl",
 	"engines": {
 		"vscode": "^1.52.0"
 	},

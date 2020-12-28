@@ -11,7 +11,7 @@ let vsls = require("vsls");
  * @param {vscode.ExtensionContext} context
  */
 async function activate(context) {
-
+	try{
 	let currentPanel = undefined;
 //	let service = undefined;
  
@@ -25,8 +25,13 @@ async function activate(context) {
 		service = await liveshare.getSharedService("New Reliable");
 		console.log("using shared service!")
 	}*/
-	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService("New Reliable") : await liveshare.getSharedService("New Reliable");
-	
+//	vsls.ActivityType.
+
+	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService("hbenl.vscode-test-explorer-liveshare") : await liveshare.getSharedService("hbenl.vscode-test-explorer-liveshare");
+	console.log(service);
+	console.log(liveshare);
+	let x = await liveshare.shareService("hbenl.vscode-test-explorer-liveshare") ;
+	console.log(x);
 	let disposable = vscode.commands.registerCommand('new-reliable.helloWorld', function () {
 		// The code you place here will be executed every time your command is executed
 		
@@ -71,7 +76,9 @@ async function activate(context) {
 		// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
 		return fs.readFileSync(__dirname+'/WebContent/index.html').toString();
 	}
-
+	}catch(e){
+		console.error(e);
+	}
 	
 }
 exports.activate = activate;
