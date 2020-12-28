@@ -44,15 +44,17 @@
             if(element.mouseDown==1){
                 img.style.left = (e.clientX-element.offset.x)+"px";
                 img.style.top = (e.clientY-element.offset.y)+"px";
+                if(liveshare){
+                    vscode.postMessage({
+                        command: "Drag",
+                        id: element.id,
+                        pos: {x: img.style.left, y: img.style.top}
+                    });
+                }
             }
+            
         }
-        if(liveshare){
-            vscode.postMessage({
-                command: "Drag",
-                id: element.id,
-                pos: {x: img.style.left, y: img.style.top}
-            });
-        }
+       
     }
 
 

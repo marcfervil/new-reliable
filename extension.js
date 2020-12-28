@@ -50,6 +50,7 @@ async function activate(context) {
 
 	service.onNotify("message", (data) => {
 		currentPanel.webview.postMessage(data);
+		console.log("recieved");
 	});
 
 	let disposable2 = vscode.commands.registerCommand('new-reliable.start', () => {
@@ -64,6 +65,7 @@ async function activate(context) {
 		);
 		currentPanel.webview.html = getWebviewContent();
 		currentPanel.webview.onDidReceiveMessage(message => {
+			//console.log(message);
 			service.notify("message", message);
 			
 		}, undefined, context.subscriptions);
