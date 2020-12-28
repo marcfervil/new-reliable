@@ -65,9 +65,9 @@ async function activate(context) {
 		);
 		currentPanel.webview.html = getWebviewContent();
 		currentPanel.webview.onDidReceiveMessage(message => {
-			//console.log(message);
+			console.log("sent");
 			service.notify("tests", message);
-			
+	
 		}, undefined, context.subscriptions);
 	
 	});
