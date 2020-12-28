@@ -48,7 +48,7 @@ async function activate(context) {
 
 	context.subscriptions.push(disposable);
 
-	service.onNotify("message", (data) => {
+	service.onNotify("tests", (data) => {
 		currentPanel.webview.postMessage(data);
 		console.log("recieved");
 	});
@@ -66,7 +66,7 @@ async function activate(context) {
 		currentPanel.webview.html = getWebviewContent();
 		currentPanel.webview.onDidReceiveMessage(message => {
 			//console.log(message);
-			service.notify("message", message);
+			service.notify("tests", message);
 			
 		}, undefined, context.subscriptions);
 	
