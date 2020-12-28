@@ -27,10 +27,10 @@ async function activate(context) {
 	}*/
 //	vsls.ActivityType.
 
-	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService("hbenl.vscode-test-explorer-liveshare") : await liveshare.getSharedService("hbenl.vscode-test-explorer-liveshare");
+	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService("phylum.new-reliable") : await liveshare.getSharedService("phylum.new-reliable");
 	console.log(service);
 	console.log(liveshare);
-	let x = await liveshare.shareService("hbenl.vscode-test-explorer-liveshare") ;
+	let x = await liveshare.shareService("phylum.new-reliable") ;
 	console.log(x);
 	let disposable = vscode.commands.registerCommand('new-reliable.helloWorld', function () {
 		// The code you place here will be executed every time your command is executed
