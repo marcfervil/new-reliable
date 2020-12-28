@@ -13,15 +13,16 @@ let vsls = require("vsls");
 async function activate(context) {
 
 	let currentPanel = undefined;
-
+	let service = undefined;
  
 	const liveshare = await vsls.getApi();
-	let service = await liveshare.getSharedService("New Reliable");
-
-	if(!service.isServiceAvailable){
+	//let service = await liveshare.getSharedService("New Reliable");
+	//liveshare.session.role
+	if(liveshare.session.role == vsls.Role.Host){
 		service = await liveshare.shareService("New Reliable");
 		console.log("shared service!")
 	}else{
+		service = await liveshare.getSharedService("New Reliable");
 		console.log("using shared service!")
 	}
 	
