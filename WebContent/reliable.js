@@ -63,7 +63,7 @@ class SVG{
         this.svg.style.fill = "transparent";
         this.svg.style.strokeWidth = 3;
         this.svg.style.strokeLinejoin = "miter";
-        this.svg.style.strokeLinecap = "round";
+        this.svg.style.strokeLinecap = "butt";
         this.svg.style.strokeMiterlimit = 4;
         this.svg.style.strokeDasharray = "none";
         this.svg.style.strokeDashoffset= 0;
@@ -80,26 +80,80 @@ class SVG{
         $(this.svg).remove();
     }
 
+
+    /*
     smoothify(){
         let tempPath = this.path.slice();
         let svgData = "";
         while(tempPath.length >= 3) { 
             let curve = tempPath.splice(0, 3);
-    
-
-           svgData += `C ${curve[0]}, ${curve[1]}, ${curve[2]}`;
-
-            //throw away 3 points to compress maybe?
-           //tempPath.splice(0, 3);
+            svgData += `C ${curve[0]}, ${curve[1]}, ${curve[2]}`;
         }
         svgData = "M "+this.path[2].toString() + svgData;
         this.replaceSvg(svgData);
         
+    }*/
+
+    //funny
+    /*
+    smoothify(){
+        let tempPath = this.path.slice();
+        let svgData = "";
+        while(tempPath.length >= 3) { 
+            let curve = tempPath.splice(0, 3);
+            svgData += `${curve[0]}, ${curve[1]}, ${curve[2]}`;
+        }
+        svgData = "M "+this.path[2].toString() + "C "+ svgData;
+        this.replaceSvg(svgData);
+        
+    }*/
+//https://yqnn.github.io/svg-path-editor/
+
+    smoothify(){
+
+        let tempPath = this.path.slice();
+        let svgData = "";
+        let start = tempPath.splice(0, 1);
+        let lastPos = undefined;
+        /*
+        while(tempPath.length >= 3) { 
+            let curve = tempPath.splice(0, 3);
+            svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
+       
+        }*/
+        let skip = 0;
+        let total = 0;
+        while(tempPath.length >= 3) { 
+            total+=1;
+            let curve = tempPath.splice(0, 3);
+            if(lastPos!=undefined)console.log( curve[2].distance(lastPos));
+            if(lastPos!=undefined && curve[2].distance(lastPos) < 20){
+                skip +=1;
+                //lastPos = curve[2];
+                continue;
+            }
+            lastPos = curve[2];
+            svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
+           
+        }
+
+        svgData = "M "+start.toString() + "C"+ svgData;
+        console.log("compressed "+((skip/total)*100)+"%");
+        console.log(svgData);
+        let ogPath = this.replaceSvg(svgData);
+        
+        /*
+        let uncompressedSVG = new SVG(this.parentId, this.pos);
+        uncompressedSVG.replaceSvg(ogPath);
+        uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
+        
     }
 
     replaceSvg(updateSvg){
+        let ogPath = this.pathData;
         this.pathData = updateSvg;
         this.svg.setAttribute("d", updateSvg);
+        return ogPath;
     }
 
     updateSvg(svgData){
