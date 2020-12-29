@@ -24,14 +24,14 @@ function makeDraggable(element, liveshare){
     }
 }
 
-function onDrag(element, dragged, dragComplete){
+function onDrag(element, dragged, dragStart, dragComplete){
     element.mouseDown = 0;
     element.offset = {x: 0, y:0}
     element.onmousedown = function(e) { 
         element.offset.x = e.layerX;
         element.offset.y = e.layerY;
         element.mouseDown = 1;
-        //if(dragStart!=undefined)dragStart({x: e.layerX, y: e.layerY});
+        if(dragStart!=undefined)dragStart({x: e.layerX, y: e.layerY});
     }
     element.onmouseup = function() {
         element.mouseDown = 0;
@@ -43,4 +43,71 @@ function onDrag(element, dragged, dragComplete){
             dragged(pos);
         }   
     }
+}
+
+
+class SVG{
+
+    constructor(parentId, pos){
+        this.pos = pos;
+        this.parentId = parentId;
+        this.path = [pos];
+        this.pathData = "M "+pos.toString();
+        this.parent = $("#"+this.parentId)[0]; //Get svg element
+
+        //create SVG
+        this.svg = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+        console.log(this.svg);
+        this.svg.setAttribute("d", this.pathData); //Set path's data
+        this.svg.style.stroke = "#AAB2C0"; //Set stroke colour
+        this.svg.style.fill = "transparent";
+        this.svg.style.strokeWidth = 3;
+        this.svg.style.strokeLinejoin = "miter";
+        this.svg.style.strokeLinecap = "round";
+        this.svg.style.strokeMiterlimit = 4;
+        this.svg.style.strokeDasharray = "none";
+        this.svg.style.strokeDashoffset= 0;
+        this.parent.appendChild(this.svg);
+    }
+
+    addPoint(pos){
+        this.path.push(pos);
+        this.updateSvg(pos.toString())
+
+    }
+
+    delete(){
+        $(this.svg).remove();
+    }
+
+    smoothify(){
+        let tempPath = this.path.slice();
+        let svgData = "";
+        while(tempPath.length >= 3) { 
+            let curve = tempPath.splice(0, 3);
+    
+
+           svgData += `C ${curve[0]}, ${curve[1]}, ${curve[2]}`;
+
+            //throw away 3 points to compress maybe?
+           //tempPath.splice(0, 3);
+        }
+        svgData = "M "+this.path[2].toString() + svgData;
+        this.replaceSvg(svgData);
+        
+    }
+
+    replaceSvg(updateSvg){
+        this.pathData = updateSvg;
+        this.svg.setAttribute("d", updateSvg);
+    }
+
+    updateSvg(svgData){
+        //console.log(svgData);
+        this.pathData += "L"+svgData;
+        this.svg.setAttribute("d", this.pathData);
+    }
+    
+    
+
 }

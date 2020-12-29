@@ -14,72 +14,100 @@ let handlebars = require("handlebars");
  */
 async function activate(context) {
 	try{
-	let currentPanel = undefined;
-//	let service = undefined;
- 
+		let currentPanel = undefined;
+	//	let service = undefined;
+	
+		console.log("activate");
+		const liveshare = await vsls.getApi();
 
-	const liveshare = await vsls.getApi();
-
-
-	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService("phylum.new-reliable") : await liveshare.getSharedService("phylum.new-reliable");
-
-	service.onNotify("tests", (data) => {
-		currentPanel.webview.postMessage(data);
-		console.log("recieved");
-	});
-
-
-	let disposable = vscode.commands.registerCommand('new-reliable.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
 		
-		// Display a message box to the user
-		if (!currentPanel)return;
-		  
-		//vscode.window.showInformationMessage('Hello World from New Reliable!');
-		currentPanel.webview.postMessage({
-			command: "Drag",
-			id: "image",
-			pos: {x: "50px", y: "100px"}
+		
+
+		let disposable = vscode.commands.registerCommand('new-reliable.helloWorld', function () {
+			// The code you place here will be executed every time your command is executed
+			
+			// Display a message box to the user
+			if (!currentPanel)return;        
+			
+			//vscode.window.showInformationMessage('Hello World from New Reliable!');
+			currentPanel.webview.postMessage({
+				command: "Drag",
+				id: "image",
+				pos: {x: "50px", y: "100px"}
+			});
 		});
-	});
 
-	context.subscriptions.push(disposable);
+		context.subscriptions.push(disposable);
 
-	let contentPath = path.join(context.extensionPath, 'WebContent');
 
-	let disposable2 = vscode.commands.registerCommand('new-reliable.start', () => {
-		// Create and show a new webview
-		vscode.window.showInformationMessage('Path: '+__dirname+'/WebContent/index.html');
-		console.log(contentPath);
+		let disposable3 = vscode.commands.registerCommand('new-reliable.undo', function () {
+			// The code you place here will be executed every time your command is executed
+			
+			// Display a message box to the user
+			if (!currentPanel)return;        
+			
+			vscode.window.showInformationMessage('Un-digery-doo?');
+			
+		});
+
+		context.subscriptions.push(disposable3);
+
+		let contentPath = path.join(context.extensionPath, 'WebContent');
+
+		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
+
+			
+
+			let serviceName = context.workspaceState._id;
+			console.log(serviceName);
+			const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService(serviceName) : await liveshare.getSharedService(serviceName);
+			console.log(service);
+			console.log(context.workspaceState);
+			if(service==null || (service!=null && !service.isAvailable)){
+				vscode.window.showInformationMessage('Bad Permissions');
+				if(service==null)return ;
+			}else{
+				service.onNotify("message", (data) => {
+					currentPanel.webview.postMessage(data);
+					console.log("recieved");
+				});
+			}
+
+			currentPanel = vscode.window.createWebviewPanel(
+				'newReliable', // Identifies the type of the webview. Used internally
+				'New Reliable', // Title of the panel displayed to the user
+				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+				{
+					enableScripts: true, 
 		
-		currentPanel = vscode.window.createWebviewPanel(
-		  	'newReliable', // Identifies the type of the webview. Used internally
-		  	'New Reliable', // Title of the panel displayed to the user
-		 	vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-		  	{
-				enableScripts: true, 
-	
-				localResourceRoots: [vscode.Uri.file(contentPath)]
-			} // Webview options. More on these later.
-		  
-		);
-		currentPanel.webview.html = getWebviewContent();
-		currentPanel.webview.onDidReceiveMessage(message => {
-			console.log("sent");
-			service.notify("tests", message);
-	
-		}, undefined, context.subscriptions);
-	
-	});
+					localResourceRoots: [vscode.Uri.file(contentPath)]
+				} // Webview options. More on these later.
+			
+			);
+			currentPanel.onDidDispose(() => {}, null, context.subscriptions);
+			currentPanel.webview.html = getWebviewContent();
+			currentPanel.webview.onDidReceiveMessage(message => {
+				console.log("sent");
+				service.notify("tests", message);
+		
+			}, undefined, context.subscriptions);
+		
+		});
 
-	context.subscriptions.push(disposable2);
+		context.subscriptions.push(disposable2);
 
-	function getWebviewContent() {
-		// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
-		let file = fs.readFileSync(contentPath+"/index.html").toString();
-		//
-		return handlebars.compile(file)({path: "vscode-resource://"+contentPath});
-	}
+		function getWebviewContent() {
+			// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
+			let file = fs.readFileSync(contentPath+"/index.html").toString();
+			//
+			return handlebars.compile(file)({path: "vscode-resource://"+contentPath});
+		}
+
+
+		
+		
+		vscode.commands.executeCommand('new-reliable.start');
+
 	}catch(e){
 		console.error(e);
 	}
@@ -88,7 +116,9 @@ async function activate(context) {
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() {
+	console.log("deactivate");
+}
 
 module.exports = {
 	activate,
