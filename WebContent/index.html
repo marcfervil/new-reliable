@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cat Coding</title>
         <style>
@@ -10,55 +11,95 @@
                 -khtml-user-drag: none;
                 -moz-user-drag: none;
                 -o-user-drag: none;
-                user-drag: none;
             }
+           
         </style>
     </head>
     <body>
+       
+        <svg style="position: absolute; top:0px; left:0px; width:100%; height:100%" id="path">
+
+           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
+            
+        </svg>
         <img id="image" style="position:absolute;" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-        <button onclick="yuh()">yuh</button>
     </body>
 </html>
+<script src="{{path}}/jquery.js" type="text/javascript"></script>
+<script src="{{path}}/reliable.js" type="text/javascript"></script>
+<script src="{{path}}/Vector2.js" type="text/javascript"></script>
+<script  type="application/javascript" src="file:///Users/marcfervil/Documents/Programming/NewReliable/new-reliable/WebContent/Vector2.js"></script>
+<script src="file:///Users/marcfervil/Documents/Programming/NewReliable/new-reliable/WebContent/reliable.js" type="text/javascript"></script>
+<script src="file:///Users/marcfervil/Documents/Programming/NewReliable/new-reliable/WebContent/jquery.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-    let img = document.getElementById('image');
+    
+    //https://mavo.io/demos/svgpath/
 
     let vscode = undefined;
    
     let isVsCode = !(typeof acquireVsCodeApi === 'undefined');
     if(isVsCode) vscode = acquireVsCodeApi();
 
+    //console.log("TEST {{path}}/cat.jpeg");
+   
+    //C = her boyfriend
+    //Q = You
+    
 
-    function makeDraggable(element, liveshare){
-        element.mouseDown = 0;
-        element.offset = {x: 0, y:0}
-        element.onmousedown = function(e) { 
-            element.offset.x = e.layerX;
-            element.offset.y = e.layerY;
-            element.mouseDown = 1;
-        }
-        element.onmouseup = function() {
-            element.mouseDown = 0;
-        }
-        element.onmousemove = function(e){
-            if(element.mouseDown==1){
-                img.style.left = (e.clientX-element.offset.x)+"px";
-                img.style.top = (e.clientY-element.offset.y)+"px";
-                if(liveshare){
-                    vscode.postMessage({
-                        command: "Drag",
-                        id: element.id,
-                        pos: {x: img.style.left, y: img.style.top}
-                    });
-                }
-            }
-            
-        }
-       
+    
+
+   
+    $("#image").hide();
+    let path = [];
+
+    function lastPos(){
+        return path[path.length-1];
     }
 
+    onDrag($("#path")[0], (pos) => {
+        pos = new Vector2(pos.x,pos.y);
+        if(path.length == 0 || lastPos().distance(pos) > 20){
+            path.push(pos);
+            //if(path.length == 3) finishedDrag();
+        }
+    }, () => {finishedDrag()});
 
-    makeDraggable(img, isVsCode);
+    function getPath(){
+        //let pathStr = "M "+path.splice(0, 1);
+
+       
+            let item1 = path.splice(0, 1);
+            let item2 = path.splice(0, 1);
+            let item3 = path.splice(0, 1);
+            pathStr = `M${item1} Q ${item2}, ${item3}`
+        
+           
+        return pathStr;
+    }
+
+    function finishedDrag(){
+
+        console.log("process...");
+
+        /*
+        //.attr("d", getPath())
+        let pathEl = $("<path/>").attr("fill", "transparent").attr("stroke", "black");
+        console.log(pathEl);
+        pathEl = pathEl.appendTo("#path")[0];
+      
+        pathEl.setAttribute('d', getPath());*/
+        while(path.length >= 3){
+        var svg = $("#path")[0]; //Get svg element
+        var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
+        newElement.setAttribute("d", getPath()); //Set path's data
+        newElement.style.stroke = "#AAB2C0"; //Set stroke colour
+        newElement.style.fill = "transparent";
+        svg.appendChild(newElement);
+        //pos
+        }
+        path = [];
+    }
 
     if(isVsCode){
         window.addEventListener('message', event => {
@@ -72,6 +113,6 @@
     }
 
     var div = document.createElement("div"); 
-    div.innerHTML = isVsCode;
+    //div.innerHTML = isVsCode;
     document.body.appendChild(div);
 </script>

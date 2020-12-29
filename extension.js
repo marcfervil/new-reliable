@@ -3,6 +3,8 @@
 const vscode = require('vscode');
 const fs = require("fs");
 let vsls = require("vsls");
+let path = require('path');
+let handlebars = require("handlebars");
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -15,23 +17,18 @@ async function activate(context) {
 	let currentPanel = undefined;
 //	let service = undefined;
  
+
 	const liveshare = await vsls.getApi();
 
-/*
-	if(liveshare.session.role == vsls.Role.Host){
-		service = await liveshare.shareService("New Reliable");
-		console.log("shared service!")
-	}else{
-		service = await liveshare.getSharedService("New Reliable");
-		console.log("using shared service!")
-	}*/
-//	vsls.ActivityType.
 
 	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService("phylum.new-reliable") : await liveshare.getSharedService("phylum.new-reliable");
-	console.log(service);
-	console.log(liveshare);
-	let x = await liveshare.shareService("phylum.new-reliable") ;
-	console.log(x);
+
+	service.onNotify("tests", (data) => {
+		currentPanel.webview.postMessage(data);
+		console.log("recieved");
+	});
+
+
 	let disposable = vscode.commands.registerCommand('new-reliable.helloWorld', function () {
 		// The code you place here will be executed every time your command is executed
 		
@@ -48,20 +45,23 @@ async function activate(context) {
 
 	context.subscriptions.push(disposable);
 
-	service.onNotify("tests", (data) => {
-		currentPanel.webview.postMessage(data);
-		console.log("recieved");
-	});
+	let contentPath = path.join(context.extensionPath, 'WebContent');
 
 	let disposable2 = vscode.commands.registerCommand('new-reliable.start', () => {
 		// Create and show a new webview
 		vscode.window.showInformationMessage('Path: '+__dirname+'/WebContent/index.html');
-  
+		console.log(contentPath);
+		
 		currentPanel = vscode.window.createWebviewPanel(
-		  'newReliable', // Identifies the type of the webview. Used internally
-		  'New Reliable', // Title of the panel displayed to the user
-		  vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-		  {enableScripts: true,allowModal:true} // Webview options. More on these later.
+		  	'newReliable', // Identifies the type of the webview. Used internally
+		  	'New Reliable', // Title of the panel displayed to the user
+		 	vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+		  	{
+				enableScripts: true, 
+	
+				localResourceRoots: [vscode.Uri.file(contentPath)]
+			} // Webview options. More on these later.
+		  
 		);
 		currentPanel.webview.html = getWebviewContent();
 		currentPanel.webview.onDidReceiveMessage(message => {
@@ -76,7 +76,9 @@ async function activate(context) {
 
 	function getWebviewContent() {
 		// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
-		return fs.readFileSync(__dirname+'/WebContent/index.html').toString();
+		let file = fs.readFileSync(contentPath+"/index.html").toString();
+		//
+		return handlebars.compile(file)({path: "vscode-resource://"+contentPath});
 	}
 	}catch(e){
 		console.error(e);

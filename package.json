@@ -12,7 +12,8 @@
 	],
 	"activationEvents": [
 		"onCommand:new-reliable.helloWorld",
-		"onCommand:new-reliable.start"
+		"onCommand:new-reliable.start",
+		"*"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -44,6 +45,7 @@
 		"vscode-test": "^1.4.1"
 	},
 	"dependencies": {
+		"handlebars": "^4.7.6",
 		"vsls": "^1.0.3015"
 	}
 }
