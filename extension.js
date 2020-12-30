@@ -72,11 +72,11 @@ async function activate(context) {
 			
 			
 
-			let serviceName = context.workspaceState._id;
-			console.log(serviceName);
-			const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService(serviceName) : await liveshare.getSharedService(serviceName);
-			console.log(service);
-			console.log(context.workspaceState);
+			let serviceName = "newReliable";
+		//	console.log(serviceName);
+		//	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService(serviceName) : await liveshare.getSharedService(serviceName);
+			//console.log(service);
+			//console.log(context.workspaceState);
 			
 /*
 			if(service==null || (service!=null && !service.isAvailable)){
@@ -117,7 +117,7 @@ async function activate(context) {
 					vscode.window.showInformationMessage("Starting as host");
 				}else if (e.session.role === vsls.Role.Guest) {
 					service = await liveshare.getSharedService(serviceName);
-					vscode.window.showInformationMessage("Starting as host");
+					vscode.window.showInformationMessage("Starting as guest");
 				}
 			});
 
