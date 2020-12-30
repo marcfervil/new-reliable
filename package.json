@@ -26,16 +26,8 @@
 				"command": "new-reliable.start",
 				"title": "Oh Boy"
 			}
-		],
-		"keybindings": [
-            {
-                "command": "new-reliable.undo",
-                "key": "ctrl+alt+l",
-				"mac": "cmd+z",
-				"when": "extension == phylum.new-reliable"
-            }
-
-        ]
+		]
+		
 	},
 	"scripts": {
 		"lint": "eslint .",

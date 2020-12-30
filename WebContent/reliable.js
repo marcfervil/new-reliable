@@ -22,6 +22,15 @@ function makeDraggable(element, liveshare){
             //console.log(delta);
             element.newpos = element.pos.add(delta);
             element.setAttribute('transform',`translate(${element.newpos.x }, ${element.newpos.y})`);
+
+            if(liveshare){
+                vscode.postMessage({
+                    command: "Drag",
+                    id: element.id,
+                    pos: {x: element.style.left, y: element.style.top}
+                });
+            }
+            
         }
     }
 
@@ -34,12 +43,12 @@ function makeDraggable(element, liveshare){
         element.pos = element.newpos;
        document.removeEventListener('mousemove', mouseMove);
        document.removeEventListener('mouseup', mouseUp);
-       element.style.stroke = "#AAB2C0";
+       element.firstChild.style.stroke = "#AAB2C0";
     }
 
     element.onmousedown = function(e) { 
         
-        element.style.stroke = "green";
+        element.firstChild.style.stroke = "green";
         element.start = {x: e.offsetX, y:e.offsetY};
         element.offset = {x: e.layerX, y:e.layerY};
         //if(!element.offset){
@@ -123,6 +132,7 @@ class ImageSVG{
         this.parentId = parentId;
         this.src = src;
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", 'image');
+        
         this.parent = $("#"+this.parentId)[0];
         this.parent.appendChild(this.svg);
 
@@ -142,6 +152,8 @@ class SVG{
         this.pathData = "M "+pos.toString();
         this.parent = $("#"+this.parentId)[0]; //Get svg element
 
+        this.group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+
         //create SVG
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", 'path');
         //console.log(this.svg);
@@ -154,9 +166,10 @@ class SVG{
         this.svg.style.strokeMiterlimit = 4;
         this.svg.style.strokeDasharray = "none";
         this.svg.style.strokeDashoffset= 0;
-  
-        this.parent.appendChild(this.svg);
-        makeDraggable(this.svg, false);
+        this.parent.appendChild(this.group);
+
+        this.group.appendChild(this.svg);
+        makeDraggable(this.group, false);
     }
 
     addPoint(pos){

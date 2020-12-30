@@ -99,6 +99,7 @@ async function activate(context) {
 
 		context.subscriptions.push(disposable2);
 
+
 		function getWebviewContent() {
 			// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
