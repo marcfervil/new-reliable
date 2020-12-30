@@ -63,7 +63,7 @@
   // consider the first item (can be easily extended for multiple items)
         var item = pasteEvent.clipboardData.items[0];
         
-        alert(item.type);
+       // alert(item.type);
 
         if (item.type.indexOf("image") === 0) {
             var blob = item.getAsFile();
