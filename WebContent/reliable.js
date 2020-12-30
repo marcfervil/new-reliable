@@ -7,7 +7,7 @@ function bringToTop(targetElement){
   }
   
 
-function makeDraggable(element, liveshare){
+function makeDraggable(element, liveshare, color){
     //element.mouseDown = 0;
     //
 
@@ -23,7 +23,7 @@ function makeDraggable(element, liveshare){
             element.newpos = element.pos.add(delta);
             element.setAttribute('transform',`translate(${element.newpos.x }, ${element.newpos.y})`);
 
-            if(liveshare){
+            if(liveshare && isVsCode){
                 vscode.postMessage({
                     command: "Drag",
                     id: element.id,
@@ -43,12 +43,12 @@ function makeDraggable(element, liveshare){
         element.pos = element.newpos;
        document.removeEventListener('mousemove', mouseMove);
        document.removeEventListener('mouseup', mouseUp);
-       element.firstChild.style.stroke = "#AAB2C0";
+       if(color)element.firstChild.style.stroke = "#AAB2C0";
     }
 
     element.onmousedown = function(e) { 
         
-        element.firstChild.style.stroke = "green";
+        if(color)element.firstChild.style.stroke = "green";
         element.start = {x: e.offsetX, y:e.offsetY};
         element.offset = {x: e.layerX, y:e.layerY};
         //if(!element.offset){
@@ -58,7 +58,7 @@ function makeDraggable(element, liveshare){
        // element.clickOffset = {x: e.layerX, y:e.layerY};
 
         element.mouseDown = 1;
-        console.log(element.offset);
+ 
         isDragging = true; 
         //element.style.zIndex = "1000";
         //bringToTop(element);
@@ -115,9 +115,11 @@ function onDrag(element, dragged, dragStart, dragComplete){
         }
     }
     let mouseUp = function() {
-        element.mouseDown = 0;
-        document.removeEventListener('mousemove', mouseMove);
-        dragComplete();
+        if(!isDragging){
+            element.mouseDown = 0;
+            document.removeEventListener('mousemove', mouseMove);
+            dragComplete();
+        }
     }
 
     
@@ -139,8 +141,13 @@ class ImageSVG{
         this.svg.setAttribute('transform',`translate(${pos.x}, ${pos.y})`);
         this.svg.setAttributeNS('http://www.w3.org/1999/xlink','href', this.src);
 
-        makeDraggable(this.svg, true);
+        makeDraggable(this.svg, true, false);
     }
+
+    delete(){
+        $(this.svg).remove();
+    }
+
 }
 
 class SVG{
@@ -156,6 +163,7 @@ class SVG{
 
         //create SVG
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+
         //console.log(this.svg);
         this.svg.setAttribute("d", this.pathData); //Set path's data
         this.svg.style.stroke = "#AAB2C0"; //Set stroke colour
@@ -169,7 +177,7 @@ class SVG{
         this.parent.appendChild(this.group);
 
         this.group.appendChild(this.svg);
-        makeDraggable(this.group, false);
+        makeDraggable(this.group, false, true);
     }
 
     addPoint(pos){
@@ -201,44 +209,41 @@ class SVG{
 
     smoothify(){
 
-        let tempPath = this.path.slice();
-        let svgData = "";
-        let start = tempPath.splice(0, 1);
-        let lastPos = undefined;
-        /*
-        while(tempPath.length >= 3) { 
-            let curve = tempPath.splice(0, 3);
-            svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
-       
-        }*/
-        let skip = 0;
-        let total = 0;
-        while(tempPath.length >= 3) { 
-            total+=1;
-            let curve = tempPath.splice(0, 3);
-            //if(lastPos!=undefined)console.log( curve[2].distance(lastPos));
-            //20;
-            if(lastPos!=undefined && curve[2].distance(lastPos) < 50){
-                skip +=1;
-                //lastPos = curve[2];
-               // continue;
+        try{
+            let tempPath = this.path.slice();
+            let svgData = "";
+            let start = tempPath.splice(0, 1);
+            let lastPos = undefined;
+    
+            let skip = 0;
+            let total = 0;
+            while(tempPath.length >= 3) { 
+                total+=1;
+                let curve = tempPath.splice(0, 3);
+                //if(lastPos!=undefined)console.log( curve[2].distance(lastPos));
+                //20;
+                if(lastPos!=undefined && curve[2].distance(lastPos) < 50){
+                    skip +=1;
+                    //lastPos = curve[2];
+                // continue;
+                }
+                lastPos = curve[2];
+                svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
+
             }
-            lastPos = curve[2];
-            svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
 
-        }
+            svgData = "M "+start.toString() + "C"+ svgData;
 
-        svgData = "M "+start.toString() + "C"+ svgData;
-        console.log("compressed "+((skip/total)*100)+"%");
-       // console.log(svgData);
-        let ogPath = this.replaceSvg(svgData);
-      //  console.log(ogPath);
+            let ogPath = this.replaceSvg(svgData);
         
-        /*
-        let uncompressedSVG = new SVG(this.parentId, this.pos);
+        }catch(e){
+            console.log("error making SVG?");
+        }
+            /*
+            let uncompressedSVG = new SVG(this.parentId, this.pos);
 
-        uncompressedSVG.replaceSvg(ogPath);
-        uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
+            uncompressedSVG.replaceSvg(ogPath);
+            uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
         
     }
 

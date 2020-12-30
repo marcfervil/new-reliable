@@ -22,7 +22,7 @@
       
         <!--img id="image" style="position:absolute;" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" /-->
         <button onClick="clearPath()">Clear</button>
-        <button onClick="undo()">Undo</button>
+      
     </body>
 </html>
 
@@ -70,7 +70,7 @@
         
             var reader = new FileReader();
             reader.onload = function(event) {
-                new ImageSVG("path", new Vector2(), event.target.result);
+                svgs.push(new ImageSVG("path", new Vector2(), event.target.result));
             };
         
             reader.readAsDataURL(blob);
@@ -81,18 +81,28 @@
         currentSvg.addPoint(new Vector2(pos.x, pos.y));
     }
 
+
     function dragComplete(){
+      
+
         currentSvg.smoothify();
+        
         svgs.push(currentSvg);
+        
+    
+        
     }
 
     function undo(){
         svgs.pop().delete();
+        console.log(event);
+        event.stopPropagation();
     }
 
 
     function clearPath(){
         $("#path").empty();
+        svgs = [];
     }
 
     if(isVsCode){
