@@ -12,15 +12,40 @@ let handlebars = require("handlebars");
 /**
  * @param {vscode.ExtensionContext} context
  */
+
+class ReliableTreeItem {
+	
+
+	
+
+	constructor(){
+		this.command = {
+			command: "new-reliable.start",
+			name:"Oh Boy"
+		};
+	}
+
+	getChildren(element){
+		return Promise.resolve([this.command]);
+	}
+
+	getTreeItem(element){
+	  const treeItem = new vscode.TreeItem(`New Reliable`);
+	  treeItem.command = element;
+	  return treeItem;
+	}
+  }
+
 async function activate(context) {
 	try{
 		let currentPanel = undefined;
 	//	let service = undefined;
 	
 		console.log("activate");
-		
+		const liveshare = await vsls.getApi();
 
 		
+		liveshare.registerTreeDataProvider(vsls.View.Session, new ReliableTreeItem());
 		
 
 		let disposable = vscode.commands.registerCommand('new-reliable.helloWorld', function () {
@@ -40,22 +65,11 @@ async function activate(context) {
 		context.subscriptions.push(disposable);
 
 
-		let disposable3 = vscode.commands.registerCommand('new-reliable.undo', function () {
-			// The code you place here will be executed every time your command is executed
-			
-			// Display a message box to the user
-			if (!currentPanel)return;        
-			
-			vscode.window.showInformationMessage('Un-digery-doo?');
-			
-		});
-
-		context.subscriptions.push(disposable3);
 
 		let contentPath = path.join(context.extensionPath, 'WebContent');
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
-			const liveshare = await vsls.getApi();
+			
 			
 
 			let serviceName = context.workspaceState._id;
@@ -64,6 +78,7 @@ async function activate(context) {
 			console.log(service);
 			console.log(context.workspaceState);
 			
+/*
 			if(service==null || (service!=null && !service.isAvailable)){
 				
 				if(service==null){
@@ -92,7 +107,20 @@ async function activate(context) {
 					console.log("recieved!!!!!");
 					console.log(data);
 				});
-			}
+			}*/
+
+			vsls.onDidChangeSession(async e => {
+				let service = undefined;
+				if (e.session.role === vsls.Role.Host) {
+					service = await liveshare.shareService(serviceName);
+					vscode.window.showInformationMessage("Starting as host");
+				}else if (e.session.role === vsls.Role.Guest) {
+					service = await liveshare.getSharedService(serviceName);
+					vscode.window.showInformationMessage("Starting as host");
+				}
+			});
+
+
 
 			currentPanel = vscode.window.createWebviewPanel(
 				'newReliable', // Identifies the type of the webview. Used internally
@@ -131,7 +159,7 @@ async function activate(context) {
 
 		
 		
-		vscode.commands.executeCommand('new-reliable.start');
+		//vscode.commands.executeCommand('new-reliable.start');
 
 	}catch(e){
 		console.error(e);
