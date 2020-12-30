@@ -27,7 +27,6 @@
 				"title": "Oh Boy"
 			}
 		]
-		
 	},
 	"scripts": {
 		"lint": "eslint .",

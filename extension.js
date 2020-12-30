@@ -69,7 +69,7 @@ async function activate(context) {
 					vscode.window.showInformationMessage('Bad Permissions');
 					return ;
 				}else{
-					vscode.window.showInformationMessage('Attempting to setup service...');
+					vscode.window.showInformationMessage('Attempting to setup service as '+liveshare.session.role);
 					service.onNotify("message", (data) => {
 						//currentPanel.webview.postMessage(data);
 						console.log("recieved!!!!!");
