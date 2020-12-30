@@ -64,12 +64,23 @@ async function activate(context) {
 			console.log(service);
 			console.log(context.workspaceState);
 			if(service==null || (service!=null && !service.isAvailable)){
-				vscode.window.showInformationMessage('Bad Permissions');
-				if(service==null)return ;
+				
+				if(service==null){
+					vscode.window.showInformationMessage('Bad Permissions');
+					return ;
+				}else{
+					vscode.window.showInformationMessage('Attempting to setup service...');
+					service.onNotify("message", (data) => {
+						//currentPanel.webview.postMessage(data);
+						console.log("recieved!!!!!");
+						console.log(data);
+					});
+				}
 			}else{
 				service.onNotify("message", (data) => {
-					currentPanel.webview.postMessage(data);
-					console.log("recieved");
+					//currentPanel.webview.postMessage(data);
+					console.log("recieved!!!!!");
+					console.log(data);
 				});
 			}
 
@@ -91,7 +102,7 @@ async function activate(context) {
 			
 			currentPanel.webview.onDidReceiveMessage(message => {
 				console.log("sent");
-				service.notify("tests", message);
+				service.notify("message", message);
 		
 			}, undefined, context.subscriptions);
 		
