@@ -108,8 +108,8 @@ async function activate(context) {
 					console.log(data);
 				});
 			}*/
-
-			vsls.onDidChangeSession(async e => {
+		
+			liveshare.onDidChangeSession(async e => {
 				let service = undefined;
 				if (e.session.role === vsls.Role.Host) {
 					service = await liveshare.shareService(serviceName);
