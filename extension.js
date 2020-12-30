@@ -111,6 +111,7 @@ async function activate(context) {
 		
 			liveshare.onDidChangeSession(async e => {
 				let service = undefined;
+				vscode.window.showInformationMessage("Session Chage");
 				if (e.session.role === vsls.Role.Host) {
 					service = await liveshare.shareService(serviceName);
 					vscode.window.showInformationMessage("Starting as host");
