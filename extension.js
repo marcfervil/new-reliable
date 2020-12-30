@@ -18,7 +18,7 @@ async function activate(context) {
 	//	let service = undefined;
 	
 		console.log("activate");
-		const liveshare = await vsls.getApi();
+		
 
 		
 		
@@ -55,7 +55,7 @@ async function activate(context) {
 		let contentPath = path.join(context.extensionPath, 'WebContent');
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
-			
+			const liveshare = await vsls.getApi();
 			
 
 			let serviceName = context.workspaceState._id;
