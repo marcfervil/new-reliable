@@ -85,7 +85,10 @@ async function activate(context) {
 			
 			);
 			currentPanel.onDidDispose(() => {}, null, context.subscriptions);
+			
 			currentPanel.webview.html = getWebviewContent();
+			
+			
 			currentPanel.webview.onDidReceiveMessage(message => {
 				console.log("sent");
 				service.notify("tests", message);
