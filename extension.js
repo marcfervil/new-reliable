@@ -55,7 +55,7 @@ async function activate(context) {
 		let contentPath = path.join(context.extensionPath, 'WebContent');
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
-
+			
 			
 
 			let serviceName = context.workspaceState._id;
@@ -63,12 +63,22 @@ async function activate(context) {
 			const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService(serviceName) : await liveshare.getSharedService(serviceName);
 			console.log(service);
 			console.log(context.workspaceState);
+			
 			if(service==null || (service!=null && !service.isAvailable)){
 				
 				if(service==null){
 					vscode.window.showInformationMessage('Bad Permissions');
 					return ;
 				}else{
+					if(liveshare.session.role == vsls.Role.Guest){
+						console.log("Service: ");
+						console.log(service);
+						service.onDidChangeIsServiceAvailable((availibility)=>{
+							console.log("Availibility change!: "+availibility);
+						});
+					}
+
+
 					vscode.window.showInformationMessage('Attempting to setup service as '+liveshare.session.role);
 					service.onNotify("message", (data) => {
 						//currentPanel.webview.postMessage(data);
