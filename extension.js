@@ -13,11 +13,9 @@ let handlebars = require("handlebars");
  * @param {vscode.ExtensionContext} context
  */
 
-//testing dev
+//this is test two.
 
 class ReliableTreeItem {
-	
-
 	
 
 	constructor(){
