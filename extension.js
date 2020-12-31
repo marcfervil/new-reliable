@@ -16,7 +16,12 @@ let handlebars = require("handlebars");
 //this is test two.
 //another
 //coolio
+<<<<<<< HEAD
 //last test
+=======
+//Marc Test
+//test2
+>>>>>>> Dev
 
 class ReliableTreeItem {
 	
