@@ -88,7 +88,14 @@
         currentSvg.smoothify();
         
         svgs.push(currentSvg);
-        
+        if(isVsCode){
+            vscode.postMessage({
+                command: "Draw",
+                id: currentSvg.id,
+                pos: currentSvg.pos.toJSON(),
+                path: currentSvg.pathData
+            });
+        }
     
         
     }
@@ -108,10 +115,14 @@
     if(isVsCode){
         window.addEventListener('message', event => {
             const message = event.data; 
+
             if(message.command == "Drag"){
                 let element = document.getElementById(message.id);
                 element.style.left = message.pos.x;
                 element.style.top = message.pos.y;
+            }else if(message.command == "Draw"){
+                let svg = new SVG("path", new Vector2(message.pos.x, message.pos.y), message.id);
+                svg.replaceSvg(svg.pathData);
             }
         });
     }

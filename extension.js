@@ -119,9 +119,7 @@ async function activate(context) {
 				if (liveshare.session.role === vsls.Role.Host) {
 					service = await liveshare.shareService(serviceName);
 					vscode.window.showInformationMessage("Starting as host");
-					//timer = setInterval(() => {
-					//	service.notify("message", {"zoowee": "mama"});
-					//}, 1000);
+
 				}else if (liveshare.session.role === vsls.Role.Guest) {
 					service = await liveshare.getSharedService(serviceName);
 					vscode.window.showInformationMessage("Starting as guest");
@@ -132,11 +130,13 @@ async function activate(context) {
 
 				service.onNotify("message", (data) => {
 					//currentPanel.webview.postMessage(data);
-					console.log("recieved!!!!!");
-					console.log(data);
+					currentPanel.webview.postMessage(data);
 				});
 
-				
+				currentPanel.webview.onDidReceiveMessage(message => {
+					service.notify("message", message);
+				}, undefined, context.subscriptions);
+
 			//});
 
 
@@ -159,11 +159,7 @@ async function activate(context) {
 			currentPanel.webview.html = getWebviewContent();
 			
 			
-			currentPanel.webview.onDidReceiveMessage(message => {
-				console.log("sent");
-				service.notify("message", message);
-		
-			}, undefined, context.subscriptions);
+			
 		
 		});
 

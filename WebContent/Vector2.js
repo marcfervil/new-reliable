@@ -13,6 +13,11 @@ Vector2.prototype = {
 		return new Vector2(this.x, this.y)
 	},
 
+	toJSON: function(){
+		return {x: this.x, y: this.y}
+	},
+
+
 	add: function(vector) {
 		return new Vector2(this.x + vector.x, this.y + vector.y);
 	},

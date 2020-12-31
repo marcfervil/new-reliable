@@ -23,13 +23,14 @@ function makeDraggable(element, liveshare, color){
             element.newpos = element.pos.add(delta);
             element.setAttribute('transform',`translate(${element.newpos.x }, ${element.newpos.y})`);
 
+            /*
             if(liveshare && isVsCode){
                 vscode.postMessage({
                     command: "Drag",
                     id: element.id,
                     pos: {x: element.style.left, y: element.style.top}
                 });
-            }
+            }*/
             
         }
     }
@@ -150,19 +151,34 @@ class ImageSVG{
 
 }
 
+function makeId(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
 class SVG{
 
-    constructor(parentId, pos){
+    constructor(parentId, pos, id){
         this.pos = pos;
         this.parentId = parentId;
         this.path = [pos];
         this.pathData = "M "+pos.toString();
         this.parent = $("#"+this.parentId)[0]; //Get svg element
+        
+        if(id==undefined)this.id = makeId(10);
+
 
         this.group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
 
         //create SVG
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+        this.svg.id = this.id;
+        
 
         //console.log(this.svg);
         this.svg.setAttribute("d", this.pathData); //Set path's data
