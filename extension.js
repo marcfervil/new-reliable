@@ -15,6 +15,7 @@ let handlebars = require("handlebars");
 
 //this is test two.
 //another
+//coolio
 
 class ReliableTreeItem {
 	
