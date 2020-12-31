@@ -133,9 +133,7 @@ async function activate(context) {
 					currentPanel.webview.postMessage(data);
 				});
 
-				currentPanel.webview.onDidReceiveMessage(message => {
-					service.notify("message", message);
-				}, undefined, context.subscriptions);
+			
 
 			//});
 
@@ -152,6 +150,11 @@ async function activate(context) {
 				} // Webview options. More on these later.
 			
 			);
+
+			currentPanel.webview.onDidReceiveMessage(message => {
+				service.notify("message", message);
+			}, undefined, context.subscriptions);
+			
 			currentPanel.onDidDispose(() => {
 				if(timer!=null)clearInterval(timer);
 			}, null, context.subscriptions);
