@@ -5,13 +5,14 @@ function bringToTop(targetElement){
     let parent = targetElement.parentNode;
     parent.appendChild(targetElement);
   }
-  
+
 
 function makeDraggable(element, liveshare, color){
     //element.mouseDown = 0;
     //
 
     element.pos = new Vector2(0, 0);
+
 
 
     let mouseMove = function(e) {
@@ -55,7 +56,7 @@ function makeDraggable(element, liveshare, color){
     
 
 
-
+        /*
         let bounds = element.getBoundingClientRect();
         let testRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         
@@ -68,13 +69,8 @@ function makeDraggable(element, liveshare, color){
         testRect.style.stroke = "green";
         testRect.style.fill="transparent"
         
-        bringToTop(element);
+        bringToTop(element);*/
     }
-    
-
-
-   
-
     
 
 }
@@ -109,7 +105,7 @@ function onDrag(element, dragged, dragStart, dragComplete){
     }
 
     
-    document.addEventListener('mouseup', mouseUp);
+    element.addEventListener('mouseup', mouseUp);
 
 
     
@@ -262,6 +258,10 @@ class SVG{
         this.svg.setAttribute("d", this.pathData);
     }
     
-    
+    toString(){
+        //console.log(JSON.stringify(this));
+        //return JSON.stringify(this);
+        return "[SVG "+ this.id+"]";
+    }
 
 }
