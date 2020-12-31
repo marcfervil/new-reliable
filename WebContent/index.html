@@ -70,7 +70,14 @@
         
             var reader = new FileReader();
             reader.onload = function(event) {
-                svgs.push(new ImageSVG("path", new Vector2(), event.target.result));
+                let img = new ImageSVG("path", new Vector2(), event.target.result);
+                svgs.push(img);
+                vscode.postMessage({
+                    command: "Image",
+                    pos: img.pos,
+                    src: img.src,
+                    //id: currentSvg.id,
+                });
             };
         
             reader.readAsDataURL(blob);
@@ -121,9 +128,10 @@
                 element.style.left = message.pos.x;
                 element.style.top = message.pos.y;
             }else if(message.command == "Draw"){
-                console.log("Draw From VSCode")
                 let svg = new SVG("path", new Vector2(message.pos.x, message.pos.y), message.id);
                 svg.replaceSvg(message.path);
+            }else if(message.command == "Image"){
+                let svg = new ImageSVG("path", new Vector2(0, 0), message.src);
             }
         });
     }
