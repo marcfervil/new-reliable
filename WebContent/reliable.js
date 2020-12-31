@@ -171,7 +171,7 @@ class SVG{
         this.parent = $("#"+this.parentId)[0]; //Get svg element
         
         if(id==undefined)this.id = makeId(10);
-
+        else this.id = id;
 
         this.group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
 
