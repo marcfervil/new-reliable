@@ -13,15 +13,6 @@ let handlebars = require("handlebars");
  * @param {vscode.ExtensionContext} context
  */
 
-//this is test two.
-//another
-//coolio
-<<<<<<< HEAD
-//last test
-=======
-//Marc Test
-//test2
->>>>>>> Dev
 
 class ReliableTreeItem {
 	
