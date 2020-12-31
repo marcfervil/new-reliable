@@ -16,6 +16,7 @@ let handlebars = require("handlebars");
 //this is test two.
 //another
 //coolio
+//last test
 
 class ReliableTreeItem {
 	
@@ -75,43 +76,6 @@ async function activate(context) {
 			
 
 			let serviceName = "newReliable";
-		//	console.log(serviceName);
-		//	const service = (liveshare.session.role == vsls.Role.Host) ? await liveshare.shareService(serviceName) : await liveshare.getSharedService(serviceName);
-			//console.log(service);
-			//console.log(context.workspaceState);
-			
-/*
-			if(service==null || (service!=null && !service.isAvailable)){
-				
-				if(service==null){
-					vscode.window.showInformationMessage('Bad Permissions');
-					return ;
-				}else{
-					if(liveshare.session.role == vsls.Role.Guest){
-						console.log("Service: ");
-						console.log(service);
-						service.onDidChangeIsServiceAvailable((availibility)=>{
-							console.log("Availibility change!: "+availibility);
-						});
-					}
-
-
-					vscode.window.showInformationMessage('Attempting to setup service as '+liveshare.session.role);
-					service.onNotify("message", (data) => {
-						//currentPanel.webview.postMessage(data);
-						console.log("recieved!!!!!");
-						console.log(data);
-					});
-				}
-			}else{
-				service.onNotify("message", (data) => {
-					//currentPanel.webview.postMessage(data);
-					console.log("recieved!!!!!");
-					console.log(data);
-				});
-			}*/
-			//liveshare.
-			//liveshare.onDidChangeSession(async e => {
 
 			
 
@@ -139,9 +103,7 @@ async function activate(context) {
 
 			
 
-			//});
-
-
+				
 
 			currentPanel = vscode.window.createWebviewPanel(
 				'newReliable', // Identifies the type of the webview. Used internally
@@ -154,10 +116,15 @@ async function activate(context) {
 				} // Webview options. More on these later.
 			
 			);
-
+				
 			currentPanel.webview.onDidReceiveMessage(message => {
-				console.log("recieved client data to send");
-				service.notify("message", message);
+				if(message.command == "Refresh"){
+					currentPanel.webview.html = "stupid";
+					currentPanel.webview.html = getWebviewContent();
+				}else{
+					service.notify("message", message);
+				}
+
 			}, undefined, context.subscriptions);
 			
 			currentPanel.onDidDispose(() => {
@@ -178,7 +145,7 @@ async function activate(context) {
 			// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
 			//
-			return handlebars.compile(file)({path: "vscode-resource://"+contentPath});
+			return handlebars.compile(file)({path: "vscode-resource://"+contentPath}) ;
 		}
 
 
