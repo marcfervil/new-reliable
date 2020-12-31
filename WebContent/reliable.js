@@ -22,16 +22,6 @@ function makeDraggable(element, liveshare, color){
             //console.log(delta);
             element.newpos = element.pos.add(delta);
             element.setAttribute('transform',`translate(${element.newpos.x }, ${element.newpos.y})`);
-
-            /*
-            if(liveshare && isVsCode){
-                vscode.postMessage({
-                    command: "Drag",
-                    id: element.id,
-                    pos: {x: element.style.left, y: element.style.top}
-                });
-            }*/
-            
         }
     }
 
@@ -49,45 +39,40 @@ function makeDraggable(element, liveshare, color){
 
     element.onmousedown = function(e) { 
         
-        if(color)element.firstChild.style.stroke = "green";
+        //if(color)element.firstChild.style.stroke = "green";
+        
+
         element.start = {x: e.offsetX, y:e.offsetY};
         element.offset = {x: e.layerX, y:e.layerY};
-        //if(!element.offset){
-          //  console.log("new set");
-            
-        //}
-       // element.clickOffset = {x: e.layerX, y:e.layerY};
+
 
         element.mouseDown = 1;
  
         isDragging = true; 
-        //element.style.zIndex = "1000";
-        //bringToTop(element);
 
         document.addEventListener('mouseup', mouseUp);
         document.addEventListener('mousemove', mouseMove);
     
+
+
+
+        let bounds = element.getBoundingClientRect();
+        let testRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+        
+        element.parentNode.appendChild(testRect);
+       
+        testRect.setAttribute('x', bounds.x);
+        testRect.setAttribute('y', bounds.y);
+        testRect.setAttribute('width', bounds.width);
+        testRect.setAttribute('height', bounds.height);
+        testRect.style.stroke = "green";
+        testRect.style.fill="transparent"
+        
+        bringToTop(element);
     }
     
 
-/*
-    element.onmousemove = function(e){
-        if(element.mouseDown==1){
-            let x = (e.clientX-element.offset.x);
-            let y = (e.clientY-element.offset.y)
-           
-            element.setAttribute('transform',`translate(${x}, ${y})`);
-           
 
-            if(liveshare){
-                vscode.postMessage({
-                    command: "Drag",
-                    id: element.id,
-                    pos: {x: element.style.left, y: element.style.top}
-                });
-            }
-        }   
-    }*/
    
 
     
@@ -125,6 +110,7 @@ function onDrag(element, dragged, dragStart, dragComplete){
 
     
     document.addEventListener('mouseup', mouseUp);
+
 
     
 }
