@@ -42,7 +42,7 @@ async function activate(context) {
 	//	let service = undefined;
 	
 		console.log("activate");
-		const liveshare = await vsls.getApi();
+		const liveshare = await vsls.getApi("phylum.new-reliable");
 
 		
 		liveshare.registerTreeDataProvider(vsls.View.Session, new ReliableTreeItem());
@@ -108,18 +108,36 @@ async function activate(context) {
 					console.log(data);
 				});
 			}*/
-		
-			liveshare.onDidChangeSession(async e => {
+			//liveshare.
+			//liveshare.onDidChangeSession(async e => {
+
+			
+
+			let timer = null;
 				let service = undefined;
-				vscode.window.showInformationMessage("Session Chage");
-				if (e.session.role === vsls.Role.Host) {
+				//vscode.window.showInformationMessage("Session Chage");
+				if (liveshare.session.role === vsls.Role.Host) {
 					service = await liveshare.shareService(serviceName);
 					vscode.window.showInformationMessage("Starting as host");
-				}else if (e.session.role === vsls.Role.Guest) {
+					//timer = setInterval(() => {
+					//	service.notify("message", {"zoowee": "mama"});
+					//}, 1000);
+				}else if (liveshare.session.role === vsls.Role.Guest) {
 					service = await liveshare.getSharedService(serviceName);
 					vscode.window.showInformationMessage("Starting as guest");
+					
 				}
-			});
+				console.log("service started");
+				console.log(service);
+
+				service.onNotify("message", (data) => {
+					//currentPanel.webview.postMessage(data);
+					console.log("recieved!!!!!");
+					console.log(data);
+				});
+
+				
+			//});
 
 
 
@@ -134,7 +152,9 @@ async function activate(context) {
 				} // Webview options. More on these later.
 			
 			);
-			currentPanel.onDidDispose(() => {}, null, context.subscriptions);
+			currentPanel.onDidDispose(() => {
+				if(timer!=null)clearInterval(timer);
+			}, null, context.subscriptions);
 			
 			currentPanel.webview.html = getWebviewContent();
 			
