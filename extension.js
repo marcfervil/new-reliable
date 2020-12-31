@@ -131,6 +131,8 @@ async function activate(context) {
 				service.onNotify("message", (data) => {
 					//currentPanel.webview.postMessage(data);
 					currentPanel.webview.postMessage(data);
+					console.log("GOT SERVER DATA: " );
+					console.log(data);
 				});
 
 			
@@ -152,6 +154,7 @@ async function activate(context) {
 			);
 
 			currentPanel.webview.onDidReceiveMessage(message => {
+				console.log("recieved client data to send");
 				service.notify("message", message);
 			}, undefined, context.subscriptions);
 			

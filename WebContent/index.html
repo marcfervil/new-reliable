@@ -121,6 +121,7 @@
                 element.style.left = message.pos.x;
                 element.style.top = message.pos.y;
             }else if(message.command == "Draw"){
+                console.log("Draw From VSCode")
                 let svg = new SVG("path", new Vector2(message.pos.x, message.pos.y), message.id);
                 svg.replaceSvg(svg.pathData);
             }
