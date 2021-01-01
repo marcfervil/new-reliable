@@ -9,9 +9,6 @@ let handlebars = require("handlebars");
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
-/**
- * @param {vscode.ExtensionContext} context
- */
 
 
 class ReliableTreeItem {
@@ -35,8 +32,13 @@ class ReliableTreeItem {
 	}
   }
 
+  /** 
+	@param {vscode.ExtensionContext} context 
+ */
+
 async function activate(context) {
 	try{
+
 		let currentPanel = undefined;
 	//	let service = undefined;
 	
@@ -70,32 +72,32 @@ async function activate(context) {
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
 			
 			
-
+			vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
 			let serviceName = "newReliable";
-
+			
 			
 
 			let timer = null;
-				let service = undefined;
-				//vscode.window.showInformationMessage("Session Chage");
-				if (liveshare.session.role === vsls.Role.Host) {
-					service = await liveshare.shareService(serviceName);
-					vscode.window.showInformationMessage("Starting as host");
+			let service = undefined;
+			//vscode.window.showInformationMessage("Session Chage");
+			if (liveshare.session.role === vsls.Role.Host) {
+				service = await liveshare.shareService(serviceName);
+				vscode.window.showInformationMessage("Starting as host");
 
-				}else if (liveshare.session.role === vsls.Role.Guest) {
-					service = await liveshare.getSharedService(serviceName);
-					vscode.window.showInformationMessage("Starting as guest");
-					
-				}
-				console.log("service started");
-				console.log(service);
+			}else if (liveshare.session.role === vsls.Role.Guest) {
+				service = await liveshare.getSharedService(serviceName);
+				vscode.window.showInformationMessage("Starting as guest");
+				
+			}
+			console.log("service started");
+			console.log(service);
 
-				service.onNotify("message", (data) => {
-					//currentPanel.webview.postMessage(data);
-					currentPanel.webview.postMessage(data);
-					console.log("GOT SERVER DATA: " );
-					console.log(data);
-				});
+			service.onNotify("message", (data) => {
+				//currentPanel.webview.postMessage(data);
+				currentPanel.webview.postMessage(data);
+				console.log("GOT SERVER DATA: " );
+				console.log(data);
+			});
 
 			
 
@@ -112,11 +114,12 @@ async function activate(context) {
 				} // Webview options. More on these later.
 			
 			);
-				
+			
 			currentPanel.webview.onDidReceiveMessage(message => {
 				if(message.command == "Refresh"){
 					currentPanel.webview.html = "stupid";
 					currentPanel.webview.html = getWebviewContent();
+					
 				}else{
 					service.notify("message", message);
 				}
