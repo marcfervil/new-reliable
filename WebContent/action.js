@@ -19,6 +19,7 @@ class Action {
 
     static commit(reliable, actionData){
         let actionList = {Draw};
+        console.log(actionData);
         let action = new actionList[actionData.action](actionData.data);
         reliable.actions.push(action);
         action.execute(reliable);

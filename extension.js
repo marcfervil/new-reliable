@@ -93,7 +93,7 @@ async function activate(context) {
 			console.log(service);
 
 			service.onNotify("message", (data) => {
-				//currentPanel.webview.postMessage(data);
+				
 				currentPanel.webview.postMessage(data);
 				console.log("GOT SERVER DATA: " );
 				console.log(data);
@@ -121,6 +121,8 @@ async function activate(context) {
 					currentPanel.webview.html = getWebviewContent();
 					
 				}else{
+					console.log("sending");
+					console.log(message);
 					service.notify("message", message);
 				}
 
