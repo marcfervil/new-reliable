@@ -250,7 +250,6 @@ class SVGPath extends SVG{
     }
 
     updatePath(svgData){
-        //console.log(svgData);
         this.pathData += "L"+svgData;
         this.svg.setAttribute("d", this.pathData);
     }
