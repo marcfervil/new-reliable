@@ -22,7 +22,7 @@ class Action {
     static commit(reliable, actionData){
         let actionList = {Draw};
         console.log(actionData);
-        console.log("WE BOUT THAT "+actionData.action);
+        //console.log("WE BOUT THAT "+actionData.action);
         let action = new actionList[actionData.action](actionData);
         reliable.actions.push(action);
         action.execute(reliable);
