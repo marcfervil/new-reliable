@@ -12,9 +12,6 @@
                 -moz-user-drag: none;
                 -o-user-drag: none;
             }
-
-          
-           
         </style>
     </head>
     <body>
@@ -42,150 +39,61 @@
 <script src="{{path}}/reliable.js" type="text/javascript"></script>
 
 
-<!--
-<script  type="application/javascript" src="file:///Users/marcfervil/Documents/Programming/NewReliable/new-reliable/WebContent/Vector2.js"></script>
-<script src="file:///Users/marcfervil/Documents/Programming/NewReliable/new-reliable/WebContent/reliable.js" type="text/javascript"></script>
-<script src="file:///Users/marcfervil/Documents/Programming/NewReliable/new-reliable/WebContent/jquery.js" type="text/javascript"></script>
-
--->
 
 <script type="text/javascript">
-    vscode = acquireVsCodeApi();
+
+    var isVsCode = !(typeof acquireVsCodeApi === 'undefined');
+    var vscode = acquireVsCodeApi();
     var canvas = $("#canvas")[0];
 
-    var app = new Reliable(canvas);
-    app.addTool(new Pen("Pen", "image"));
-
-    /*
-    let newDraw = Action.commit({action: "Draw", data: {
-        x: "ifjewifjweij"
-    }});
-    console.log(newDraw);*/
-   /*
-
-    let vscode = undefined;
-   
-    let isVsCode = !(typeof acquireVsCodeApi === 'undefined');
-    if(isVsCode) vscode = acquireVsCodeApi();
-
-    let currentSvg = undefined;
-   
-    let svgs = [];
-
-    $("#image").hide();
-
-
-    onDrag($("#path")[0], drag, dragStart, dragComplete);
-
-
-    function dragStart(pos){
-        currentSvg = new SVG("path", new Vector2(pos.x, pos.y));
-   
-       
-    }
-
-    document.onpaste = function(pasteEvent) {
-
-        var item = pasteEvent.clipboardData.items[0];
-        
-       
-        if (item.type.indexOf("image") === 0) {
-            var blob = item.getAsFile();
-        
-            var reader = new FileReader();
-            reader.onload = function(event) {
-                let img = new ImageSVG("path", new Vector2(), event.target.result);
-                svgs.push(img);
-                vscode.postMessage({
-                    command: "Image",
-                    pos: img.pos,
-                    src: img.src,
-                    //id: currentSvg.id,
-                });
-            };
-        
-            reader.readAsDataURL(blob);
-        }
-    }
-
+    var app = new Reliable(canvas, [
+        new Pen(),
+    ]);
     
-    function drag(pos){
-        currentSvg.addPoint(new Vector2(pos.x, pos.y));
-    }
-
-
-    function dragComplete(){
-
-        currentSvg.smoothify();
-        
-        svgs.push(currentSvg);
-       
-        if(isVsCode){
-            vscode.postMessage({
-                command: "Draw",
-                id: currentSvg.id,
-                pos: currentSvg.pos.toJSON(),
-                path: currentSvg.pathData
-            });
-        }
-    }
-
     function undo(){
-        
-        svgs.pop().delete();
-      
-
+        app.undo();
     }
 
     function refresh(){
-        vscode.postMessage({
-            command: "Refresh"
-        });
-    }
-
-    function clearPath(){
-        $("#path").empty();
-        svgs = [];
         console.clear();
-    }
-
-    if(isVsCode){
-        window.addEventListener('message', event => {
-            const message = event.data; 
-
-            if(message.command == "Drag"){
-                let element = document.getElementById(message.id);
-                element.style.left = message.pos.x;
-                element.style.top = message.pos.y;
-            }else if(message.command == "Draw"){
-                let svg = new SVG("path", new Vector2(message.pos.x, message.pos.y), message.id);
-                svg.replaceSvg(message.path);
-            }else if(message.command == "Image"){
-                let svg = new ImageSVG("path", new Vector2(0, 0), message.src);
-            }
+        vscode.postMessage({
+            action: "Refresh"
         });
     }
 
+    //Events:
 
+    //keypress events
     document.addEventListener('keydown', function(event) {
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
         }
-        
-        if ((event.ctrlKey && event.key === 'r' && event.shiftKey) ) {
-            refresh();
+    });
+
+    //recieve message from VSCode
+    window.addEventListener('message', (message) => {
+        app.commit(message.data, false);
+    });
+
+    //Paste Image 
+    document.onpaste = function(pasteEvent) {
+        var item = pasteEvent.clipboardData.items[0];
+
+        if (item.type.indexOf("image") === 0) {
+            var blob = item.getAsFile();
+
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                //let img = new ImageSVG("path", new Vector2(), event.target.result);
+                //svgs.push(img);
+            };
+            reader.readAsDataURL(blob);
         }
-    });
+    }
 
 
-    var div = document.createElement("div"); 
-    document.body.appendChild(div);
-*/
 
-function refresh(){
-    console.clear();
-    vscode.postMessage({
-        action: "Refresh"
-    });
-}
+
+
+
 </script>

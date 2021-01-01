@@ -117,7 +117,8 @@ async function activate(context) {
 				if(message.action == "Refresh"){
 					currentPanel.webview.html = "stupid";
 					currentPanel.webview.html = getWebviewContent();
-					
+					console.clear();
+
 				}else{
 					service.notify("message", message);
 				}
@@ -139,7 +140,6 @@ async function activate(context) {
 
 
 		function getWebviewContent() {
-			// console.log(fs.readFileSync(__dirname+'/WebContent/index.html').toString());
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
 			//
 			return handlebars.compile(file)({path: "vscode-resource://"+contentPath}) ;
