@@ -51,25 +51,6 @@ class Action {
 
 
 
-class Draw extends Action{
-
-    constructor(data){
-        super(data);
-    }
-
-    execute(reliable){
-        super.execute(reliable);
-        this.svgPath = new SVGPath(reliable.canvas, new Vector2());
-        this.svgPath.replacePath(this.data.path);
-        reliable.svgs.push(this.svgPath);
-    }
-
-    undo(){
-        this.reliable.svgs.splice(this.reliable.svgs.indexOf(this.svgPath), 1);
-        this.svgPath.delete();
-    }
-
-}
 
 
 class Undo extends Action{
