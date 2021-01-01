@@ -72,7 +72,7 @@ async function activate(context) {
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
 			
 			
-			vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
+			
 			let serviceName = "newReliable";
 			
 			
@@ -116,7 +116,7 @@ async function activate(context) {
 			);
 			
 			currentPanel.webview.onDidReceiveMessage(message => {
-				if(message.command == "Refresh"){
+				if(message.action == "Refresh"){
 					currentPanel.webview.html = "stupid";
 					currentPanel.webview.html = getWebviewContent();
 					
@@ -132,7 +132,7 @@ async function activate(context) {
 			
 			currentPanel.webview.html = getWebviewContent();
 			
-			
+			vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
 			
 		
 		});

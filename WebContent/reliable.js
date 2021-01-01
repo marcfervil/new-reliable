@@ -6,7 +6,11 @@ class Reliable {
         this.toolbar = [];
         this.currentTool = 0;
         this.canvas = canvas;
+        this.actions = [];
+        this.svgs = [];
         this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
+
+        network();
     }
 
     /**
@@ -19,9 +23,14 @@ class Reliable {
     addTool(tool){
        
         this.toolbar.push(tool);
-        
+        tool.reliable = this;
     }
     
+    network(){
+        window.addEventListener('message', actionData => {
+            Action.commit(actionData);
+        });
+    }
 
     mouseDownCanvas(e){
         

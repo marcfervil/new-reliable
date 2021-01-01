@@ -8,14 +8,12 @@ class Tool {
         this.name = name;
         this.img = img;
        
+       
         this.canvas = undefined;
       
     }
 
-    initCanvas(canvas){
-        this.canvas = canvas;
-       
-    }
+  
 
   
     canvasDragStart(){
@@ -43,17 +41,24 @@ class Pen extends Tool{
 
    
     canvasDragStart(pos){
-        console.log("Pen Down at "+pos)
+        this.svgPath = new SVGPath(this.reliable.canvas, pos);
+
     }
 
     canvasDrag(pos){
-        console.log("Drag to "+ pos)
+        this.svgPath.addPoint(new Vector2(pos.x, pos.y));
     }
 
     canvasDragEnd(){
-        console.log("Drag ended");
+        this.svgPath.smoothify();
+        Action.commit(this.reliable, {
+            action: "Draw",
+            data: {
+                id: this.svgPath.id,
+                path: this.svgPath.pathData
+            }
+        });
+        this.svgPath.delete();
+       
     }
-
-
-
 }
