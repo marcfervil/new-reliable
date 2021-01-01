@@ -43,6 +43,7 @@ class Draw extends Action{
     }
 
     execute(reliable){
+      //  console.log(this.this.data);
         this.svgPath = new SVGPath(reliable.canvas, new Vector2());
         this.svgPath.replacePath(this.data.path);
     }
