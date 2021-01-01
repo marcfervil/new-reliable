@@ -28,6 +28,7 @@ class Reliable {
     
     network(){
         window.addEventListener('message', actionData => {
+            console.log(actionData);
             Action.commit(actionData);
         });
     }
