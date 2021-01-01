@@ -80,18 +80,17 @@ class Undo extends Action{
 
     execute(reliable){
 
-        let undo = reliable.actions.filter(action => {
-            console.log(`${action.data.actionId}    VS    ${this.data.undoActionId}`)
-            return action.data.actionId == this.data.undoActionId
-        });
+        let undo = reliable.actions.filter(action => action.data.actionId == this.data.undoActionId);
         
+    
         if(undo.length > 0) {
             undo[0].undo();
             reliable.redoActions.push(undo[0]);
             reliable.actions.splice(reliable.actions.indexOf(undo[0]), 1);
         }else {
-            console.log("Desync!!!!!");
+            console.log("Undo Desync!!!!!");
         }
+        
     }
 
 }

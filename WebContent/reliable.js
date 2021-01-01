@@ -36,10 +36,12 @@ class Reliable {
 
 
     undo(){
-        this.commit({
-            action: "Undo",
-            undoActionId: this.myActionIds.pop()
-        });
+        if(this.myActionIds.length > 0){
+            this.commit({
+                action: "Undo",
+                undoActionId: this.myActionIds.pop()
+            });
+        }
     }
     
 
