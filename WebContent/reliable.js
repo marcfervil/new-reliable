@@ -10,7 +10,7 @@ class Reliable {
         this.svgs = [];
         this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
 
-        network();
+        this.network();
     }
 
     /**
