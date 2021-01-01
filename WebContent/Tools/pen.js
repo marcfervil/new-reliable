@@ -16,13 +16,18 @@ class Pen extends Tool{
     }
 
     canvasDragEnd(){
-        this.svgPath.smoothify();
-        Action.commit(this.reliable, {
-            action: "Draw",
-            id: this.svgPath.id,
-            path: this.svgPath.pathData,
-            color: "#AAB2C0"
-        });   
+        
+        let smoothed = this.svgPath.smoothify();
+
+        if(smoothed){
+            Action.commit(this.reliable, {
+                action: "Draw",
+                id: this.svgPath.id,
+                path: this.svgPath.pathData,
+                color: "#AAB2C0"
+            });   
+
+        } 
         this.svgPath.delete();
 
     }
