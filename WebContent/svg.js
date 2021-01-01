@@ -109,7 +109,7 @@ function onDrag(element, dragged, dragStart, dragComplete){
 
 }
 
-class ImageSVG{
+class ImageSVG extends SVG{
     constructor(parentId, pos, src){
         this.pos = pos;
         this.parentId = parentId;
@@ -123,7 +123,15 @@ class ImageSVG{
         this.svg.setAttributeNS('http://www.w3.org/1999/xlink','href', this.src);
 
         makeDraggable(this.svg, true, false);
+
+        /*
+        <svg>
+            <path d="fewokfe">
+            <image href="">
+        </svg>
+        */
     }
+    
 
     delete(){
         $(this.svg).remove();
@@ -131,19 +139,33 @@ class ImageSVG{
 
 }
 
-function makeId(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
- }
+ 
+
 
 class SVG{
 
+    constructor(parent, pos, id){
+        this.parent = parent;
+        this.pos = pos;
+        this.id = (id==undefined) ? this.makeId(10) : id;
+    }
+
+    makeId(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+}
+
+class SVGPath extends SVG{
+
     constructor(parentId, pos, id){
+        super();
         this.pos = pos;
         this.parentId = parentId;
         this.path = [pos];
