@@ -19,14 +19,14 @@ class Action {
         vscode.postMessage(this.data);
     }
 
-    static commit(reliable, actionData){
+    static commit(reliable, actionData, broadcast){
         let actionList = {Draw};
         console.log(actionData);
-        //console.log("WE BOUT THAT "+actionData.action);
+        console.log("WE BOUT THAT "+actionData.action);
         let action = new actionList[actionData.action](actionData);
         reliable.actions.push(action);
         action.execute(reliable);
-        action.broadcast();
+        if(broadcast)action.broadcast();
         return action; 
     }
 

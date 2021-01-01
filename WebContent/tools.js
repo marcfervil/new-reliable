@@ -57,7 +57,7 @@ class Pen extends Tool{
                 id: this.svgPath.id,
                 path: this.svgPath.pathData
             }
-        });
+        }, true);
         this.svgPath.delete();
        
     }

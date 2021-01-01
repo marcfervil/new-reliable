@@ -30,7 +30,7 @@ class Reliable {
         window.addEventListener('message', (actionData) => {
             console.log("WWE RAW DATA");
             console.log(actionData);
-            Action.commit(this, actionData.data);
+            Action.commit(this, actionData.data, false);
         });
     }
 
