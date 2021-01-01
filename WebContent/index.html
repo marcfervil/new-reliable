@@ -53,8 +53,9 @@
 
     var app = new Reliable(canvas, [
         new Pen(),
+        new RedPen()
     ]);
-    
+
     function undo(){
         app.undo();
     }
@@ -77,6 +78,8 @@
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
         }
+        if(event.key === "p")app.currentTool ++;
+        if(event.key === "o")app.currentTool --;
     });
 
     //recieve message from VSCode
