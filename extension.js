@@ -89,14 +89,12 @@ async function activate(context) {
 				vscode.window.showInformationMessage("Starting as guest");
 				
 			}
-			console.log("service started");
-			console.log(service);
+
 
 			service.onNotify("message", (data) => {
 				
 				currentPanel.webview.postMessage(data);
-				console.log("GOT SERVER DATA: " );
-				console.log(data);
+
 			});
 
 			
@@ -121,8 +119,6 @@ async function activate(context) {
 					currentPanel.webview.html = getWebviewContent();
 					
 				}else{
-					console.log("sending");
-					console.log(message);
 					service.notify("message", message);
 				}
 
