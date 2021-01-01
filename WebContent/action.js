@@ -14,13 +14,15 @@ class Action {
     }
     
     broadcast(){
+        console.log("broadcast");
+        console.log(this.data);
         vscode.postMessage(this.data);
     }
 
     static commit(reliable, actionData){
         let actionList = {Draw};
-        console.log(actionData);
-        let action = new actionList[actionData.action](actionData.data);
+        console.log("WE BOUT THAT "+actionData.action);
+        let action = new actionList[actionData.action](actionData);
         reliable.actions.push(action);
         action.execute(reliable);
         action.broadcast();
@@ -39,10 +41,18 @@ class Draw extends Action{
         super(data);
     }
 
-    
+    /*
+        {
+            action: "Draw",
+            data: {
+                id: "fowkfew"
+            }
+        }
+    */
+
     execute(reliable){
         this.svgPath = new SVGPath(reliable.canvas, new Vector2());
-        this.svgPath.replacePath(this.data.path);
+        this.svgPath.replacePath(this.data.data.path);
     }
 
     undo(){
