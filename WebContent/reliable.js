@@ -2,15 +2,18 @@
 
 class Reliable {
 
-    constructor(canvas){
+    constructor(canvas, tools){
         this.toolbar = [];
         this.currentTool = 0;
         this.canvas = canvas;
         this.actions = [];
+        this.myActionIds = [];
+        this.redoActions = [];
         this.svgs = [];
         this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
-
-        this.network();
+        
+        for(let tool of tools)this.addTool(tool);
+        
     }
 
     /**
@@ -25,12 +28,22 @@ class Reliable {
         this.toolbar.push(tool);
         tool.reliable = this;
     }
+
     
-    network(){
-        window.addEventListener('message', (message) => {
-            Action.commit(this, message.data, false);
-        });
+    commit(action, broadcast){
+        Action.commit(this, action, broadcast);
     }
+
+
+    undo(){
+        if(this.myActionIds.length > 0){
+            this.commit({
+                action: "Undo",
+                undoActionId: this.myActionIds.pop()
+            });
+        }
+    }
+    
 
     mouseDownCanvas(e){
         
@@ -47,7 +60,6 @@ class Reliable {
     }
 
     mouseMoveCanvas(e){
-        //if(element.mouseDown==1){
         let pos = new Vector2(e.layerX, e.layerY);
         this.getCurrentTool().canvasDrag(pos);
     }
@@ -57,6 +69,16 @@ class Reliable {
         this.canvas.removeEventListener('mousemove', this.mouseMoveRef);
         this.canvas.removeEventListener('mouseup', this.mouseUpRef);
         this.getCurrentTool().canvasDragEnd();
+    }
+
+    static makeId(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 
 }

@@ -54,8 +54,10 @@ class Pen extends Tool{
         Action.commit(this.reliable, {
             action: "Draw",
             id: this.svgPath.id,
-            path: this.svgPath.pathData
-        }, true);   
+            path: this.svgPath.pathData,
+        });   
+        this.svgPath.delete();
+
     }
 }
 

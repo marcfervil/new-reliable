@@ -120,30 +120,22 @@ class SVG{
     constructor(type, parent, pos, id) {
         this.parent = parent;
         this.pos = pos;
-        this.id = (id==undefined) ? this.makeId(10) : id;
+        this.id = (id==undefined) ? Reliable.makeId(10) : id;
         this.type = type;
 
         this.group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", this.type);
 
-        this.group.appendChild(this.svg);
-        this.parent.appendChild(this.group);
+        this.svg = this.group.appendChild(this.svg);
+        this.group = this.parent.appendChild(this.group);
 
-        this.svg.setAttribute("id", this.id);
+        this.group.setAttribute("id", this.id);
     }
 
-    makeId(length) {
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-           result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
+
 
     delete() {
-        $(this.svg).remove();
+        $(this.group).remove();
     }
 
 }
@@ -201,9 +193,7 @@ class SVGPath extends SVG{
 
     }
 
-    delete(){
-        $(this.group).remove();
-    }
+
 
     smoothify(){
 
