@@ -39,7 +39,7 @@ class Pen extends Tool{
         super("Pen", "images/pen.svg");
     }
 
-   
+
     canvasDragStart(pos){
         this.svgPath = new SVGPath(this.reliable.canvas, pos);
 
@@ -53,12 +53,9 @@ class Pen extends Tool{
         this.svgPath.smoothify();
         Action.commit(this.reliable, {
             action: "Draw",
-            data: {
-                id: this.svgPath.id,
-                path: this.svgPath.pathData
-            }
-        }, true);
-        this.svgPath.delete();
-       
+            id: this.svgPath.id,
+            path: this.svgPath.pathData
+        }, true);   
     }
 }
+

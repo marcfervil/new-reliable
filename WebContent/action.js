@@ -42,18 +42,9 @@ class Draw extends Action{
         super(data);
     }
 
-    /*
-        {
-            action: "Draw",
-            data: {
-                id: "fowkfew"
-            }
-        }
-    */
-
     execute(reliable){
         this.svgPath = new SVGPath(reliable.canvas, new Vector2());
-        this.svgPath.replacePath(this.data.data.path);
+        this.svgPath.replacePath(this.data.path);
     }
 
     undo(){

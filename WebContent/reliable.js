@@ -27,10 +27,10 @@ class Reliable {
     }
     
     network(){
-        window.addEventListener('message', (actionData) => {
+        window.addEventListener('message', (message) => {
             console.log("WWE RAW DATA");
             console.log(actionData);
-            Action.commit(this, actionData.data, false);
+            Action.commit(this, message.data, false);
         });
     }
 
