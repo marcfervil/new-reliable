@@ -1,5 +1,6 @@
 class SVG{
 
+
     constructor(type, parent, pos, id) {
         this.parent = parent;
         this.pos = pos;
@@ -10,6 +11,7 @@ class SVG{
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", this.type);
 
         this.group.reliableSvg = this;
+        this.svg.reliableSvg = this;
 
         this.svg = this.group.appendChild(this.svg);
         this.group = this.parent.appendChild(this.group);
@@ -60,7 +62,7 @@ class SVG{
         selectRect.style.fill = "transparent";
 
 
-       
+
         selectRect.addEventListener('mousedown', (e) => this.selectedMouseDown(e));
         
 

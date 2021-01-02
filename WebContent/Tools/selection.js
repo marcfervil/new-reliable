@@ -8,22 +8,6 @@ class Selection extends Tool{
 
     canvasDragStart(pos){
  
-        /*
-        if(this.selected.length > 0) {
-            //TODO migtate to multi user unselect action
-            for(let id of this.selected){
-                let svg = $(`#${id}`)[0].reliableSvg
-                
-                if(!svg.isDragging){
-    
-                    svg.unselect();
-                }
-            }
-            this.selected = [];
-            return;
-        }*/
-
-
         this.mouseStart = pos;
         this.drawRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
 
@@ -76,16 +60,12 @@ class Selection extends Tool{
         
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
 
-        //console.log(this.selected);
-        for(let id of this.selected){
-            
-            let svg = $(`#${id}`)[0].reliableSvg
-            
-            if(!svg.isDragging){
+        let unselectList = [...this.selected];
 
-                svg.unselect();
-            }
-        }
+        Action.commit(this.reliable, {
+            action: "UnSelect",
+            ids: unselectList,
+        });  
 
         this.selected = [];
         
@@ -131,3 +111,32 @@ class Select extends Action{
     }
 
 }
+
+
+class UnSelect extends Action{
+
+    constructor(data){
+        super(data);
+    }
+
+    execute(reliable){
+        super.execute(reliable);
+
+        for(let id of this.data.ids){
+            $(`#${id}`)[0].reliableSvg.unselect();
+        }
+    }
+
+    undo(){
+        
+    }
+
+}
+
+/**for(let id of this.selected){
+            
+            let svg = $(`#${id}`)[0].reliableSvg
+            
+            if(!svg.isDragging)unselectList.push(svg.id);
+        }
+ */
