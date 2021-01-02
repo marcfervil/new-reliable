@@ -12,11 +12,14 @@
                 -moz-user-drag: none;
                 -o-user-drag: none;
             }
+            g{
+                z-index: 20;
+            }
         </style>
     </head>
     <body>
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
-        
+        <h1>New Reliable: <i id="toolName" style="size:10">Pen<i/></h1>
         <svg style="position: absolute; top:0px; left:0px; width:100%; height:100%; z-index: -1" id="canvas"> </svg>
        
         <!--img id="image" style="position:absolute;" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" /-->
@@ -53,9 +56,8 @@
     var canvas = $("#canvas")[0];
 
     var app = new Reliable(canvas, [
-        new Selection(),
         new Pen(),
-        new RedPen()
+        new Selection()
     ]);
 
     function undo(){
@@ -73,7 +75,7 @@
         $(canvas).empty();
     }
 
-    
+    $("#toolName").text(app.getCurrentTool().name);
     //Events:
 
     //keypress events
@@ -83,6 +85,9 @@
         }
         if(event.key === "p")app.currentTool ++;
         if(event.key === "o")app.currentTool --;
+        if(app.currentTool==app.toolbar.length)app.currentTool=0;
+        if(app.currentTool<0)app.currentTool=app.toolbar.length-1;
+        $("#toolName").text(app.getCurrentTool().name);
     });
 
     //recieve message from VSCode

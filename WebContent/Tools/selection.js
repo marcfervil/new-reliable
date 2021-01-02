@@ -2,12 +2,28 @@ class Selection extends Tool{
 
     constructor(){
         super("Selection", "images/selection");
-       
+        this.selected = [];
     }
 
 
     canvasDragStart(pos){
  
+        /*
+        if(this.selected.length > 0) {
+            //TODO migtate to multi user unselect action
+            for(let id of this.selected){
+                let svg = $(`#${id}`)[0].reliableSvg
+                
+                if(!svg.isDragging){
+    
+                    svg.unselect();
+                }
+            }
+            this.selected = [];
+            return;
+        }*/
+
+
         this.mouseStart = pos;
         this.drawRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
 
@@ -34,16 +50,22 @@ class Selection extends Tool{
 
 
     canvasDrag(pos){
+    
         let dist = this.mouseStart.subtract(pos);
         let scaleFlip = dist.scale(-1);
         //dist = new Vector2(Math.abs(dist.x), Math.abs(dist.y));
         this.setDragRect(this.mouseStart, scaleFlip);
-       
+    
     }
 
     canvasDragEnd(){
-      
+        /*
+        if(this.selected.length > 0) {
+            
         
+            return;
+        }
+        */
         let rect = this.drawRect.getBoundingClientRect();
         let svgRect = this.reliable.canvas.createSVGRect();
 
@@ -54,14 +76,34 @@ class Selection extends Tool{
         
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
 
+        //console.log(this.selected);
+        for(let id of this.selected){
+            
+            let svg = $(`#${id}`)[0].reliableSvg
+            
+            if(!svg.isDragging){
+
+                svg.unselect();
+            }
+        }
+
+        this.selected = [];
         
-        let hitIds = [];
-        for(let hit of hits)if(hit.parentNode.id != "canvas")hitIds.push(hit.parentNode.id);
+        for(let hit of hits){
+            if(hit.parentNode== null)continue;
+            let id = hit.parentNode.id;
+
+
+            if(id != "canvas" && !hit.parentNode.reliableSvg.isSelected){
+                this.selected.push(id);
+            }
+        }
+
 
 
         Action.commit(this.reliable, {
             action: "Select",
-            ids: hitIds,
+            ids: this.selected,
         });   
 
 

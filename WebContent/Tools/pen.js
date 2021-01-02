@@ -33,25 +33,6 @@ class Pen extends Tool{
     }
 }
 
-class RedPen extends Pen{
-
-    canvasDragStart(pos){
-        this.svgPath = new SVGPath(this.reliable.canvas, pos);
-        this.svgPath.svg.style.stroke = "red";
-    }
-
-    canvasDragEnd(){
-        this.svgPath.smoothify();
-        Action.commit(this.reliable, {
-            action: "Draw",
-            id: this.svgPath.id,
-            path: this.svgPath.pathData,
-            color: "red"
-        });   
-        this.svgPath.delete();
-
-    }
-}
 
 class Draw extends Action{
 
