@@ -29,12 +29,15 @@ class SVG{
             
             let rect = this.group.getBoundingClientRect();
             this.canvasPos = new Vector2(rect.x, rect.y).subtract(new Vector2(10, 10));
-
+           
   
         },0)
 
 
 
+        this.dragStartPos = null;
+
+       
         this.transPos = new Vector2(0, 0);
 
 
@@ -42,38 +45,32 @@ class SVG{
 
       //takes in a vector or something that has an x or a y 
     moveTo(pos){
-        //this.lastPos = pos;
-        //let deltaX = e.offsetX - this.transPos.x;
-        //let deltaY = e.offsetY - this.clickStart.y;
-        //let delta = new Vector2(deltaX, deltaY);
-        
+  
         let delta = pos.subtract(this.canvasPos);
-        //console.log(pos)
         this.group.setAttribute('transform', `translate(${delta.x}, ${delta.y})`);
-        //this.transPos = pos;
         this.transPos = delta;
+
+        if(this.dragStartPos==null){
+       
+            this.dragStartPos = pos;
+        }else{
+            this.dragEndPos = pos;
+        }
     }
 
 
-    /*
-            let deltaX = e.offsetX - this.clickStart.x;
-            let deltaY = e.offsetY - this.clickStart.y;
-            let delta = new Vector2(deltaX, deltaY);
-    */
 
     selectedMouseMove(e){
-       // console.log("here");
-        
+
         if(this.isDragging){
      
             let clickPos = new Vector2(e.layerX, e.layerY);
             
             clickPos = this.clickOffset.subtract(clickPos).scale(-1);
-            //console.log(clickPos);
+
             
             this.moveTo(clickPos);
 
-            //console.log(clickPos);
         }
     }
 
@@ -119,23 +116,19 @@ class SVG{
         this.isDragging = false; 
        
 
-          /*
+        
        
         Action.commit(this.reliable, {
             action: "Drag",
             id: this.id,
-            endPos: {
-                x: this.newpos.x,
-                y: this.newpos.y,
-            },
-            startPos: {
-                x: this.clickBegin.x,
-                y: this.clickBegin.y,
-            },
+            endPos: this.dragEndPos.toJSON(),
+            startPos: this.dragStartPos.toJSON(),
 
            
             
-        });   */
+        });  
+        this.dragStartPos = null;
+        
     }
 
 

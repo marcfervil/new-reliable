@@ -58,7 +58,7 @@ class Selection extends Tool{
         svgRect.width = rect.width;
         svgRect.height = rect.height;
         
-        
+
 
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
 
@@ -150,12 +150,14 @@ class Drag extends Action{
     }
 
     execute(reliable){
-        SVG.getFromId(this.data.id).moveTo(this.data.endPos);
+
+        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.endPos));
     }
 
 
     undo(){
-        SVG.getFromId(this.data.id).moveTo(this.data.startPos);
+    
+        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.startPos));
     }
 
 }
