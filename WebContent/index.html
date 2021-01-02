@@ -18,7 +18,7 @@
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
         
         <svg style="position: absolute; top:0px; left:0px; width:100%; height:100%; z-index: -1" id="canvas"> </svg>
-      
+       
         <!--img id="image" style="position:absolute;" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" /-->
         <div style = "position: fixed; z-index: 10;">
  
@@ -53,6 +53,7 @@
     var canvas = $("#canvas")[0];
 
     var app = new Reliable(canvas, [
+        new Selection(),
         new Pen(),
         new RedPen()
     ]);
