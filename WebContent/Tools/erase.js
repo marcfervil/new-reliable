@@ -23,7 +23,7 @@ class Eraser extends Tool{
         this.erase();
         this.svgRect.delete();
     }
-    checkCollisions(){
+    svgCollisions(){
         let svgRect = this.reliable.canvas.createSVGRect();
 
         svgRect.x = this.svgRect.pos.x;
@@ -32,53 +32,48 @@ class Eraser extends Tool{
         svgRect.height = this.svgRect.size;
         
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
-        let hitIds = [];
-        for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas")hitIds.push(hit.parentNode.id);
-        console.log(hitIds);
-        return hitIds;
+        let realHits = [];
+        for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas")realHits.push(hit.reliableSvg);
+        return realHits;
+    }
+
+    insideCursor(x, y){
+        let x1 = this.svgRect.pos.x;
+        let y1 = this.svgRect.pos.y;
+        let x2 = x1+this.svgRect.size;
+        let y2 = y1+this.svgRect.size;
+        return (x > x1 && x < x2) && (y > y1 && y < y2)
+    }
+
+    isCollidingLineSegment(path){
+        path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
+        console.log(path)
+        for(let i = 0; i<path.length; i+=2){
+            for(let j =1; j<path.length; j+=2){
+                let x = path[i];
+                let y = path[j];
+                if(this.insideCursor(x,y)){
+                    path.splice(i,2); //removes the coords but does not readjust
+                }
+            }
+        }
+        return path
     }
     
-    eraseOverlap(test){
-        console.log(test)
+    lineSegmentColisions(svgs){
+        let eraseables = []
+        for(let svg of svgs){
+            let edited = svg.pathData.split(" ")
+            svg.setPath(eraseables.push(this.isCollidingLineSegment(edited.splice(1,edited.length)))) //this splice removes the m from the begining
+        }
+        return eraseables;
+        //console.log(test);
     }
     erase(){
- 
-        eraseOverlap(checkCollisions());
-
+        this.lineSegmentColisions(this.svgCollisions());
+        
     }
 
 
-
-
-
-    /*
-    canvasDragEnd(){
-      
-        
-        let rect = this.drawRect.getBoundingClientRect();
-        let svgRect = this.reliable.canvas.createSVGRect();
-
-        svgRect.x = rect.x;
-        svgRect.y = rect.y;
-        svgRect.width = rect.width;
-        svgRect.height = rect.height;
-        
-        let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
-
-        
-        let hitIds = [];
-        for(let hit of hits)if(hit.parentNode.id != "canvas")hitIds.push(hit.parentNode.id);
-
-
-        Action.commit(this.reliable, {
-            action: "Select",
-            ids: hitIds,
-        });   
-
-
-        $(this.drawRect).remove();
-    }
-
-    */
 }
 

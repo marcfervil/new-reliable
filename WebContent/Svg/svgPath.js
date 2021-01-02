@@ -21,20 +21,8 @@ class SVGPath extends SVG{
         this.path.push(pos);
         this.updatePath(pos.toString())
 
-    } 
-
-    updatePath(svgData){
-        this.pathData += "L"+svgData;
-        this.svg.setAttribute("d", this.pathData);
     }
-    
 
-    replacePath(updateSvg){
-        let ogPath = this.pathData;
-        this.pathData = updateSvg;
-        this.svg.setAttribute("d", updateSvg);
-        return ogPath;
-    }
 
 
     smoothify(){
@@ -77,7 +65,24 @@ class SVGPath extends SVG{
         
     }
 
+    replacePath(updateSvg){
+        let ogPath = this.pathData;
+        this.pathData = updateSvg;
+        this.svg.setAttribute("d", updateSvg);
+        return ogPath;
+    }
 
+    updatePath(svgData){
+        this.pathData += "L"+svgData;
+        this.svg.setAttribute("d", this.pathData);
+        
+    }
+
+    setPath(svgP){
+        this.svg.setAttribute("d",svgP);
+    }
+    
+    
     //funny
     /*
     smoothify(){
