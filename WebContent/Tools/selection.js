@@ -96,6 +96,8 @@ class Select extends Action{
 
     constructor(data){
         super(data);
+        //cannot be undone until further notice
+        this.unDoable = false;
     }
 
     execute(reliable){
@@ -117,13 +119,17 @@ class UnSelect extends Action{
 
     constructor(data){
         super(data);
+         //cannot be undone until further notice
+         this.unDoable = false;
     }
 
     execute(reliable){
         super.execute(reliable);
 
         for(let id of this.data.ids){
-            $(`#${id}`)[0].reliableSvg.unselect();
+            let elements = $(`#${id}`);
+            if(elements.length ==0) continue;
+            elements[0].reliableSvg.unselect();
         }
     }
 

@@ -3,7 +3,7 @@ class Action {
 
     constructor(data){
         this.data = data;
-
+        this.unDoable = true;
         if(this.data.actionId == undefined){
             this.data.actionId = Reliable.makeId(10);
             this.myAction = true;
@@ -35,7 +35,7 @@ class Action {
 
         //Undo should never be recorded
  
-        if(actionData.action != "Undo"){
+        if(action.unDoable){
             reliable.actions.push(action);
             if(action.myAction) reliable.myActionIds.push(action.data.actionId);
         }
@@ -57,6 +57,7 @@ class Undo extends Action{
     
     constructor(data){
         super(data);
+        this.unDoable = false;
     }
 
     execute(reliable){
