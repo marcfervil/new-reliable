@@ -16,7 +16,7 @@ class Pen extends Tool{
     }
 
     canvasDragEnd(){
-        console.log(this.svgPath.pathData)
+       
         let smoothed = this.svgPath.smoothify();
         if(smoothed){
             Action.commit(this.reliable, {
@@ -45,7 +45,6 @@ class RedPen extends Pen{
             path: this.svgPath.pathData,
             color: "red"
         });
-        console.log
         this.svgPath.delete();
 
     }
