@@ -18,7 +18,7 @@ class Eraser extends Tool{
     }
 
     canvasDragEnd(){
-        
+        this.svgRect.delete();
        
 
 
