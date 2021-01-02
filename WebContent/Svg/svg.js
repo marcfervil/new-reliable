@@ -180,8 +180,17 @@ class SVG{
         $(this.group).remove();
     }
 
+   
+
     static getFromId(id){
         return $("#"+id)[0].reliableSvg;
+    }
+
+    static forEachSVG(ids, callback){
+        for(let id of ids){
+            callback($("#"+id)[0].reliableSvg);
+        }
+        
     }
 
     

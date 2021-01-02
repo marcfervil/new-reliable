@@ -3,6 +3,17 @@ class Selection extends Tool{
     constructor(){
         super("Selection", "images/selection");
         this.selected = [];
+
+        document.addEventListener('keydown', (event) => {
+           
+            if (event.keyCode == 8 || event.keyCode == 46 ) {
+                console.log(this.selected);
+                Action.commit(this.reliable, {
+                    action: "Delete",
+                    ids: this.selected
+                });
+            }
+        });
     }
 
 
@@ -161,6 +172,30 @@ class Drag extends Action{
     }
 
 }
+
+
+class Delete extends Action{
+    
+    constructor(data){
+        super(data);
+        this.unDoable = false;
+    }
+
+    execute(reliable){
+
+        SVG.forEachSVG(this.data.ids, (svg) => {
+            svg.delete();
+        });
+    }
+
+
+    undo(){
+    
+        
+    }
+
+}
+
 
 
 
