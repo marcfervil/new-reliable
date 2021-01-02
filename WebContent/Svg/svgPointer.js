@@ -1,16 +1,16 @@
-class SVGCursor extends SVG{
+class SVGPointer extends SVG{
 
     constructor(parent, pos, id){
         super("rect", parent, pos, id)
 
         this.svg.style.stroke = "#AAB2C0"; 
-        this.svg.style.fill = "orange";
-        this.svg.style.strokeWidth = 3;
-        this.svg.style.strokeLinejoin = "miter";
-        this.svg.style.strokeLinecap = "butt";
-        this.svg.style.strokeMiterlimit = 4;
-        this.svg.style.strokeDasharray = "none";
-        this.svg.style.strokeDashoffset= 0;
+        //this.svg.style.fill = "orange";
+        this.svg.setAttributeNS(null, 'x', pos.x);
+        this.svg.setAttributeNS(null, 'y', pos.y);
+        this.svg.setAttributeNS(null, 'height', '50');
+        this.svg.setAttributeNS(null, 'width', '50');
+        this.svg.setAttributeNS(null, 'fill', '#'+Math.round(0xffffff * Math.random()).toString(16));
+        //document.getElementById('svgOne').appendChild(rect);
 
     }
 
