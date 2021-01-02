@@ -58,6 +58,8 @@ class Selection extends Tool{
         svgRect.width = rect.width;
         svgRect.height = rect.height;
         
+        
+
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
 
         let unselectList = [...this.selected];

@@ -1,3 +1,5 @@
+
+
 class SVG{
 
 
@@ -21,66 +23,74 @@ class SVG{
         this.isSelected = false;
         this.isDragging = false;
 
-        this.clickPos = new Vector2(0, 0);
-        this.lastPos = {x: 0, y:0};
+        //TODO: FIX RACE CONDITION
+        //Is it a really a race condition if the timeout is 0?
+        setTimeout(()=>{
+            
+            let rect = this.group.getBoundingClientRect();
+            this.canvasPos = new Vector2(rect.x, rect.y).subtract(new Vector2(10, 10));
+
+  
+        },0)
+
+
+
+        this.transPos = new Vector2(0, 0);
+
+
     }
 
-    selectedMouseMove(e){
-        if(this.isDragging){
-            //console.log("dragging");
+      //takes in a vector or something that has an x or a y 
+    moveTo(pos){
+        //this.lastPos = pos;
+        //let deltaX = e.offsetX - this.transPos.x;
+        //let deltaY = e.offsetY - this.clickStart.y;
+        //let delta = new Vector2(deltaX, deltaY);
+        
+        let delta = pos.subtract(this.canvasPos);
+        //console.log(pos)
+        this.group.setAttribute('transform', `translate(${delta.x}, ${delta.y})`);
+        //this.transPos = pos;
+        this.transPos = delta;
+    }
+
+
+    /*
             let deltaX = e.offsetX - this.clickStart.x;
             let deltaY = e.offsetY - this.clickStart.y;
             let delta = new Vector2(deltaX, deltaY);
-            //console.log(delta);
-            this.newpos = this.clickPos.add(delta);
+    */
+
+    selectedMouseMove(e){
+       // console.log("here");
+        
+        if(this.isDragging){
+     
+            let clickPos = new Vector2(e.layerX, e.layerY);
             
-            this.moveTo(this.newpos);
+            clickPos = this.clickOffset.subtract(clickPos).scale(-1);
+            //console.log(clickPos);
+            
+            this.moveTo(clickPos);
+
+            //console.log(clickPos);
         }
     }
 
-    //takes in a vector or something that has an x or a y 
-    moveTo(pos){
-        this.lastPos = pos;
-        this.group.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
-    }
-
-    static getFromId(id){
-        return $("#"+id)[0].reliableSvg;
-    }
-
-    selectedMouseUp(e){
-        this.parent.removeEventListener('mousemove', this.mouseMoveRef);
-        this.parent.removeEventListener('mouseup', this.mouseUpRef);
-
-
-        this.clickPos = this.newpos;
-        
-        this.isDragging = false; 
-        console.log(this);
-        Action.commit(this.reliable, {
-            action: "Drag",
-            id: this.id,
-            endPos: {
-                x: this.newpos.x,
-                y: this.newpos.y,
-            },
-            startPos: {
-                x: this.clickBegin.x,
-                y: this.clickBegin.y,
-            }
-        });   
-    }
-
-
     
-
     selectedMouseDown(e){
         e.stopPropagation();
 
-        this.clickStart = {x: e.offsetX, y:e.offsetY};
-        this.clickOffset = {x: e.layerX, y:e.layerY};
-        console.log(this.group);
-        this.clickBegin = this.lastPos;
+        
+ 
+        this.clickOffset = new Vector2(e.layerX, e.layerY);
+        
+       
+        let svgPos = new Vector2(parseInt(e.srcElement.getAttribute("x")), parseInt(e.srcElement.getAttribute("y")));
+        
+
+        this.clickOffset =  this.clickOffset.subtract(svgPos).subtract(this.transPos);
+        //this.clickBegin = this.lastPos;
 
 
 
@@ -92,18 +102,57 @@ class SVG{
 
         this.isDragging = true; 
 
-        console.log("Start drag");
+    
     }
+
+   
+
+    selectedMouseUp(e){
+
+      
+        this.parent.removeEventListener('mousemove', this.mouseMoveRef);
+        this.parent.removeEventListener('mouseup', this.mouseUpRef);
+
+        
+        //this.group.removeAttribute('transform');
+        
+        this.isDragging = false; 
+       
+
+          /*
+       
+        Action.commit(this.reliable, {
+            action: "Drag",
+            id: this.id,
+            endPos: {
+                x: this.newpos.x,
+                y: this.newpos.y,
+            },
+            startPos: {
+                x: this.clickBegin.x,
+                y: this.clickBegin.y,
+            },
+
+           
+            
+        });   */
+    }
+
+
+    
 
     createSelectRect(){
         let bounds = this.group.getBoundingClientRect();
+  
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         
         this.group.appendChild(selectRect);
         let margin = 10;
 
-        selectRect.setAttribute('x', bounds.x - margin);
-        selectRect.setAttribute('y', bounds.y - margin);
+        selectRect.setAttribute('x', bounds.x - this.transPos.x - margin);
+        selectRect.setAttribute('y', bounds.y - this.transPos.y - margin);
+        //selectRect.setAttribute("transform", `translate(${bounds.x - margin}, ${bounds.y - margin})`)
+
         selectRect.setAttribute('width', bounds.width + (margin *2));
         selectRect.setAttribute('height', bounds.height + (margin *2));
         selectRect.style.stroke = "green";
@@ -125,6 +174,7 @@ class SVG{
         if(this.isSelected) return;
         this.isSelected = true;
         this.selectRect = this.createSelectRect();
+        
     }
 
     unselect(reliable){
@@ -135,6 +185,10 @@ class SVG{
 
     delete() {
         $(this.group).remove();
+    }
+
+    static getFromId(id){
+        return $("#"+id)[0].reliableSvg;
     }
 
     

@@ -24,7 +24,11 @@ class Pen extends Tool{
                 action: "Draw",
                 id: this.svgPath.id,
                 path: this.svgPath.pathData,
-                color: "#AAB2C0"
+                color: "#AAB2C0",
+                pos: {
+                    x: this.svgPath.pos.x,
+                    y: this.svgPath.pos.y,
+                }
             });   
 
         } 
@@ -38,11 +42,12 @@ class Draw extends Action{
 
     constructor(data){
         super(data);
+        this.pos = new Vector2(this.data.pos.x, this.data.pos.y);
     }
 
     execute(reliable){
         super.execute(reliable);
-        this.svgPath = new SVGPath(reliable.canvas, new Vector2(), this.data.id);
+        this.svgPath = new SVGPath(reliable.canvas, this.pos, this.data.id);
         this.svgPath.replacePath(this.data.path);
         this.svgPath.svg.style.stroke = this.data.color; 
         reliable.svgs.push(this.svgPath);
