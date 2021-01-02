@@ -1,4 +1,3 @@
-//is mightier than the sword
 class Selection extends Tool{
 
     constructor(){
@@ -27,16 +26,13 @@ class Selection extends Tool{
     }
 
     setDragRect(pos, size){
-        //this.drawRect.setAttribute("width", size.x); 
-        //this.drawRect.setAttribute("height", size.y); 
+ 
         this.drawRect.setAttribute("stroke-width", "1");
         this.drawRect.setAttribute("transform", `translate(${pos.x}, ${pos.y}) scale(${size.x}, ${size.y})`);
        
     }
 
 
-
-    
     canvasDrag(pos){
         let dist = this.mouseStart.subtract(pos);
         let scaleFlip = dist.scale(-1);
@@ -47,6 +43,28 @@ class Selection extends Tool{
 
     canvasDragEnd(){
       
+        
+        let rect = this.drawRect.getBoundingClientRect();
+        let svgRect = this.reliable.canvas.createSVGRect();
+
+        svgRect.x = rect.x;
+        svgRect.y = rect.y;
+        svgRect.width = rect.width;
+        svgRect.height = rect.height;
+        
+        let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
+
+        
+        let hitIds = [];
+        for(let hit of hits)if(hit.parentNode.id != "canvas")hitIds.push(hit.parentNode.id);
+
+
+        Action.commit(this.reliable, {
+            action: "Select",
+            ids: hitIds,
+        });   
+
+
         $(this.drawRect).remove();
     }
 }
@@ -60,7 +78,10 @@ class Select extends Action{
 
     execute(reliable){
         super.execute(reliable);
-       
+
+        for(let id of this.data.ids){
+            $(`#${id}`)[0].reliableSvg.select(this.myAction);
+        }
     }
 
     undo(){

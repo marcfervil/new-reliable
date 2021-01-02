@@ -9,13 +9,17 @@ class SVG{
         this.group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
         this.svg = document.createElementNS("http://www.w3.org/2000/svg", this.type);
 
+        this.group.reliableSvg = this;
+
         this.svg = this.group.appendChild(this.svg);
         this.group = this.parent.appendChild(this.group);
 
         this.group.setAttribute("id", this.id);
     }
 
-
+    select(mySelection){
+        this.delete();
+    }
 
     delete() {
         $(this.group).remove();
