@@ -20,7 +20,7 @@ class SVGPath extends SVG{
     addPoint(pos){
         this.path.push(pos);
         this.updatePath(pos.toString())
-
+    
     }
 
 

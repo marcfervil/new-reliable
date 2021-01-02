@@ -9,7 +9,6 @@ class Eraser extends Tool{
 
     canvasDragStart(pos){
         this.svgRect = new SVGPointer(this.reliable.canvas, pos)
-
     }
 
     canvasDrag(pos){
@@ -20,9 +19,10 @@ class Eraser extends Tool{
 
     canvasDragEnd(){
     
-        this.erase();
+        //this.erase();
         this.svgRect.delete();
     }
+
     svgCollisions(){
         let svgRect = this.reliable.canvas.createSVGRect();
 
@@ -49,7 +49,9 @@ class Eraser extends Tool{
     }
 
     isCollidingLineSegment(path){
+        //console.log("pre path length" + path.length)
         path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
+       
         let ret = path;
         for(let i = 0; i<path.length; i+=2){
             for(let j =1; j<path.length; j+=2){
@@ -57,27 +59,36 @@ class Eraser extends Tool{
                 let y = path[j];
                 if(this.insideCursor(x,y)){
                     ret = path.splice(i,2); //removes the coords but does not readjust
-                    console.log("splicing")
+                    //console.log(ret)
                 }
             }
         }
-        //console.log(ret);
-        return ret
+        //console.log("post path length "+ path.length);
+        return path
     }
     
     lineSegmentColisions(svgs){
         let eraseables = []
         for(let svg of svgs){
             let edited = svg.pathData.split(" ")
-            let temp = (this.isCollidingLineSegment(edited.splice(1,edited.length)));
-            temp[2] = "C"+temp[2]
+           
+            let temp = (this.isCollidingLineSegment(edited.splice(1,edited.length))); //gets rid of the M
+            //temp.length-1 has to be divisable by 12
+            while((temp.length-2)%6 !=0){
+                temp.push(temp[temp.length-2])
+                temp.push(temp[temp.length-2])
+                console.log("added "+ temp[temp.length])
+            }
+            temp[1] = temp[1]+"C"
             temp = "M "+temp.join(" ")
+            console.log(temp);
             svg.replacePath(temp);
-            eraseables.push(temp) //this splice removes the m from the begining
+            eraseables.push(temp)
         }
         return eraseables;
         //console.log(test);
     }
+
     erase(){
         this.lineSegmentColisions(this.svgCollisions());
         
