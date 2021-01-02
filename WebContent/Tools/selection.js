@@ -80,7 +80,6 @@ class Selection extends Tool{
         }
 
 
-
         Action.commit(this.reliable, {
             action: "Select",
             ids: this.selected,
@@ -104,7 +103,8 @@ class Select extends Action{
         super.execute(reliable);
 
         for(let id of this.data.ids){
-            $(`#${id}`)[0].reliableSvg.select(this.myAction);
+            $(`#${id}`)[0].reliableSvg.select(reliable, this.myAction);
+            
         }
     }
 
@@ -129,7 +129,7 @@ class UnSelect extends Action{
         for(let id of this.data.ids){
             let elements = $(`#${id}`);
             if(elements.length ==0) continue;
-            elements[0].reliableSvg.unselect();
+            elements[0].reliableSvg.unselect(reliable);
         }
     }
 
@@ -138,6 +138,28 @@ class UnSelect extends Action{
     }
 
 }
+
+
+
+class Drag extends Action{
+    
+    constructor(data){
+        super(data);
+    }
+
+    execute(reliable){
+        SVG.getFromId(this.data.id).moveTo(this.data.endPos);
+    }
+
+
+    undo(){
+        SVG.getFromId(this.data.id).moveTo(this.data.startPos);
+    }
+
+}
+
+
+
 
 /**for(let id of this.selected){
             

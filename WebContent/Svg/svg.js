@@ -20,22 +20,70 @@ class SVG{
 
         this.isSelected = false;
         this.isDragging = false;
+
+        this.clickPos = new Vector2(0, 0);
+        this.lastPos = {x: 0, y:0};
     }
 
     selectedMouseMove(e){
-        console.log("dragging");
+        if(this.isDragging){
+            //console.log("dragging");
+            let deltaX = e.offsetX - this.clickStart.x;
+            let deltaY = e.offsetY - this.clickStart.y;
+            let delta = new Vector2(deltaX, deltaY);
+            //console.log(delta);
+            this.newpos = this.clickPos.add(delta);
+            
+            this.moveTo(this.newpos);
+        }
+    }
+
+    //takes in a vector or something that has an x or a y 
+    moveTo(pos){
+        this.lastPos = pos;
+        this.group.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+    }
+
+    static getFromId(id){
+        return $("#"+id)[0].reliableSvg;
     }
 
     selectedMouseUp(e){
         this.parent.removeEventListener('mousemove', this.mouseMoveRef);
         this.parent.removeEventListener('mouseup', this.mouseUpRef);
 
-        console.log("done dragging");
+
+        this.clickPos = this.newpos;
+        
         this.isDragging = false; 
+        console.log(this);
+        Action.commit(this.reliable, {
+            action: "Drag",
+            id: this.id,
+            endPos: {
+                x: this.newpos.x,
+                y: this.newpos.y,
+            },
+            startPos: {
+                x: this.clickBegin.x,
+                y: this.clickBegin.y,
+            }
+        });   
     }
+
+
+    
 
     selectedMouseDown(e){
         e.stopPropagation();
+
+        this.clickStart = {x: e.offsetX, y:e.offsetY};
+        this.clickOffset = {x: e.layerX, y:e.layerY};
+        console.log(this.group);
+        this.clickBegin = this.lastPos;
+
+
+
         this.mouseMoveRef = (e) => this.selectedMouseMove(e);
         this.mouseUpRef = (e) => this.selectedMouseUp(e);
 
@@ -70,13 +118,17 @@ class SVG{
         return selectRect;
     }
 
-    select(mySelection){
+
+    
+    select(reliable, mySelection){
+        this.reliable = reliable;
         if(this.isSelected) return;
         this.isSelected = true;
         this.selectRect = this.createSelectRect();
     }
 
-    unselect(){
+    unselect(reliable){
+        this.reliable = reliable;
         this.isSelected = false;
         $(this.selectRect).remove();
     }
@@ -84,5 +136,7 @@ class SVG{
     delete() {
         $(this.group).remove();
     }
+
+    
 
 }
