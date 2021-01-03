@@ -7,7 +7,6 @@ class Selection extends Tool{
         document.addEventListener('keydown', (event) => {
            
             if (event.keyCode == 8 || event.keyCode == 46 ) {
-                console.log(this.selected);
                 Action.commit(this.reliable, {
                     action: "Delete",
                     ids: this.selected
