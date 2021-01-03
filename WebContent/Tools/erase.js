@@ -48,23 +48,35 @@ class Eraser extends Tool{
         return (x > x1 && x < x2) && (y > y1 && y < y2)
     }
 
+
+
     isCollidingLineSegment(path){
-        //console.log("pre path length" + path.length)
         path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
-       
-        let ret = path;
+
+        let removeIndex = [];
         for(let i = 0; i<path.length; i+=2){
-            for(let j =1; j<path.length; j+=2){
+            let j = i+1;
+            //for(let j =1; j<path.length; j+=2){
                 let x = path[i];
                 let y = path[j];
                 if(this.insideCursor(x,y)){
-                    ret = path.splice(i,2); //removes the coords but does not readjust
-                    //console.log(ret)
+                   removeIndex.push(i) 
                 }
-            }
+            //}
         }
-        //console.log("post path length "+ path.length);
-        return path
+        let minIndex = Math.min(...removeIndex)
+        let maxIndex = Math.max(...removeIndex)
+        //path.splice(minIndex, (maxIndex-minIndex)+2);
+        let temp = path.splice(minIndex, path.length)
+        temp.splice(0,Math.min((maxIndex-minIndex)+2, temp.length));
+        let paths = []
+        paths.push(path)
+        
+        if(temp.length>0){
+            paths.push(temp)
+        }
+
+        return paths
     }
     
     lineSegmentColisions(svgs){
@@ -72,21 +84,41 @@ class Eraser extends Tool{
         for(let svg of svgs){
             let edited = svg.pathData.split(" ")
            
-            let temp = (this.isCollidingLineSegment(edited.splice(1,edited.length))); //gets rid of the M
-            //temp.length-1 has to be divisable by 12
-            while((temp.length-2)%6 !=0){
-                temp.push(temp[temp.length-2])
-                temp.push(temp[temp.length-2])
-                console.log("added "+ temp[temp.length])
+            let paths = this.isCollidingLineSegment(edited.splice(1,edited.length)); //gets rid of the M
+            let firstPass = true;
+            for(let temp of paths){
+                //temp.length-2 has to be divisable by 6
+                if(!(temp.length<8)){
+                    while((temp.length-2)%6 !=0){
+                        temp.push(temp[temp.length-2])
+                        temp.push(temp[temp.length-2])
+                    }
+                    temp[1] = temp[1]+"C"
+                    temp = "M "+temp.join(" ")
+                    eraseables.push(temp)
+                    if(firstPass){
+                        svg.replacePath(temp);
+                        firstPass = false;
+                    }
+                    else{
+                        Action.commit(this.reliable, {
+                            action: "Draw",
+                            id: Reliable.makeId(10) ,
+                            path: temp,
+                            color: "#AAB2C0"
+                        })
+                    }
+                }else{
+                    if(firstPass){
+                        //svg.replacePath(temp)
+                        svg.delete();
+                    }
+                }
+                firstPass = false;
             }
-            temp[1] = temp[1]+"C"
-            temp = "M "+temp.join(" ")
-            console.log(temp);
-            svg.replacePath(temp);
-            eraseables.push(temp)
         }
         return eraseables;
-        //console.log(test);
+
     }
 
     erase(){

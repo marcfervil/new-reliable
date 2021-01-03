@@ -9,11 +9,11 @@ class SVGPath extends SVG{
         this.svg.style.stroke = "#AAB2C0"; 
         this.svg.style.fill = "transparent";
         this.svg.style.strokeWidth = 3;
-        this.svg.style.strokeLinejoin = "miter";
+        //this.svg.style.strokeLinejoin = "miter";
         this.svg.style.strokeLinecap = "butt";
-        this.svg.style.strokeMiterlimit = 4;
+        //this.svg.style.strokeMiterlimit = 4;
         this.svg.style.strokeDasharray = "none";
-        this.svg.style.strokeDashoffset= 0;
+        //this.svg.style.strokeDashoffset= 0;
 
     }
 
@@ -64,7 +64,7 @@ class SVGPath extends SVG{
             uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
         
     }
-
+    //replaces path
     replacePath(updateSvg){
         let ogPath = this.pathData;
         this.pathData = updateSvg;
@@ -72,8 +72,12 @@ class SVGPath extends SVG{
         this.svg.setAttribute("d", updateSvg);
         return ogPath;
     }
-
+    //adds things to the path
     updatePath(svgData){
+        if(svgData ==""){
+            this.delete()
+            console.log("deleted svg cuz too small");
+        }
         this.pathData += "L"+svgData;
         this.svg.setAttribute("d", this.pathData);
         
