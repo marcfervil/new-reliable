@@ -26,15 +26,20 @@ class SVG{
 
         this.group.setAttribute("transform", `translate(0, 0)`);
         this.matrix = this.group.transform.baseVal.consolidate().matrix;
+
+
+        this.scaleDelta = new Vector2(1, 1);
         //console.log(this.matrix);
         //TODO: FIX RACE CONDITION
         //Is it a really a race condition if the timeout is 0?
         setTimeout(() => {
             
-            let rect = this.group.getBoundingClientRect();
-            this.canvasPos = new Vector2(rect.x, rect.y).subtract(new Vector2(10, 10));
+            this.canvasRect = this.group.getBoundingClientRect();
+            this.canvasPos = new Vector2(this.canvasRect.x, this.canvasRect.y).subtract(new Vector2(10, 10));
             this.dragEndPos = this.canvasPos;
             //this.moveTo(this.canvasPos);
+
+
         }, 0)
 
 
@@ -44,7 +49,7 @@ class SVG{
         
         this.transPos = new Vector2(0, 0);
 
-        
+       
     }
 
     
@@ -53,7 +58,7 @@ class SVG{
   
         let delta = pos.subtract(this.canvasPos);
        
-        this.matrixTransform(pos.x, pos.y, 1, 1);
+        this.matrixTransform(pos.x, pos.y);
 
         //this.matrixTranslate(pos)
 
@@ -73,13 +78,17 @@ class SVG{
 
     scaleTo(scaleDelta){
         let rect = this.group.getBoundingClientRect();
-
-
+        
+        console.log(this.dragEndPos);
+        console.log(scaleDelta);
         this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, scaleDelta.x, scaleDelta.y);
+        this.scaleDelta = scaleDelta;
     }
 
     matrixTransform(x, y, xScale, yScale){
         let rect = this.group.getBoundingClientRect();
+        //let rect = this.group.getBoundingClientRect();
+            
         /**
          
                 //position
@@ -92,6 +101,11 @@ class SVG{
                 neo.d = deltaPercent.y;
          */
 
+        if(xScale===undefined && yScale===undefined){
+            xScale = this.scaleDelta.x;
+            yScale = this.scaleDelta.y;
+ 
+        }
         let deltaPercent = new Vector2(xScale, yScale).subtract(new Vector2(1, 1));
         
 
@@ -102,8 +116,8 @@ class SVG{
        // this.matrix.e = delta.x - (rect.left * deltaPercent.x);
        // this.matrix.f = delta.y - (rect.top * deltaPercent.y);
         
-        this.matrix.e = delta.x  - (rect.left * deltaPercent.x);
-        this.matrix.f = delta.y  - (rect.top * deltaPercent.y);
+        this.matrix.e = delta.x  - (this.canvasRect.left * deltaPercent.x);
+        this.matrix.f = delta.y  - (this.canvasRect.top * deltaPercent.y);
         
         this.matrix.a = xScale;
         this.matrix.d = yScale;
@@ -203,8 +217,8 @@ class SVG{
         selectRect.setAttribute('y', rectY);
         //selectRect.setAttribute("transform", `translate(${bounds.x - margin}, ${bounds.y - margin})`)
 
-        let rectWidth = bounds.width + (margin *2);
-        let rectHeight = bounds.height + (margin *2);
+        let rectWidth = (bounds.width/this.scaleDelta.x) + (margin *2);
+        let rectHeight = (bounds.height/this.scaleDelta.y) + (margin *2);
         selectRect.setAttribute('width', rectWidth);
         selectRect.setAttribute('height', rectHeight);
         selectRect.setAttribute("vector-effect","non-scaling-stroke");
