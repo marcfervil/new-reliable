@@ -24,17 +24,18 @@ class SVG{
         this.isSelected = false;
         this.isDragging = false;
 
+        this.group.setAttribute("transform", `translate(0, 0)`);
         this.matrix = this.group.transform.baseVal.consolidate().matrix;
-
+        //console.log(this.matrix);
         //TODO: FIX RACE CONDITION
         //Is it a really a race condition if the timeout is 0?
-        setTimeout(()=>{
+        setTimeout(() => {
             
             let rect = this.group.getBoundingClientRect();
             this.canvasPos = new Vector2(rect.x, rect.y).subtract(new Vector2(10, 10));
-   
-            this.moveTo(this.canvasPos);
-        },0)
+            this.dragEndPos = this.canvasPos;
+            //this.moveTo(this.canvasPos);
+        }, 0)
 
 
 
@@ -43,7 +44,7 @@ class SVG{
         
         this.transPos = new Vector2(0, 0);
 
-
+        
     }
 
     
@@ -51,23 +52,65 @@ class SVG{
     moveTo(pos){
   
         let delta = pos.subtract(this.canvasPos);
-        let action = `translate(${delta.x}, ${delta.y})`;
-        this.group.setAttribute('transform', action);
+       
+        this.matrixTransform(pos.x, pos.y, 1, 1);
+
+        //this.matrixTranslate(pos)
+
+        //let delta = pos.subtract(this.canvasPos);
+        //let action = `translate(${delta.x}, ${delta.y})`;
+        //this.group.setAttribute('transform', action);
         this.transPos = delta;
-        
+        this.lastPos = pos;
         if(this.dragStartPos==null){
        
             this.dragStartPos = pos;
-        }else{
-            this.dragEndPos = pos;
         }
-        return action;
+        this.dragEndPos = pos;
+        
+        return "action";
+    }
+
+    scaleTo(scaleDelta){
+        let rect = this.group.getBoundingClientRect();
+
+
+        this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, scaleDelta.x, scaleDelta.y);
     }
 
     matrixTransform(x, y, xScale, yScale){
-        
-    }
+        let rect = this.group.getBoundingClientRect();
+        /**
+         
+                //position
+                neo.e = - (rect.left * deltaPercent.x);
+                neo.f = - (rect.top * deltaPercent.y);
 
+                //scale 
+                deltaPercent = deltaPercent.add(new Vector2(1,1))
+                neo.a = deltaPercent.x;
+                neo.d = deltaPercent.y;
+         */
+
+        let deltaPercent = new Vector2(xScale, yScale).subtract(new Vector2(1, 1));
+        
+
+
+        let pos = new Vector2(x, y);
+        //let delta = pos.subtract(this.canvasPos);
+        let delta = pos.subtract(this.canvasPos);
+       // this.matrix.e = delta.x - (rect.left * deltaPercent.x);
+       // this.matrix.f = delta.y - (rect.top * deltaPercent.y);
+        
+        this.matrix.e = delta.x  - (rect.left * deltaPercent.x);
+        this.matrix.f = delta.y  - (rect.top * deltaPercent.y);
+        
+        this.matrix.a = xScale;
+        this.matrix.d = yScale;
+        let transVals = `matrix(${this.matrix.a}, ${this.matrix.b}, ${this.matrix.c}, ${this.matrix.d}, ${this.matrix.e}, ${this.matrix.f})`;
+        
+        this.group.setAttribute("transform", transVals);
+    }
 
 
     selectedMouseMove(e){
@@ -193,10 +236,12 @@ class SVG{
             mouseDown.preventDefault();
             this.group.setAttribute("transform", `translate(0, 0)`);
             
-            let moveRef =  (e) => {moveEvent(e)};
+            let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
-            document.addEventListener('mousemove', moveRef);
-            document.addEventListener('mouseup', upRef);
+            //document.addEventListener('mousemove', moveRef);
+            //document.addEventListener('mouseup', upRef);
+
+            this.scaleTo(new Vector2(2, 2));
 
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
@@ -218,17 +263,18 @@ class SVG{
                 
                 let neo = this.group.transform.baseVal.consolidate().matrix;
            
+                //position
+                neo.e = - (rect.left * deltaPercent.x);
+                neo.f = - (rect.top * deltaPercent.y);
 
-                neo.e = -(rect.left*deltaPercent.x);
-                neo.f = -(rect.top*deltaPercent.y);
-
-                //deltaPercent=new Vector2
-
+                //scale 
                 deltaPercent = deltaPercent.add(new Vector2(1,1))
-                neo.a = deltaPercent.x ;
+                neo.a = deltaPercent.x;
                 neo.d = deltaPercent.y;
                 let transVals = `matrix(${neo.a}, ${neo.b}, ${neo.c}, ${neo.d}, ${neo.e}, ${neo.f})`;
                 
+
+
                 this.group.setAttribute("transform", transVals);
 
                 console.log();
@@ -254,6 +300,7 @@ class SVG{
         this.group.appendChild(selectRectGroup);
 
         let rect = this.group.getBoundingClientRect();
+        //console.log(rect);
         return selectRectGroup;
     }
 
