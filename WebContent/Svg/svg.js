@@ -211,8 +211,8 @@ class SVG{
        
         let margin = 10;
 
-        let rectX = bounds.x - this.transPos.x - margin;
-        let rectY = bounds.y - this.transPos.y - margin
+        let rectX = bounds.x - this.transPos.x - (margin * this.scaleDelta.x);
+        let rectY = bounds.y - this.transPos.y - (margin * this.scaleDelta.y)
         selectRect.setAttribute('x', rectX);
         selectRect.setAttribute('y', rectY);
         //selectRect.setAttribute("transform", `translate(${bounds.x - margin}, ${bounds.y - margin})`)
@@ -252,13 +252,13 @@ class SVG{
             
             let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
-            //document.addEventListener('mousemove', moveRef);
-            //document.addEventListener('mouseup', upRef);
+            document.addEventListener('mousemove', moveRef);
+            document.addEventListener('mouseup', upRef);
 
-            this.scaleTo(new Vector2(2, 2));
-            let test = new SVGPath(this.parent, this.pos, this.id+"2");
-            test.replacePath(this.pathData);
-            test.createSelectRect();
+            //this.scaleTo(new Vector2(2, 2));
+            //let test = new SVGPath(this.parent, this.pos, this.id+"2");
+            //test.replacePath(this.pathData);
+            //test.createSelectRect();
 
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
@@ -267,12 +267,13 @@ class SVG{
                 
                 let delta = mouseEnd.subtract(mouseStart);
 
-                let deltaPercent = new Vector2(delta.x/rectWidth, delta.y/rectHeight);
+                let deltaPercent = new Vector2(delta.x/rectWidth, delta.y/rectHeight).add(new Vector2(1,1));
                 //console.log(deltaPercent);
                 //this.group.setAttribute("transform", `translate(0, 0) scale(${deltaPercent.x}, ${deltaPercent.y}) translate(0, 0)`);
                // this.group.setAttribute("transform", `scale(2, 2)`);
                 
-                
+                this.scaleTo(deltaPercent);
+               /*
                 //let pos = this.moveTo(new Vector2(x, y));
                 this.group.style.transformOrgin = "100% 100%";
                // this.group.setAttribute("transform", `scale(2, 2)`);
@@ -292,7 +293,7 @@ class SVG{
                 
 
 
-                this.group.setAttribute("transform", transVals);
+                this.group.setAttribute("transform", transVals);*/
 
                 console.log();
             };
