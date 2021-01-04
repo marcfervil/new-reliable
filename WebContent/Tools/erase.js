@@ -104,11 +104,13 @@ class Eraser extends Tool{
                         firstPass = false;
                     }
                     else{
+                        let tempPos = new Vector2(0,0);
                         Action.commit(this.reliable, {
                             action: "Draw",
                             id: Reliable.makeId(10) ,
                             path: temp,
-                            color: "#AAB2C0"
+                            color: "#AAB2C0",
+                            pos: tempPos.toJSON()
                         })
                     }
                 }else{
