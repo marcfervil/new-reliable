@@ -3,7 +3,7 @@ class Action {
 
     constructor(data){
         this.data = data;
-
+        this.unDoable = true;
         if(this.data.actionId == undefined){
             this.data.actionId = Reliable.makeId(10);
             this.myAction = true;
@@ -30,12 +30,13 @@ class Action {
      */
     static commit(reliable, actionData, broadcast){
         if(broadcast==undefined)broadcast = true; 
-        let actionList = {Draw, Undo, Replace, DeleteSVGPath};
+
+        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath};
         let action = new actionList[actionData.action](actionData);
 
         //Undo should never be recorded
  
-        if(actionData.action != "Undo"){
+        if(action.unDoable){
             reliable.actions.push(action);
             if(action.myAction) reliable.myActionIds.push(action.data.actionId);
         }
@@ -57,6 +58,7 @@ class Undo extends Action{
     
     constructor(data){
         super(data);
+        this.unDoable = false;
     }
 
     execute(reliable){
