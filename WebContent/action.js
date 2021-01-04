@@ -30,7 +30,8 @@ class Action {
      */
     static commit(reliable, actionData, broadcast){
         if(broadcast==undefined)broadcast = true; 
-        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale};
+
+        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath};
         let action = new actionList[actionData.action](actionData);
 
         //Undo should never be recorded

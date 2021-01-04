@@ -39,6 +39,7 @@
 <script src="{{path}}/action.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svg.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgPath.js" type="text/javascript"></script>
+<script src="{{path}}/Svg/svgPointer.js" type="text/javascript"></script>
 <script src="{{path}}/tools.js" type="text/javascript"></script>
 <script src="{{path}}/reliable.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/pen.js" type="text/javascript"></script>
@@ -57,7 +58,8 @@
 
     var app = new Reliable(canvas, [
         new Pen(),
-        new Selection()
+        new Selection(),
+        new Eraser()
     ]);
 
     function undo(){
