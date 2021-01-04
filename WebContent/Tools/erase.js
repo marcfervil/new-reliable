@@ -142,3 +142,16 @@ class Replace extends Action{
         tempSvg.replacePath(this.data.newPath);   
     }
 }
+
+class DeleteSVGPath extends Action{
+    constructor(data){
+        super(data)
+    }
+
+    execute(reliable){
+        super.execute(reliable)
+        let tempSvg = SVG.getFromId(this.data.SVGID)
+        tempSvg.delete();
+    }
+
+}
