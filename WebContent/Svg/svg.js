@@ -116,8 +116,8 @@ class SVG{
        // this.matrix.e = delta.x - (rect.left * deltaPercent.x);
        // this.matrix.f = delta.y - (rect.top * deltaPercent.y);
         
-        this.matrix.e = delta.x  - (this.canvasRect.left * deltaPercent.x);
-        this.matrix.f = delta.y  - (this.canvasRect.top * deltaPercent.y);
+        this.matrix.e = delta.x  - ((this.canvasRect.left -10) * deltaPercent.x);
+        this.matrix.f = delta.y  - ((this.canvasRect.top -10 )* deltaPercent.y);
         
         this.matrix.a = xScale;
         this.matrix.d = yScale;
@@ -256,6 +256,9 @@ class SVG{
             //document.addEventListener('mouseup', upRef);
 
             this.scaleTo(new Vector2(2, 2));
+            let test = new SVGPath(this.parent, this.pos, this.id+"2");
+            test.replacePath(this.pathData);
+            test.createSelectRect();
 
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
