@@ -86,7 +86,6 @@ class SVG{
     }
 
     static getFromId(id){
-        console.log("this happened")
         return $("#"+id)[0].reliableSvg;
     }
 

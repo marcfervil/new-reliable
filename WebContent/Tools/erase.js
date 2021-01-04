@@ -137,7 +137,6 @@ class Replace extends Action{
     }
 
     execute(reliable){
-        console.log(this.data)
         super.execute(reliable)
         let tempSvg = SVG.getFromId(this.data.SVGID)
         tempSvg.replacePath(this.data.newPath);   
