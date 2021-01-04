@@ -120,6 +120,7 @@ class Eraser extends Tool{
                             action: "DeleteSVGPath",
                             id: svg.id
                         })
+
                         //svg.delete();
                     }
                 }
@@ -154,7 +155,8 @@ class DeleteSVGPath extends Action{
 
     execute(reliable){
         super.execute(reliable)
-        let tempSvg = SVG.getFromId(this.data.SVGID)
+        let tempSvg = SVG.getFromId(this.data.id)
+        console.log(tempSvg)
         tempSvg.delete();
     }
 
