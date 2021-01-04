@@ -79,8 +79,7 @@ class SVG{
     scaleTo(scaleDelta){
         let rect = this.group.getBoundingClientRect();
         
-        console.log(this.dragEndPos);
-        console.log(scaleDelta);
+      
         this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, scaleDelta.x, scaleDelta.y);
         this.scaleDelta = scaleDelta;
     }
@@ -231,6 +230,8 @@ class SVG{
         
 
         let rightDrag = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+
+
         let dragBoxSize = 10;
         rightDrag.setAttribute('x', rectX + rectWidth - (dragBoxSize/2));
         rightDrag.setAttribute('y', rectY + (rectHeight) - (dragBoxSize/2) );
@@ -239,7 +240,7 @@ class SVG{
         rightDrag.setAttribute('height', dragBoxSize);
         rightDrag.setAttribute("vector-effect","non-scaling-stroke");
         rightDrag.style.stroke = "red";
-        rightDrag.style.fill = "red";
+        rightDrag.style.fill = "transparent";
         
 
         
@@ -248,7 +249,7 @@ class SVG{
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
             mouseDown.stopPropagation();
             mouseDown.preventDefault();
-            this.group.setAttribute("transform", `translate(0, 0)`);
+            //this.group.setAttribute("transform", `translate(0, 0)`);
             
             let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
@@ -259,15 +260,26 @@ class SVG{
             //let test = new SVGPath(this.parent, this.pos, this.id+"2");
             //test.replacePath(this.pathData);
             //test.createSelectRect();
-
+            let startScale = this.scaleDelta.clone();
+           let totalWidth = this.group.getBBox().width;
+           let totalHeight = this.group.getBBox().height;
+          
+            console.log(totalWidth+","+totalHeight);
+            console.log(this.scaleDelta);
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
-                
+        
+
                 let mouseEnd = new Vector2(mouseMove.clientX, mouseMove.clientY);
                 
                 let delta = mouseEnd.subtract(mouseStart);
 
-                let deltaPercent = new Vector2(delta.x/rectWidth, delta.y/rectHeight).add(new Vector2(1,1));
+                //multiply startScale by something to move anchor
+                //let deltaPercent = new Vector2(delta.x/totalWidth, delta.y/totalHeight).add(startScale);
+
+                let deltaPercent = new Vector2(delta.x/rectWidth, delta.y/rectHeight).add(startScale);
+
+
                 //console.log(deltaPercent);
                 //this.group.setAttribute("transform", `translate(0, 0) scale(${deltaPercent.x}, ${deltaPercent.y}) translate(0, 0)`);
                // this.group.setAttribute("transform", `scale(2, 2)`);
@@ -295,11 +307,10 @@ class SVG{
 
                 this.group.setAttribute("transform", transVals);*/
 
-                console.log();
             };
 
             let upEvent = (mouseUp) => {
-                console.log("up??");
+          
                 document.removeEventListener('mousemove', moveRef);
                 document.removeEventListener('mouseup', upRef);
             };
@@ -312,6 +323,8 @@ class SVG{
         
 
         selectRectGroup.appendChild(selectRect);
+
+        
         selectRectGroup.appendChild(rightDrag);
 
         
