@@ -9,11 +9,18 @@ class SVGPath extends SVG{
         this.svg.style.stroke = "#AAB2C0"; 
         this.svg.style.fill = "transparent";
         this.svg.style.strokeWidth = 3;
-        //this.svg.style.strokeLinejoin = "miter";
-        this.svg.style.strokeLinecap = "butt";
-        //this.svg.style.strokeMiterlimit = 4;
+
+        
+        this.svg.style.strokeLinejoin = "round";
+        this.svg.style.strokeLinecap = "round";
+        this.svg.style.strokeMiterlimit = 10;
         this.svg.style.strokeDasharray = "none";
         //this.svg.style.strokeDashoffset= 0;
+
+        //<path stroke="#595959" stroke-opacity="1" stroke-width="381" stroke-linecap="butt" stroke-linejoin="square" stroke-miterlimit="8"></path>
+        /*this.svg.setAttribute("stroke-line-join", "square")
+        this.svg.setAttribute("stroke-line-cap", "round")
+        this.svg.setAttribute("stroke-miterlimit", 8)*/
 
     }
 
@@ -41,10 +48,10 @@ class SVGPath extends SVG{
             let curve = tempPath.splice(0, 3);
             //if(lastPos!=undefined)console.log( curve[2].distance(lastPos));
             //20;
-            if(lastPos!=undefined && curve[2].distance(lastPos) < 50){
+            if(lastPos!=undefined && curve[2].distance(lastPos) < 20){
                 skip +=1;
                 //lastPos = curve[2];
-                //continue;
+               // continue;
             }
             lastPos = curve[2];
             svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
