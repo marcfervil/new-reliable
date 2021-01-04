@@ -82,7 +82,7 @@ class Selection extends Tool{
         this.selected = [];
         
         for(let hit of hits){
-            if(hit.parentNode== null)continue;
+            if(hit.parentNode== null || hit.parentNode.reliableSvg===undefined)continue;
             let id = hit.parentNode.id;
 
 
@@ -125,6 +125,8 @@ class Select extends Action{
     }
 
 }
+
+
 
 
 class UnSelect extends Action{
@@ -172,6 +174,25 @@ class Drag extends Action{
 
 }
 
+
+class Scale extends Action{
+    
+    constructor(data){
+        super(data);
+    }
+
+    execute(reliable){
+
+        SVG.getFromId(this.data.id).scaleTo(new Vector2(this.data.endScale));
+    }
+
+
+    undo(){
+    
+        SVG.getFromId(this.data.id).scaleTo(new Vector2(this.data.startScale));
+    }
+
+}
 
 class Delete extends Action{
     

@@ -249,6 +249,7 @@ class SVG{
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
             mouseDown.stopPropagation();
             mouseDown.preventDefault();
+          
             //this.group.setAttribute("transform", `translate(0, 0)`);
             
             let moveRef = (e) => {moveEvent(e)};
@@ -261,11 +262,8 @@ class SVG{
             //test.replacePath(this.pathData);
             //test.createSelectRect();
             let startScale = this.scaleDelta.clone();
-           let totalWidth = this.group.getBBox().width;
-           let totalHeight = this.group.getBBox().height;
-          
-            console.log(totalWidth+","+totalHeight);
-            console.log(this.scaleDelta);
+     
+    
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
         
@@ -274,38 +272,12 @@ class SVG{
                 
                 let delta = mouseEnd.subtract(mouseStart);
 
-                //multiply startScale by something to move anchor
-                //let deltaPercent = new Vector2(delta.x/totalWidth, delta.y/totalHeight).add(startScale);
-
+                //multiply startScale by normalized directional vector to move anchor
                 let deltaPercent = new Vector2(delta.x/rectWidth, delta.y/rectHeight).add(startScale);
 
-
-                //console.log(deltaPercent);
-                //this.group.setAttribute("transform", `translate(0, 0) scale(${deltaPercent.x}, ${deltaPercent.y}) translate(0, 0)`);
-               // this.group.setAttribute("transform", `scale(2, 2)`);
                 
                 this.scaleTo(deltaPercent);
-               /*
-                //let pos = this.moveTo(new Vector2(x, y));
-                this.group.style.transformOrgin = "100% 100%";
-               // this.group.setAttribute("transform", `scale(2, 2)`);
-
-                
-                let neo = this.group.transform.baseVal.consolidate().matrix;
-           
-                //position
-                neo.e = - (rect.left * deltaPercent.x);
-                neo.f = - (rect.top * deltaPercent.y);
-
-                //scale 
-                deltaPercent = deltaPercent.add(new Vector2(1,1))
-                neo.a = deltaPercent.x;
-                neo.d = deltaPercent.y;
-                let transVals = `matrix(${neo.a}, ${neo.b}, ${neo.c}, ${neo.d}, ${neo.e}, ${neo.f})`;
-                
-
-
-                this.group.setAttribute("transform", transVals);*/
+             
 
             };
 
@@ -313,6 +285,13 @@ class SVG{
           
                 document.removeEventListener('mousemove', moveRef);
                 document.removeEventListener('mouseup', upRef);
+
+                Action.commit(this.reliable, {
+                    action: "Scale",
+                    id: this.id,
+                    endScale: this.scaleDelta.toJSON(),
+                    startScale: startScale.toJSON(),
+                });   
             };
 
   
