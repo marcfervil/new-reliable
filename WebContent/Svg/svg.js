@@ -29,7 +29,9 @@ class SVG{
 
 
         this.scaleDelta = new Vector2(1, 1);
+
         this.scaleAnchor= new Vector2(1, -1);
+        this.transformAnchor = {x: "left", y:"top"};
         //console.log(this.matrix);
         //TODO: FIX RACE CONDITION
         //Is it a really a race condition if the timeout is 0?
@@ -77,15 +79,16 @@ class SVG{
         return "action";
     }
 
-    scaleTo(scaleDelta){
-        let rect = this.group.getBoundingClientRect();
+    scaleTo(scaleDelta, anchorX, anchorY){
+        
         
       
-        this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, scaleDelta.x, scaleDelta.y);
+        this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, scaleDelta.x, scaleDelta.y, anchorX, anchorY);
         this.scaleDelta = scaleDelta;
+        this.transformAnchor = {x: anchorX, y: anchorY};
     }
 
-    matrixTransform(x, y, xScale, yScale){
+    matrixTransform(x, y, xScale, yScale, anchorX, anchorY){
         let rect = this.group.getBoundingClientRect();
         //let rect = this.group.getBoundingClientRect();
             
@@ -116,11 +119,14 @@ class SVG{
  
         //I added an optional rest parameter to Vector2 so when I scale I know where it's being scaled from 
         //x can be "left" or "righ"  y can be "top" or "bottom"
-        let scaleAnchorX = this.scaleAnchor.data[0];
-        let scaleAnchorY = this.scaleAnchor.data[1];
+        
+        if(anchorX===undefined && anchorY===undefined){
+            anchorX = this.transformAnchor.x;
+            anchorY = this.transformAnchor.y;
+        }
 
-        this.matrix.e = delta.x  - ((this.canvasRect[scaleAnchorX] - (10*this.scaleAnchor.x)) * deltaPercent.x);
-        this.matrix.f = delta.y  - ((this.canvasRect[scaleAnchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
+        this.matrix.e = delta.x  - ((this.canvasRect[anchorX] - (10*this.scaleAnchor.x)) * deltaPercent.x);
+        this.matrix.f = delta.y  - ((this.canvasRect[anchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
         
         this.matrix.a = xScale;
         this.matrix.d = yScale;
@@ -238,13 +244,15 @@ class SVG{
         //rightDrag.setAttribute('y', (rectY /*+ rectHeight*/) - (dragBoxSize/2) );
                
         let anchorSize = 10;
-        let topRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY /*+ rectHeight*/) - (anchorSize/2), new Vector2(1, -1, "left", "bottom") );
+        let topRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY) - (anchorSize/2), new Vector2(1, -1), "left", "bottom" );
+        let bottomRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY + rectHeight) - (anchorSize/2), new Vector2(1, 1), "left", "top" );
 
 
         selectRectGroup.appendChild(selectRect);
 
         
         selectRectGroup.appendChild(topRightScaleAnchor);
+        selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
         this.group.appendChild(selectRectGroup);
@@ -254,7 +262,7 @@ class SVG{
         return selectRectGroup;
     }
 
-    createDragRect(x, y, anchor){
+    createDragRect(x, y, anchor, anchorX, anchorY){
 
         let margin = 10;
         let bounds = this.group.getBoundingClientRect();
@@ -277,6 +285,14 @@ class SVG{
         
 
         rightDrag.addEventListener('mousedown', (mouseDown) => {
+
+            //change the anchor
+            this.scaleAnchor = anchor;
+            //this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, this.scaleDelta.x, this.scaleDelta.y, anchor.data[0], anchor.data[1]);
+           // this.moveTo(this.transPos);
+
+          // this.scaleTo(this.scaleDelta);
+
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
             mouseDown.stopPropagation();
             mouseDown.preventDefault();
@@ -308,7 +324,7 @@ class SVG{
                 let deltaPercent = new Vector2(this.scaleAnchor.x * (delta.x/rectWidth), this.scaleAnchor.y * (delta.y/rectHeight)).add(startScale);
                
                 
-                this.scaleTo(deltaPercent);
+                this.scaleTo(deltaPercent, anchorX, anchorY);
              
 
             };
