@@ -68,7 +68,7 @@ class SVGPath extends SVG{
     replacePath(updateSvg){
         let ogPath = this.pathData;
         this.pathData = updateSvg;
-        console.log(updateSvg);
+        //console.log(updateSvg);
         this.svg.setAttribute("d", updateSvg);
         return ogPath;
     }

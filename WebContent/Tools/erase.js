@@ -97,6 +97,11 @@ class Eraser extends Tool{
                     temp = "M "+temp.join(" ")
                     eraseables.push(temp)
                     if(firstPass){
+                        Action.commit(this.reliable,{
+                            action: "Replace",
+                            SVGID: svg.id,
+                            newPath: temp
+                        })
                         svg.replacePath(temp);
                         firstPass = false;
                     }
@@ -118,14 +123,22 @@ class Eraser extends Tool{
             }
         }
         return eraseables;
-
     }
 
     erase(){
-        this.lineSegmentColisions(this.svgCollisions());
-        
+        this.lineSegmentColisions(this.svgCollisions());   
     }
-
-
 }
 
+class Replace extends Action{
+
+    constructor(data){
+        super(data)
+    }
+
+    execute(reliable){
+        super.execute(reliable)
+        let tempSvg = SVG.getFromId(this.data.SVGID)
+        tempSvg.replacePath(this.data.newPath);   
+    }
+}
