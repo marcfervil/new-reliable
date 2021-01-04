@@ -46,6 +46,7 @@
 	},
 	"dependencies": {
 		"handlebars": "^4.7.6",
+		"svg-intersections": "^0.4.0",
 		"vsls": "^1.0.3015"
 	}
 }
