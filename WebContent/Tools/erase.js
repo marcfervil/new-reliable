@@ -56,13 +56,12 @@ class Eraser extends Tool{
         let removeIndex = [];
         for(let i = 0; i<path.length; i+=2){
             let j = i+1;
-            //for(let j =1; j<path.length; j+=2){
-                let x = path[i];
-                let y = path[j];
-                if(this.insideCursor(x,y)){
-                   removeIndex.push(i) 
-                }
-            //}
+
+            let x = path[i];
+            let y = path[j];
+            if(this.insideCursor(x,y)){
+                removeIndex.push(i) 
+            }
         }
         let minIndex = Math.min(...removeIndex)
         let maxIndex = Math.max(...removeIndex)
@@ -75,7 +74,6 @@ class Eraser extends Tool{
         if(temp.length>0){
             paths.push(temp)
         }
-
         return paths
     }
     
@@ -131,7 +129,7 @@ class Eraser extends Tool{
     }
 
     erase(){
-        this.lineSegmentColisions(this.svgCollisions());   
+        this.lineSegmentColisions(this.svgCollisions());
     }
 }
 
@@ -144,7 +142,16 @@ class Replace extends Action{
     execute(reliable){
         super.execute(reliable)
         let tempSvg = SVG.getFromId(this.data.SVGID)
+        this.undoData = {
+            id: this.data.SVGID,
+            path: tempSvg.pathData
+        }
         tempSvg.replacePath(this.data.newPath);   
+    }
+
+    undo(){
+        let tempSVG = SVG.getFromId(this.undoData.id)
+        tempSVG.replacePath(this.undoData.path)
     }
 }
 
@@ -156,8 +163,24 @@ class DeleteSVGPath extends Action{
     execute(reliable){
         super.execute(reliable)
         let tempSvg = SVG.getFromId(this.data.id)
-        console.log(tempSvg)
+        this.restoreSVGPath = {
+            id: tempSvg.id,
+            path: tempSvg.pathData,
+            color: tempSvg.color
+
+        }
+        let index = this.reliable.svgs.indexOf(tempSvg)
+        if (index > -1) {
+            this.reliable.svgs.splice(index, 1);
+        }
         tempSvg.delete();
+    }
+
+    undo(){
+        this.svgPath = new SVGPath(reliable.canvas, new Vector2(),this.restoreSVGPath.id);
+        this.svgPath.replacePath(this.restoreSVGPath.path);
+        this.svgPath.svg.style.stroke = this.restoreSVGPath.color;
+        reliable.svgs.push(this.svgPath);
     }
 
 }
