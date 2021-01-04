@@ -116,7 +116,11 @@ class Eraser extends Tool{
                 }else{
                     if(firstPass){
                         //svg.replacePath(temp)
-                        svg.delete();
+                        Action.commit(this.reliable,{
+                            action: "DeleteSVGPath",
+                            id: svg.id
+                        })
+                        //svg.delete();
                     }
                 }
                 firstPass = false;
