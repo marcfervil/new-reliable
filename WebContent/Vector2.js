@@ -1,4 +1,4 @@
-function Vector2(x, y) {
+function Vector2(x, y, ...data) {
 	
 	if(x !== undefined && y !== undefined){
 		this.x = x;
@@ -10,6 +10,7 @@ function Vector2(x, y) {
 		this.x = 0;
 		this.y = 0;
 	}
+	this.data = data
 }
 
 Vector2.prototype = {
@@ -41,6 +42,11 @@ Vector2.prototype = {
 
 	dot: function(vector) {
 		return (this.x * vector.x + this.y + vector.y);
+	},
+
+
+	multiply: function(vector) {
+		return new Vector2(this.x * vector.x, this.y * vector.y);
 	},
 
 	moveTowards: function(vector, t) {

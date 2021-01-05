@@ -29,6 +29,7 @@ class SVG{
 
 
         this.scaleDelta = new Vector2(1, 1);
+        this.scaleAnchor= new Vector2(1, -1);
         //console.log(this.matrix);
         //TODO: FIX RACE CONDITION
         //Is it a really a race condition if the timeout is 0?
@@ -110,13 +111,16 @@ class SVG{
 
 
         let pos = new Vector2(x, y);
-        //let delta = pos.subtract(this.canvasPos);
+
         let delta = pos.subtract(this.canvasPos);
-       // this.matrix.e = delta.x - (rect.left * deltaPercent.x);
-       // this.matrix.f = delta.y - (rect.top * deltaPercent.y);
-        
-        this.matrix.e = delta.x  - ((this.canvasRect.left -10) * deltaPercent.x);
-        this.matrix.f = delta.y  - ((this.canvasRect.top -10 )* deltaPercent.y);
+ 
+        //I added an optional rest parameter to Vector2 so when I scale I know where it's being scaled from 
+        //x can be "left" or "righ"  y can be "top" or "bottom"
+        let scaleAnchorX = this.scaleAnchor.data[0];
+        let scaleAnchorY = this.scaleAnchor.data[1];
+
+        this.matrix.e = delta.x  - ((this.canvasRect[scaleAnchorX] - (10*this.scaleAnchor.x)) * deltaPercent.x);
+        this.matrix.f = delta.y  - ((this.canvasRect[scaleAnchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
         
         this.matrix.a = xScale;
         this.matrix.d = yScale;
@@ -229,12 +233,39 @@ class SVG{
         selectRect.addEventListener('mousedown', (e) => this.selectedMouseDown(e));
         
 
+       
+        //rightDrag.setAttribute('x', (rectX + rectWidth) - (dragBoxSize/2));
+        //rightDrag.setAttribute('y', (rectY /*+ rectHeight*/) - (dragBoxSize/2) );
+               
+        let anchorSize = 10;
+        let topRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY /*+ rectHeight*/) - (anchorSize/2), new Vector2(1, -1, "left", "bottom") );
+
+
+        selectRectGroup.appendChild(selectRect);
+
+        
+        selectRectGroup.appendChild(topRightScaleAnchor);
+
+        
+        this.group.appendChild(selectRectGroup);
+
+        let rect = this.group.getBoundingClientRect();
+        //console.log(rect);
+        return selectRectGroup;
+    }
+
+    createDragRect(x, y, anchor){
+
+        let margin = 10;
+        let bounds = this.group.getBoundingClientRect();
         let rightDrag = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
 
+        let rectWidth = (bounds.width/this.scaleDelta.x) + (margin *2);
+        let rectHeight = (bounds.height/this.scaleDelta.y) + (margin *2);
 
         let dragBoxSize = 10;
-        rightDrag.setAttribute('x', rectX + rectWidth - (dragBoxSize/2));
-        rightDrag.setAttribute('y', rectY + (rectHeight) - (dragBoxSize/2) );
+        rightDrag.setAttribute('x', x);
+        rightDrag.setAttribute('y', y);
         rightDrag.setAttribute('width', dragBoxSize);
         rightDrag.setAttribute('draggable', true);
         rightDrag.setAttribute('height', dragBoxSize);
@@ -266,15 +297,16 @@ class SVG{
     
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
-        
+                this.scaleAnchor = anchor;
 
                 let mouseEnd = new Vector2(mouseMove.clientX, mouseMove.clientY);
                 
                 let delta = mouseEnd.subtract(mouseStart);
-
+                
                 //multiply startScale by normalized directional vector to move anchor
-                let deltaPercent = new Vector2(delta.x/rectWidth, delta.y/rectHeight).add(startScale);
-
+                console.log(this.scaleAnchor);
+                let deltaPercent = new Vector2(this.scaleAnchor.x * (delta.x/rectWidth), this.scaleAnchor.y * (delta.y/rectHeight)).add(startScale);
+               
                 
                 this.scaleTo(deltaPercent);
              
@@ -285,33 +317,19 @@ class SVG{
           
                 document.removeEventListener('mousemove', moveRef);
                 document.removeEventListener('mouseup', upRef);
-
+/*
                 Action.commit(this.reliable, {
                     action: "Scale",
                     id: this.id,
                     endScale: this.scaleDelta.toJSON(),
                     startScale: startScale.toJSON(),
-                });   
+                });   */
             };
 
   
 
         });
-        
-
-        
-
-        selectRectGroup.appendChild(selectRect);
-
-        
-        selectRectGroup.appendChild(rightDrag);
-
-        
-        this.group.appendChild(selectRectGroup);
-
-        let rect = this.group.getBoundingClientRect();
-        //console.log(rect);
-        return selectRectGroup;
+        return rightDrag;
     }
 
 
