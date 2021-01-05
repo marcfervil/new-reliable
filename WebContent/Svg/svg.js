@@ -38,7 +38,7 @@ class SVG{
             this.canvasRect = this.group.getBoundingClientRect();
             this.canvasPos = new Vector2(this.canvasRect.x, this.canvasRect.y).subtract(new Vector2(10, 10));
             this.dragEndPos = this.canvasPos;
-            //this.moveTo(this.canvasPos);
+            this.moveTo(this.canvasPos);
 
 
         }, 0)
@@ -85,48 +85,100 @@ class SVG{
         this.scaleDelta = scaleDelta;
     }
 
+<<<<<<< HEAD
     matrixTransform(x, y, xScale, yScale){
+=======
+    debugRect(x, y, w, h, color){
+        let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+        debug.setAttribute("x", x);
+        debug.setAttribute("y", y);
+        debug.setAttribute("width", w);
+        debug.setAttribute("height", h);
+        debug.style.stroke = color;
+        debug.style.fill = "transparent";
+        this.parent.appendChild(debug);
+    }
+
+    matrixTransform(x, y, xScale, yScale, anchorX, anchorY){
+>>>>>>> parent of 7739f0d... Revert "sorta got it working?"
         let rect = this.group.getBoundingClientRect();
         //let rect = this.group.getBoundingClientRect();
-            
-        /**
-         
-                //position
-                neo.e = - (rect.left * deltaPercent.x);
-                neo.f = - (rect.top * deltaPercent.y);
-
-                //scale 
-                deltaPercent = deltaPercent.add(new Vector2(1,1))
-                neo.a = deltaPercent.x;
-                neo.d = deltaPercent.y;
-         */
-
+      
+        let yOffset = 0;
         if(xScale===undefined && yScale===undefined){
             xScale = this.scaleDelta.x;
             yScale = this.scaleDelta.y;
  
         }
+       
+
         let deltaPercent = new Vector2(xScale, yScale).subtract(new Vector2(1, 1));
         
 
+        if(anchorX===undefined && anchorY===undefined){
+            anchorX = this.transformAnchor.x;
+            anchorY = this.transformAnchor.y;
+        }
+
+        
+       
 
         let pos = new Vector2(x, y);
 
         let delta = pos.subtract(this.canvasPos);
  
+<<<<<<< HEAD
         //I added an optional rest parameter to Vector2 so when I scale I know where it's being scaled from 
         //x can be "left" or "righ"  y can be "top" or "bottom"
         let scaleAnchorX = this.scaleAnchor.data[0];
         let scaleAnchorY = this.scaleAnchor.data[1];
+=======
+       
+
+        
+        
+>>>>>>> parent of 7739f0d... Revert "sorta got it working?"
 
         this.matrix.e = delta.x  - ((this.canvasRect[scaleAnchorX] - (10*this.scaleAnchor.x)) * deltaPercent.x);
         this.matrix.f = delta.y  - ((this.canvasRect[scaleAnchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
         
+        
+        //if(this.transformAnchor.y == "top" && anchorY == "bottom"){
+        if(this.transformAnchor.y != anchorY ){
+            console.log("dropped anchor transform top to bottom");
+            /*
+            console.log(rect);
+    
+            yOffset = (rect.height-(10*this.scaleDelta.y));
+            console.log(delta.y);
+            this.debugRect(x, this.dragEndPos.y, 10, 10, "purple");
+            this.debugRect(x, y+yOffset, 10, 10, "cyan");
+            
+            //y -= yOffset;*/
+            let newF =  delta.y  - ((this.canvasRect[anchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
+            let oldF =  delta.y  - ((this.canvasRect[this.transformAnchor.y] - (10*this.scaleAnchor.y) )* deltaPercent.y);
+            yOffset = (newF - oldF);
+            let offsetDir = yOffset / Math.abs(yOffset)
+
+            //scale back by margin
+            yOffset += ((10/2) *this.scaleDelta.y) * offsetDir;
+            console.log(yOffset);
+
+            this.transformAnchor.y = anchorY
+
+            //this.matrixTransform(x, y-yOffset, xScale, yScale, anchorY, anchorY)
+            this.moveTo(new Vector2(x, y-yOffset));
+        }
+
         this.matrix.a = xScale;
         this.matrix.d = yScale;
         let transVals = `matrix(${this.matrix.a}, ${this.matrix.b}, ${this.matrix.c}, ${this.matrix.d}, ${this.matrix.e}, ${this.matrix.f})`;
         
+        //if(this.stop)return;
+       
+
         this.group.setAttribute("transform", transVals);
+
     }
 
 
@@ -277,6 +329,17 @@ class SVG{
         
 
         rightDrag.addEventListener('mousedown', (mouseDown) => {
+<<<<<<< HEAD
+=======
+
+            //change the anchor
+            this.scaleAnchor = anchor;
+            //this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, this.scaleDelta.x, this.scaleDelta.y, anchor.data[0], anchor.data[1]);
+           // this.moveTo(this.transPos);
+
+            this.scaleTo(this.scaleDelta, anchorX, anchorY);
+
+>>>>>>> parent of 7739f0d... Revert "sorta got it working?"
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
             mouseDown.stopPropagation();
             mouseDown.preventDefault();
@@ -297,6 +360,7 @@ class SVG{
     
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
+                if(this.stop == true)return;
                 this.scaleAnchor = anchor;
 
                 let mouseEnd = new Vector2(mouseMove.clientX, mouseMove.clientY);
@@ -304,7 +368,7 @@ class SVG{
                 let delta = mouseEnd.subtract(mouseStart);
                 
                 //multiply startScale by normalized directional vector to move anchor
-                console.log(this.scaleAnchor);
+                
                 let deltaPercent = new Vector2(this.scaleAnchor.x * (delta.x/rectWidth), this.scaleAnchor.y * (delta.y/rectHeight)).add(startScale);
                
                 
