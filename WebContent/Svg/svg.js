@@ -275,8 +275,8 @@ class SVG{
         top -= margin;
         bottom += margin;
 
-        let width = right - left;
-        let height = bottom - top;
+        width = right - left;
+        height = bottom - top;
 
         return {left, right, top,  bottom, width, height};
     }
@@ -320,15 +320,15 @@ class SVG{
       
                
         let anchorSize = 10;
-        //let topRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY) - (anchorSize/2), new Vector2(1, -1), "left", "bottom" );
-        //let bottomRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY + rectHeight) - (anchorSize/2), new Vector2(1, 1), "left", "top" );
+        let topRightScaleAnchor = this.createDragRect(bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
+        let bottomRightScaleAnchor = this.createDragRect(bounds.right, bounds.bottom, new Vector2(1, 1), "left", "top" );
 
 
         selectRectGroup.appendChild(selectRect);
 
         
-        //selectRectGroup.appendChild(topRightScaleAnchor);
-        //selectRectGroup.appendChild(bottomRightScaleAnchor);
+        selectRectGroup.appendChild(topRightScaleAnchor);
+        selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
         this.group.appendChild(selectRectGroup);
@@ -340,6 +340,10 @@ class SVG{
 
     createDragRect(x, y, anchor, anchorX, anchorY){
 
+        let dragBoxSize = 10;
+
+        x -= (dragBoxSize/2);
+        y -= (dragBoxSize/2);
         let margin = 10;
         let bounds = this.group.getBoundingClientRect();
         let rightDrag = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
@@ -347,7 +351,7 @@ class SVG{
         let rectWidth = (bounds.width/this.scaleDelta.x) + (margin *2);
         let rectHeight = (bounds.height/this.scaleDelta.y) + (margin *2);
 
-        let dragBoxSize = 10;
+       
         rightDrag.setAttribute('x', x);
         rightDrag.setAttribute('y', y);
         rightDrag.setAttribute('width', dragBoxSize);
