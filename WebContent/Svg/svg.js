@@ -146,7 +146,8 @@ class SVG{
             this.debugRect(x, this.dragEndPos.y, 10, 10, "purple");
             this.debugRect(x, y+yOffset, 10, 10, "cyan");
             
-            //y -= yOffset;*/
+            //this was working
+            /*
             let newF =  delta.y  - ((this.canvasRect[anchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
             let oldF =  delta.y  - ((this.canvasRect[this.transformAnchor.y] - (10*this.scaleAnchor.y) )* deltaPercent.y);
             yOffset = (newF - oldF);
@@ -159,7 +160,7 @@ class SVG{
             this.transformAnchor.y = anchorY
 
             //this.matrixTransform(x, y-yOffset, xScale, yScale, anchorY, anchorY)
-            this.moveTo(new Vector2(x, y-yOffset));
+            this.moveTo(new Vector2(x, y-yOffset));*/
         }
 
         this.matrix.a = xScale;
@@ -246,10 +247,42 @@ class SVG{
     }
 
 
-    
+    getSelectionBounds(margin){
+        let bounds = this.svg.getBoundingClientRect();
+        
+        console.log(bounds);
+
+        /*
+        let left = bounds.left ;
+        let top = bounds.top;
+        let right = (left + bounds.width) * this.scaleDelta.x;
+        let bottom = (top + bounds.height) * this.scaleDelta.y;
+
+        left = Math.min(left, right);
+        right = Math.max(left, right);
+        top = Math.min(top, bottom);
+        bottom = Math.max(top, bottom);*/
+        let x = bounds.x - this.matrix.e;
+        let y = bounds.y - this.matrix.f;
+        let left = Math.min(x, (x + bounds.width) * this.scaleDelta.x) 
+        let right = Math.max(x, (x + bounds.width) * this.scaleDelta.x)
+        let top = Math.min(y, (y + bounds.height) * this.scaleDelta.y)
+        let bottom = Math.max(y, (y + bounds.height) * this.scaleDelta.y)
+
+        left -= margin;
+        right += margin;
+
+        top -= margin;
+        bottom += margin;
+
+        let width = right - left;
+        let height = bottom - top;
+
+        return {left, right, top,  bottom, width, height};
+    }
 
     createSelectRect(){
-        let bounds = this.group.getBoundingClientRect();
+        let bounds = this.getSelectionBounds(10);
   
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let selectRectGroup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -258,6 +291,7 @@ class SVG{
        
         let margin = 10;
 
+        /*
         let rectX = bounds.x - this.transPos.x - (margin * this.scaleDelta.x);
         let rectY = bounds.y - this.transPos.y - (margin * this.scaleDelta.y)
         selectRect.setAttribute('x', rectX);
@@ -267,7 +301,13 @@ class SVG{
         let rectWidth = (bounds.width/this.scaleDelta.x) + (margin *2);
         let rectHeight = (bounds.height/this.scaleDelta.y) + (margin *2);
         selectRect.setAttribute('width', rectWidth);
-        selectRect.setAttribute('height', rectHeight);
+        selectRect.setAttribute('height', rectHeight);*/
+
+        selectRect.setAttribute('x', bounds.left);
+        selectRect.setAttribute('y', bounds.top);
+        selectRect.setAttribute('width', bounds.width);
+        selectRect.setAttribute('height', bounds.height);
+
         selectRect.setAttribute("vector-effect","non-scaling-stroke");
         selectRect.style.stroke = "green";
         selectRect.style.fill = "transparent";
@@ -277,20 +317,18 @@ class SVG{
         selectRect.addEventListener('mousedown', (e) => this.selectedMouseDown(e));
         
 
-       
-        //rightDrag.setAttribute('x', (rectX + rectWidth) - (dragBoxSize/2));
-        //rightDrag.setAttribute('y', (rectY /*+ rectHeight*/) - (dragBoxSize/2) );
+      
                
         let anchorSize = 10;
-        let topRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY) - (anchorSize/2), new Vector2(1, -1), "left", "bottom" );
-        let bottomRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY + rectHeight) - (anchorSize/2), new Vector2(1, 1), "left", "top" );
+        //let topRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY) - (anchorSize/2), new Vector2(1, -1), "left", "bottom" );
+        //let bottomRightScaleAnchor = this.createDragRect((rectX + rectWidth) - (anchorSize/2), (rectY + rectHeight) - (anchorSize/2), new Vector2(1, 1), "left", "top" );
 
 
         selectRectGroup.appendChild(selectRect);
 
         
-        selectRectGroup.appendChild(topRightScaleAnchor);
-        selectRectGroup.appendChild(bottomRightScaleAnchor);
+        //selectRectGroup.appendChild(topRightScaleAnchor);
+        //selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
         this.group.appendChild(selectRectGroup);
@@ -329,7 +367,7 @@ class SVG{
             //this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, this.scaleDelta.x, this.scaleDelta.y, anchor.data[0], anchor.data[1]);
            // this.moveTo(this.transPos);
 
-            this.scaleTo(this.scaleDelta, anchorX, anchorY);
+            //this.scaleTo(this.scaleDelta, anchorX, anchorY);
 
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
             mouseDown.stopPropagation();
