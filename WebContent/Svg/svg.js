@@ -262,12 +262,15 @@ class SVG{
         right = Math.max(left, right);
         top = Math.min(top, bottom);
         bottom = Math.max(top, bottom);*/
-        let x = bounds.x - this.matrix.e;
-        let y = bounds.y - this.matrix.f;
-        let left = Math.min(x, (x + bounds.width) * this.scaleDelta.x) 
-        let right = Math.max(x, (x + bounds.width) * this.scaleDelta.x)
-        let top = Math.min(y, (y + bounds.height) * this.scaleDelta.y)
-        let bottom = Math.max(y, (y + bounds.height) * this.scaleDelta.y)
+        let x = (bounds.x - this.matrix.e )/this.scaleDelta.x;
+        let y = (bounds.y - this.matrix.f )/this.scaleDelta.y;
+        let width = bounds.width  / this.scaleDelta.x;
+        let height = bounds.height / this.scaleDelta.y;
+
+        let left = Math.min(x, (x + width) ) 
+        let right = Math.max(x, (x + width))
+        let top = Math.min(y, (y + height))
+        let bottom = Math.max(y, (y + height))
 
         left -= margin;
         right += margin;
@@ -320,14 +323,14 @@ class SVG{
       
                
         let anchorSize = 10;
-        let topRightScaleAnchor = this.createDragRect(bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
+        //let topRightScaleAnchor = this.createDragRect(bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
         let bottomRightScaleAnchor = this.createDragRect(bounds.right, bounds.bottom, new Vector2(1, 1), "left", "top" );
 
 
         selectRectGroup.appendChild(selectRect);
 
         
-        selectRectGroup.appendChild(topRightScaleAnchor);
+        //selectRectGroup.appendChild(topRightScaleAnchor);
         selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
