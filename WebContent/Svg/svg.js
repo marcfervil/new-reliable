@@ -60,7 +60,7 @@ class SVG{
 
         }, 0)
    
-        this.testScale= new Vector2(3, 3);
+       // this.testScale= new Vector2(2, 2);
 
         this.dragStartPos = null;
 
@@ -97,9 +97,7 @@ class SVG{
         //scale= new Vector2(1,1);
 
        let deltaScale = scale.subtract(this.transform.scale);
-       // console.log(deltaScale);
-        //console.log(scale)
-        console.log(deltaScale);
+       
         let marginSize = 10 ;
         
 //        console.log(this.transform.scale);
@@ -114,10 +112,10 @@ class SVG{
 
        let marginPad =  new Vector2(0, (marginSize/2) ).divide(scale).multiply(deltaScale);
         //console.log(marginPad);
-       
+       marginPad = new Vector2(0, 0);
 
         let getPos = () => {
-            let bounds = this.group.getBoundingClientRect();
+            let bounds = this.selectRect.getBoundingClientRect();
             return new Vector2(bounds.x, bounds.y);
         }
 
@@ -143,7 +141,7 @@ class SVG{
 
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
         this.updateTransform();
-        console.log("-------------------");
+     
 
         this.transform.scale = scale;
     }
@@ -253,10 +251,11 @@ class SVG{
         right = Math.max(left, right);
         top = Math.min(top, bottom);
         bottom = Math.max(top, bottom);*/
-        let x = (bounds.x - this.matrix.e )/this.transform.scale.x;
-        let y = (bounds.y - this.matrix.f )/this.transform.scale.y;
-        let width = bounds.width / this.transform.scale.x;
-        let height = bounds.height /this.transform.scale.y;
+        if(scale==undefined) scale = this.transform.scale;
+        let x = (bounds.x - this.matrix.e )/scale.x;
+        let y = (bounds.y - this.matrix.f )/scale.y;
+        let width = bounds.width / scale.x;
+        let height = bounds.height / scale.y;
 
         let left = Math.min(x, (x + width) ) 
         let right = Math.max(x, (x + width))
@@ -322,14 +321,13 @@ class SVG{
         selectRectGroup.appendChild(selectRect);
 
         
-        selectRectGroup.appendChild(topRightScaleAnchor);
+       // selectRectGroup.appendChild(topRightScaleAnchor);
         selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
         this.group.appendChild(selectRectGroup);
 
-        let rect = this.group.getBoundingClientRect();
-        //console.log(rect);
+        
         return selectRectGroup;
     }
 
@@ -356,7 +354,8 @@ class SVG{
         rightDrag.style.stroke = "red";
         rightDrag.style.fill = "transparent";
         
-
+        x -= (dragBoxSize/2);
+        y -= (dragBoxSize/2);
         
 
         rightDrag.addEventListener('mousedown', (mouseDown) => {
@@ -374,11 +373,11 @@ class SVG{
            
           
             //this.group.setAttribute("transform", `translate(0, 0)`);
-            /*
+            
             let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
             document.addEventListener('mousemove', moveRef);
-            document.addEventListener('mouseup', upRef);*/
+            document.addEventListener('mouseup', upRef);
 
             
            
@@ -389,10 +388,10 @@ class SVG{
         
                 this.scaleTo(new Vector2(2, 2));*/
       
-                this.scaleTo(this.testScale);
-                this.testScale = this.testScale.add(new Vector2(1, 1));
+                //this.scaleTo(this.testScale);
+                //this.testScale = this.testScale.add(new Vector2(1, 1));
             
-          //  let startScale = this.scaleDelta.clone();
+            let startScale = this.transform.scale.clone();
      
     
             let moveEvent = (mouseMove) => {
@@ -411,7 +410,21 @@ class SVG{
                 
                 this.scaleTo(deltaPercent, anchorX, anchorY);
              
+                let scaleX = Math.abs(this.transform.scale.x);
+                let scaleY = Math.abs(this.transform.scale.y);
+                if(scaleX==0) scaleX=1;
+                if(scaleY==0) scaleY=1;
+                
+                let scaleWidth = 10/scaleX;
+                let scaleHeight = 10/scaleY
 
+                rightDrag.setAttribute('width', scaleWidth);
+                rightDrag.setAttribute('height', scaleHeight);
+
+                //getSe
+                let bounds = this.getSelectionBounds(10);
+                rightDrag.setAttribute('x', bounds.right - (scaleWidth/2));
+                rightDrag.setAttribute('y', bounds.bottom - (scaleHeight/2));
             };
 
             let upEvent = (mouseUp) => {
