@@ -92,61 +92,32 @@ class SVG{
     }
 
     scaleTo(scale, anchorX, anchorY){
-        
-        //console.log(this.matrix);
 
-//        this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
-        
-       
-    //    this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
-        //his.matrix = this.matrix.translate(newPos.x, newPos.y);
-        
+        let deltaScale = scale.subtract(this.transform.scale);
+        console.log(deltaScale);
+        let marginSize = 10 
+        this.transform.scale = this.transform.scale.add(deltaScale);
+        //console.log(this.transform.scale);
+        let marginPad = new Vector2(0, (marginSize/2)/2);
+
+
         let getPos = () => {
             let bounds = this.group.getBoundingClientRect();
             return new Vector2(bounds.x, bounds.y);
         }
 
-        if(!this.t){
-            let marginSize = 10 
-            this.transform.scale = scale;
-            let marginPad = new Vector2(0, (marginSize/2)/2);
 
+        let pos = getPos();
 
-            let bounds = this.group.getBoundingClientRect();
-            let pos = getPos();
-
-            
-            this.matrix = this.matrix.scaleNonUniform(2, 2);
-            this.updateTransform();
-
-
-            let transPos = pos.subtract(getPos()).divide(scale).subtract(marginPad);
-            this.matrix = this.matrix.translate(transPos.x, transPos.y);
-            this.updateTransform();
-
-            //let transPos = new Vector2((-bounds.x)/scale.x, (-bounds.y)/scale.y).subtract(marginPad);
-            //let transPos = new Vector2();
-   
-            /*
-            let marginSize = 10 
-            let marginPad = new Vector2(0, (marginSize/2)/2);
-
-            let transPos = new Vector2((-bounds.x)/scale.x, (-bounds.y)/scale.y).subtract(marginPad);
-            
-            this.matrix = this.matrix.translate(transPos.x, transPos.y);
-            //this.moveTo(this.transform.pos);
-            */
-           
-           
-            console.log(bounds);
-            console.log("------");
-            console.log(bounds.width);
-        }
         
-       // console.log(bounds);
+        this.matrix = this.matrix.scaleNonUniform(this.transform.scale.x, this.transform.scale.y);
+        this.updateTransform();
 
-      //  this.matrix = this.matrix.translate(newPos.x, newPos.y);
-        this.t = true;
+
+        let transPos = pos.subtract(getPos()).divide(scale).subtract(marginPad);
+        this.matrix = this.matrix.translate(transPos.x, transPos.y);
+        this.updateTransform();
+
 
        
     }
@@ -256,10 +227,10 @@ class SVG{
         right = Math.max(left, right);
         top = Math.min(top, bottom);
         bottom = Math.max(top, bottom);*/
-        let x = (bounds.x - this.matrix.e )/scale.x;
-        let y = (bounds.y - this.matrix.f )/scale.y;
-        let width = bounds.width  / scale.x;
-        let height = bounds.height / scale.y;
+        let x = (bounds.x - this.matrix.e )/this.transform.scale.x;
+        let y = (bounds.y - this.matrix.f )/this.transform.scale.y;
+        let width = bounds.width / this.transform.scale.x;
+        let height = bounds.height /this.transform.scale.y;
 
         let left = Math.min(x, (x + width) ) 
         let right = Math.max(x, (x + width))
