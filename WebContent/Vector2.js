@@ -36,17 +36,20 @@ Vector2.prototype = {
 		return new Vector2(this.x - vector.x, this.y - vector.y);
 	},
 
+	divide: function(vector) {
+		return new Vector2(this.x / vector.x, this.y / vector.y);
+	},
+
+	multiply: function(vector) {
+		return new Vector2(this.x * vector.x, this.y * vector.y);
+	},
+
 	scale: function(scalar) {
 		return new Vector2(this.x * scalar, this.y * scalar);
 	},
 
 	dot: function(vector) {
 		return (this.x * vector.x + this.y + vector.y);
-	},
-
-
-	multiply: function(vector) {
-		return new Vector2(this.x * vector.x, this.y * vector.y);
 	},
 
 	moveTowards: function(vector, t) {

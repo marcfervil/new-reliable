@@ -50,7 +50,8 @@ class SVG{
                 startPos : new Vector2(this.canvasRect.x, this.canvasRect.y),
                 pos:  new Vector2(this.canvasRect.x, this.canvasRect.y),
                 translatedPos: new Vector2(0, 0),
-                startMatrix: this.group.transform.baseVal.consolidate().matrix
+                startMatrix: this.group.transform.baseVal.consolidate().matrix,
+                scale: new Vector2(1, 1)
             }
             
             //this.moveTo(this.canvasPos);
@@ -75,12 +76,14 @@ class SVG{
         let newPos = pos.subtract(this.transform.pos);
         //console.log(newPos);
 
-       //this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
+        this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
         //console.log(newPos);
 
         
-    
-        this.matrix = this.matrix.translate(newPos.x, newPos.y);
+       
+        this.matrix = this.matrix.translate(newPos.x/this.transform.scale.x, newPos.y/this.transform.scale.y);
+        
+        
         //console.log(this.matrix);
 
         //console.log(this.group.transform.baseVal.consolidate().matrix);
@@ -88,13 +91,64 @@ class SVG{
         this.transform.pos = pos;
     }
 
-    scaleTo(scaleDelta, anchorX, anchorY){
+    scaleTo(scale, anchorX, anchorY){
         
+        //console.log(this.matrix);
+
+//        this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
         
-      
-        this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, scaleDelta.x, scaleDelta.y, anchorX, anchorY);
-        this.scaleDelta = scaleDelta;
-        this.transformAnchor = {x: anchorX, y: anchorY};
+       
+    //    this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
+        //his.matrix = this.matrix.translate(newPos.x, newPos.y);
+        
+        let getPos = () => {
+            let bounds = this.group.getBoundingClientRect();
+            return new Vector2(bounds.x, bounds.y);
+        }
+
+        if(!this.t){
+            let marginSize = 10 
+            this.transform.scale = scale;
+            let marginPad = new Vector2(0, (marginSize/2)/2);
+
+
+            let bounds = this.group.getBoundingClientRect();
+            let pos = getPos();
+
+            
+            this.matrix = this.matrix.scaleNonUniform(2, 2);
+            this.updateTransform();
+
+
+            let transPos = pos.subtract(getPos()).divide(scale).subtract(marginPad);
+            this.matrix = this.matrix.translate(transPos.x, transPos.y);
+            this.updateTransform();
+
+            //let transPos = new Vector2((-bounds.x)/scale.x, (-bounds.y)/scale.y).subtract(marginPad);
+            //let transPos = new Vector2();
+   
+            /*
+            let marginSize = 10 
+            let marginPad = new Vector2(0, (marginSize/2)/2);
+
+            let transPos = new Vector2((-bounds.x)/scale.x, (-bounds.y)/scale.y).subtract(marginPad);
+            
+            this.matrix = this.matrix.translate(transPos.x, transPos.y);
+            //this.moveTo(this.transform.pos);
+            */
+           
+           
+            console.log(bounds);
+            console.log("------");
+            console.log(bounds.width);
+        }
+        
+       // console.log(bounds);
+
+      //  this.matrix = this.matrix.translate(newPos.x, newPos.y);
+        this.t = true;
+
+       
     }
 
 
@@ -140,8 +194,8 @@ class SVG{
         var rect = e.currentTarget.getBoundingClientRect();
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left -10;
-        let offsetY = e.offsetY - rect.top -10;
+        let offsetX = e.offsetX - rect.left - 10;
+        let offsetY = e.offsetY - rect.top - 10;
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         
@@ -323,17 +377,24 @@ class SVG{
            
           
             //this.group.setAttribute("transform", `translate(0, 0)`);
-            
+            /*
             let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
             document.addEventListener('mousemove', moveRef);
-            document.addEventListener('mouseup', upRef);
+            document.addEventListener('mouseup', upRef);*/
 
-            //this.scaleTo(new Vector2(2, 2));
-            //let test = new SVGPath(this.parent, this.pos, this.id+"2");
-            //test.replacePath(this.pathData);
-            //test.createSelectRect();
-            let startScale = this.scaleDelta.clone();
+            
+           
+            /*
+            let test = new SVGPath(this.parent, this.pos, this.id+"2");
+            test.replacePath(this.pathData);
+            test.createSelectRect();
+        
+                this.scaleTo(new Vector2(2, 2));*/
+      
+                this.scaleTo(new Vector2(2, 2));
+            
+          //  let startScale = this.scaleDelta.clone();
      
     
             let moveEvent = (mouseMove) => {
