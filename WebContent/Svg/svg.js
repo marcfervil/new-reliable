@@ -110,9 +110,6 @@ class SVG{
 
        //scale.add(new Vetor3)
 
-       let marginPad =  new Vector2(0, (marginSize/2) ).divide(scale).multiply(deltaScale);
-        //console.log(marginPad);
-       marginPad = new Vector2(0, 0);
 
         let getPos = () => {
             let bounds = this.selectRect.getBoundingClientRect();
@@ -134,7 +131,7 @@ class SVG{
        
         
        // let transPos = pos.subtract(getPos()).divide(scale)
-        let transPos = pos.subtract(getPos()).divide(scale).subtract(marginPad);
+        let transPos = pos.subtract(getPos()).divide(scale);
         
         
         
@@ -275,7 +272,7 @@ class SVG{
     }
 
     createSelectRect(){
-        let bounds = this.getSelectionBounds(10, this.scaleDelta);
+        let bounds = this.getSelectionBounds(10);
   
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let selectRectGroup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -309,54 +306,71 @@ class SVG{
 
         selectRect.addEventListener('mousedown', (e) => this.selectedMouseDown(e));
         
-        
+        selectRectGroup.appendChild(selectRect);
       
         //this.debugRect(bounds.left, bounds.top, 10, 10, "purple");
         //this.debugRect(bounds.left, bounds.bottom, 10, 10, "purple");
         let anchorSize = 10;
-        let topRightScaleAnchor = this.createDragRect(bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
-        let bottomRightScaleAnchor = this.createDragRect(bounds.right, bounds.bottom, new Vector2(1, 1), "left", "top" );
+        //let topRightScaleAnchor = this.createDragRect(, bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
+        let bottomRightScaleAnchor = this.createDragRect(selectRect, bounds.right, bounds.bottom, new Vector2(1, 1), "left", "top" );
 
-
-        selectRectGroup.appendChild(selectRect);
 
         
-       // selectRectGroup.appendChild(topRightScaleAnchor);
+
+        
+
         selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
         this.group.appendChild(selectRectGroup);
-
+        
         
         return selectRectGroup;
     }
 
-    createDragRect(x, y, anchor, anchorX, anchorY){
+    createDragRect(selectRect, x, y, anchor, anchorX, anchorY){
 
         let dragBoxSize = 10;
 
         x -= (dragBoxSize/2);
         y -= (dragBoxSize/2);
         let margin = 10;
-        let bounds = this.group.getBoundingClientRect();
+        //let bounds = selectRect.getBoundingClientRect();
         let rightDrag = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
 
-        let rectWidth = (bounds.width/this.scaleDelta.x) + (margin *2);
-        let rectHeight = (bounds.height/this.scaleDelta.y) + (margin *2);
-
+        let rectWidth = selectRect.getAttribute("width");
+        let rectHeight = selectRect.getAttribute("height");
+        console.log(rectWidth);
        
-        rightDrag.setAttribute('x', x);
-        rightDrag.setAttribute('y', y);
-        rightDrag.setAttribute('width', dragBoxSize);
-        rightDrag.setAttribute('draggable', true);
-        rightDrag.setAttribute('height', dragBoxSize);
+        
         rightDrag.setAttribute("vector-effect","non-scaling-stroke");
         rightDrag.style.stroke = "red";
         rightDrag.style.fill = "transparent";
         
-        x -= (dragBoxSize/2);
-        y -= (dragBoxSize/2);
+      
         
+        let setSize = () => {
+
+            let scaleX = Math.abs(this.transform.scale.x);
+            let scaleY = Math.abs(this.transform.scale.y);
+            if(scaleX==0) scaleX=1;
+            if(scaleY==0) scaleY=1;
+            
+            let scaleWidth = 10/scaleX;
+            let scaleHeight = 10/scaleY
+
+            rightDrag.setAttribute('width', scaleWidth);
+            rightDrag.setAttribute('height', scaleHeight);
+
+            //getSe
+            let bounds = this.getSelectionBounds(10);
+            rightDrag.setAttribute('x', bounds.right - (scaleWidth/2));
+            rightDrag.setAttribute('y', bounds.bottom - (scaleHeight/2));
+
+            
+        }
+
+        setSize();
 
         rightDrag.addEventListener('mousedown', (mouseDown) => {
 
@@ -409,22 +423,7 @@ class SVG{
                
                 
                 this.scaleTo(deltaPercent, anchorX, anchorY);
-             
-                let scaleX = Math.abs(this.transform.scale.x);
-                let scaleY = Math.abs(this.transform.scale.y);
-                if(scaleX==0) scaleX=1;
-                if(scaleY==0) scaleY=1;
-                
-                let scaleWidth = 10/scaleX;
-                let scaleHeight = 10/scaleY
-
-                rightDrag.setAttribute('width', scaleWidth);
-                rightDrag.setAttribute('height', scaleHeight);
-
-                //getSe
-                let bounds = this.getSelectionBounds(10);
-                rightDrag.setAttribute('x', bounds.right - (scaleWidth/2));
-                rightDrag.setAttribute('y', bounds.bottom - (scaleHeight/2));
+                setSize();
             };
 
             let upEvent = (mouseUp) => {
