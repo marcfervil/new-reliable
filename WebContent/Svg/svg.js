@@ -1,5 +1,8 @@
 
 
+
+
+
 class SVG{
 
 
@@ -26,12 +29,14 @@ class SVG{
 
         this.group.setAttribute("transform", `translate(0, 0)`);
         this.matrix = this.group.transform.baseVal.consolidate().matrix;
-
+        
 
         this.scaleDelta = new Vector2(1, 1);
 
         this.scaleAnchor= new Vector2(1, -1);
         this.transformAnchor = {x: "left", y:"top"};
+
+        this.totalScale = new Vector2(1, 1);
         //console.log(this.matrix);
         //TODO: FIX RACE CONDITION
         //Is it a really a race condition if the timeout is 0?
@@ -40,11 +45,19 @@ class SVG{
             this.canvasRect = this.group.getBoundingClientRect();
             this.canvasPos = new Vector2(this.canvasRect.x, this.canvasRect.y).subtract(new Vector2(10, 10));
             this.dragEndPos = this.canvasPos;
-            this.moveTo(this.canvasPos);
+            
+            this.transform = {
+                startPos : new Vector2(this.canvasRect.x, this.canvasRect.y),
+                pos:  new Vector2(this.canvasRect.x, this.canvasRect.y),
+                translatedPos: new Vector2(0, 0),
+                startMatrix: this.group.transform.baseVal.consolidate().matrix
+            }
+            
+            //this.moveTo(this.canvasPos);
 
 
         }, 0)
-
+   
 
 
         this.dragStartPos = null;
@@ -52,31 +65,27 @@ class SVG{
         
         this.transPos = new Vector2(0, 0);
 
-       
+        
     }
 
     
-    //takes in a vector or something that has an x or a y 
+    
     moveTo(pos){
-  
-        let delta = pos.subtract(this.canvasPos);
-       
-        this.matrixTransform(pos.x, pos.y);
-
-        //this.matrixTranslate(pos)
-
-        //let delta = pos.subtract(this.canvasPos);
-        //let action = `translate(${delta.x}, ${delta.y})`;
-        //this.group.setAttribute('transform', action);
-        this.transPos = delta;
-        this.lastPos = pos;
-        if(this.dragStartPos==null){
-       
-            this.dragStartPos = pos;
-        }
-        this.dragEndPos = pos;
         
-        return "action";
+        let newPos = pos.subtract(this.transform.pos);
+        //console.log(newPos);
+
+       // this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
+        //console.log(newPos);
+
+        
+    
+        this.matrix = this.matrix.translate(newPos.x, newPos.y);
+        //console.log(this.matrix);
+
+        //console.log(this.group.transform.baseVal.consolidate().matrix);
+        this.updateTransform();
+        this.transform.pos = pos;
     }
 
     scaleTo(scaleDelta, anchorX, anchorY){
@@ -87,6 +96,14 @@ class SVG{
         this.scaleDelta = scaleDelta;
         this.transformAnchor = {x: anchorX, y: anchorY};
     }
+
+
+    updateTransform(){
+        
+        this.group.transform.baseVal.consolidate().setMatrix(this.matrix)
+        
+    }
+
 
     debugRect(x, y, w, h, color){
         let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
@@ -99,89 +116,15 @@ class SVG{
         this.parent.appendChild(debug);
     }
 
-    matrixTransform(x, y, xScale, yScale, anchorX, anchorY){
-        let rect = this.group.getBoundingClientRect();
-        //let rect = this.group.getBoundingClientRect();
-      
-        let yOffset = 0;
-        if(xScale===undefined && yScale===undefined){
-            xScale = this.scaleDelta.x;
-            yScale = this.scaleDelta.y;
- 
-        }
-       
-
-        let deltaPercent = new Vector2(xScale, yScale).subtract(new Vector2(1, 1));
-        
-
-        if(anchorX===undefined && anchorY===undefined){
-            anchorX = this.transformAnchor.x;
-            anchorY = this.transformAnchor.y;
-        }
-
-        
-       
-
-        let pos = new Vector2(x, y);
-
-        let delta = pos.subtract(this.canvasPos);
- 
-       
-
-        
-        
-
-        this.matrix.e = delta.x  - ((this.canvasRect[anchorX] - (10*this.scaleAnchor.x)) * deltaPercent.x);
-        this.matrix.f = delta.y  - ((this.canvasRect[anchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
-        
-        
-        //if(this.transformAnchor.y == "top" && anchorY == "bottom"){
-        if(this.transformAnchor.y != anchorY ){
-            console.log("dropped anchor transform top to bottom");
-            /*
-            console.log(rect);
-    
-            yOffset = (rect.height-(10*this.scaleDelta.y));
-            console.log(delta.y);
-            this.debugRect(x, this.dragEndPos.y, 10, 10, "purple");
-            this.debugRect(x, y+yOffset, 10, 10, "cyan");
-            
-            //this was working
-            /*
-            let newF =  delta.y  - ((this.canvasRect[anchorY] - (10*this.scaleAnchor.y) )* deltaPercent.y);
-            let oldF =  delta.y  - ((this.canvasRect[this.transformAnchor.y] - (10*this.scaleAnchor.y) )* deltaPercent.y);
-            yOffset = (newF - oldF);
-            let offsetDir = yOffset / Math.abs(yOffset)
-
-            //scale back by margin
-            yOffset += ((10/2) *this.scaleDelta.y) * offsetDir;
-            console.log(yOffset);
-
-            this.transformAnchor.y = anchorY
-
-            //this.matrixTransform(x, y-yOffset, xScale, yScale, anchorY, anchorY)
-            this.moveTo(new Vector2(x, y-yOffset));*/
-        }
-
-        this.matrix.a = xScale;
-        this.matrix.d = yScale;
-        let transVals = `matrix(${this.matrix.a}, ${this.matrix.b}, ${this.matrix.c}, ${this.matrix.d}, ${this.matrix.e}, ${this.matrix.f})`;
-        
-        //if(this.stop)return;
-       
-
-        this.group.setAttribute("transform", transVals);
-
-    }
-
-
     selectedMouseMove(e){
 
         if(this.isDragging){
      
             let clickPos = new Vector2(e.layerX, e.layerY);
             
-            clickPos = this.clickOffset.subtract(clickPos).scale(-1);
+           // console.log(this.clickOffset);
+
+            clickPos = clickPos.subtract(this.clickOffset);
 
             
             this.moveTo(clickPos);
@@ -194,17 +137,25 @@ class SVG{
         e.stopPropagation();
 
         
- 
-        this.clickOffset = new Vector2(e.layerX, e.layerY);
-        
+        console.log(e);
+        this.clickOffset = new Vector2(e.offetX, e.offetY);
+
+
+        var rect = e.currentTarget.getBoundingClientRect();
+        let offsetX = e.clientX - rect.left;
+        let offsetY = e.clientY - rect.top;
+
+        console.log(offsetX);
+        console.log(offsetY);
        
-        let svgPos = new Vector2(parseInt(e.srcElement.getAttribute("x")), parseInt(e.srcElement.getAttribute("y")));
+       // let svgPos = new Vector2(parseInt(e.srcElement.getAttribute("x")), parseInt(e.srcElement.getAttribute("y")));
         
 
-        this.clickOffset =  this.clickOffset.subtract(svgPos).subtract(this.transPos);
+        //this.clickOffset =  this.clickOffset.subtract(svgPos).subtract(this.transPos);
         //this.clickBegin = this.lastPos;
 
 
+        /*
 
         this.mouseMoveRef = (e) => this.selectedMouseMove(e);
         this.mouseUpRef = (e) => this.selectedMouseUp(e);
@@ -212,7 +163,7 @@ class SVG{
         this.parent.addEventListener('mousemove', this.mouseMoveRef);
         this.parent.addEventListener('mouseup', this.mouseUpRef);
 
-        this.isDragging = true; 
+        this.isDragging = true; */
 
     
     }
@@ -232,7 +183,7 @@ class SVG{
        
 
         
-       
+       /*
         Action.commit(this.reliable, {
             action: "Drag",
             id: this.id,
@@ -241,16 +192,15 @@ class SVG{
 
            
             
-        });  
+        });  */
         this.dragStartPos = null;
         
     }
 
 
-    getSelectionBounds(margin){
+    getSelectionBounds(margin, scale){
         let bounds = this.svg.getBoundingClientRect();
-        
-        console.log(bounds);
+   
 
         /*
         let left = bounds.left ;
@@ -262,10 +212,10 @@ class SVG{
         right = Math.max(left, right);
         top = Math.min(top, bottom);
         bottom = Math.max(top, bottom);*/
-        let x = (bounds.x - this.matrix.e )/this.scaleDelta.x;
-        let y = (bounds.y - this.matrix.f )/this.scaleDelta.y;
-        let width = bounds.width  / this.scaleDelta.x;
-        let height = bounds.height / this.scaleDelta.y;
+        let x = (bounds.x - this.matrix.e )/scale.x;
+        let y = (bounds.y - this.matrix.f )/scale.y;
+        let width = bounds.width  / scale.x;
+        let height = bounds.height / scale.y;
 
         let left = Math.min(x, (x + width) ) 
         let right = Math.max(x, (x + width))
@@ -285,7 +235,7 @@ class SVG{
     }
 
     createSelectRect(){
-        let bounds = this.getSelectionBounds(10);
+        let bounds = this.getSelectionBounds(10, this.scaleDelta);
   
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let selectRectGroup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -319,18 +269,19 @@ class SVG{
 
         selectRect.addEventListener('mousedown', (e) => this.selectedMouseDown(e));
         
-
+        
       
-               
+        //this.debugRect(bounds.left, bounds.top, 10, 10, "purple");
+        //this.debugRect(bounds.left, bounds.bottom, 10, 10, "purple");
         let anchorSize = 10;
-        //let topRightScaleAnchor = this.createDragRect(bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
+        let topRightScaleAnchor = this.createDragRect(bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
         let bottomRightScaleAnchor = this.createDragRect(bounds.right, bounds.bottom, new Vector2(1, 1), "left", "top" );
 
 
         selectRectGroup.appendChild(selectRect);
 
         
-        //selectRectGroup.appendChild(topRightScaleAnchor);
+        selectRectGroup.appendChild(topRightScaleAnchor);
         selectRectGroup.appendChild(bottomRightScaleAnchor);
 
         
