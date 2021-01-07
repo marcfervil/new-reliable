@@ -75,7 +75,7 @@ class SVG{
         let newPos = pos.subtract(this.transform.pos);
         //console.log(newPos);
 
-       this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
+       //this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
         //console.log(newPos);
 
         
@@ -136,12 +136,12 @@ class SVG{
     selectedMouseDown(e){
         e.stopPropagation();
 
-
+        console.log(e.currentTarget);
         var rect = e.currentTarget.getBoundingClientRect();
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left;
-        let offsetY = e.offsetY - rect.top + 5;
+        let offsetX = e.offsetX - rect.left -10;
+        let offsetY = e.offsetY - rect.top -10;
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         
