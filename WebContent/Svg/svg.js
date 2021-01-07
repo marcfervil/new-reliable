@@ -52,6 +52,7 @@ class SVG{
                 translatedPos: new Vector2(0, 0),
                 startMatrix: this.group.transform.baseVal.consolidate().matrix,
                 scale: new Vector2(1, 1)
+               
             }
             
             //this.moveTo(this.canvasPos);
@@ -59,7 +60,7 @@ class SVG{
 
         }, 0)
    
-
+        this.testScale= new Vector2(3, 3);
 
         this.dragStartPos = null;
 
@@ -93,13 +94,27 @@ class SVG{
 
     scaleTo(scale, anchorX, anchorY){
 
-        let deltaScale = scale.subtract(this.transform.scale);
-        console.log(deltaScale);
-        let marginSize = 10 
-        this.transform.scale = this.transform.scale.add(deltaScale);
-        //console.log(this.transform.scale);
-        let marginPad = new Vector2(0, (marginSize/2)/2);
+        //scale= new Vector2(1,1);
 
+       let deltaScale = scale.subtract(this.transform.scale);
+       // console.log(deltaScale);
+        //console.log(scale)
+        console.log(deltaScale);
+        let marginSize = 10 ;
+        
+//        console.log(this.transform.scale);
+
+       // console.log(this.transform.scale);
+        //console.log(this.transform.scale);
+      //  let marginPad = new Vector2(0, (marginSize/4));
+     // let marginPad = new Vector2(0, 0 );
+     //  let marginPad =
+
+       //scale.add(new Vetor3)
+
+       let marginPad =  new Vector2(0, (marginSize/2) ).divide(scale).multiply(deltaScale);
+        //console.log(marginPad);
+       
 
         let getPos = () => {
             let bounds = this.group.getBoundingClientRect();
@@ -109,17 +124,28 @@ class SVG{
 
         let pos = getPos();
 
-        
-        this.matrix = this.matrix.scaleNonUniform(this.transform.scale.x, this.transform.scale.y);
+      
+        let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
+        this.matrix = this.matrix.scaleNonUniform(oneScalar.x, oneScalar.y);
+
+        this.matrix = this.matrix.scaleNonUniform(scale.x, scale.y);
+
+
         this.updateTransform();
-
-
+        //console.log(this.transform.scale);
+       
+        
+       // let transPos = pos.subtract(getPos()).divide(scale)
         let transPos = pos.subtract(getPos()).divide(scale).subtract(marginPad);
+        
+        
+        
+
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
         this.updateTransform();
+        console.log("-------------------");
 
-
-       
+        this.transform.scale = scale;
     }
 
 
@@ -363,7 +389,8 @@ class SVG{
         
                 this.scaleTo(new Vector2(2, 2));*/
       
-                this.scaleTo(new Vector2(2, 2));
+                this.scaleTo(this.testScale);
+                this.testScale = this.testScale.add(new Vector2(1, 1));
             
           //  let startScale = this.scaleDelta.clone();
      
