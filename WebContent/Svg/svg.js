@@ -75,7 +75,7 @@ class SVG{
         let newPos = pos.subtract(this.transform.pos);
         //console.log(newPos);
 
-       // this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
+       this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
         //console.log(newPos);
 
         
@@ -136,26 +136,16 @@ class SVG{
     selectedMouseDown(e){
         e.stopPropagation();
 
-        
-        console.log(e);
-        this.clickOffset = new Vector2(e.offetX, e.offetY);
-
 
         var rect = e.currentTarget.getBoundingClientRect();
-        let offsetX = e.clientX - rect.left;
-        let offsetY = e.clientY - rect.top;
 
-        console.log(offsetX);
-        console.log(offsetY);
-       
-       // let svgPos = new Vector2(parseInt(e.srcElement.getAttribute("x")), parseInt(e.srcElement.getAttribute("y")));
+        //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
+        let offsetX = e.offsetX - rect.left;
+        let offsetY = e.offsetY - rect.top + 5;
+
+        this.clickOffset = new Vector2(offsetX, offsetY);
         
 
-        //this.clickOffset =  this.clickOffset.subtract(svgPos).subtract(this.transPos);
-        //this.clickBegin = this.lastPos;
-
-
-        /*
 
         this.mouseMoveRef = (e) => this.selectedMouseMove(e);
         this.mouseUpRef = (e) => this.selectedMouseUp(e);
@@ -163,7 +153,7 @@ class SVG{
         this.parent.addEventListener('mousemove', this.mouseMoveRef);
         this.parent.addEventListener('mouseup', this.mouseUpRef);
 
-        this.isDragging = true; */
+        this.isDragging = true; 
 
     
     }
@@ -320,6 +310,8 @@ class SVG{
 
         rightDrag.addEventListener('mousedown', (mouseDown) => {
 
+            mouseDown.stopPropagation();
+            mouseDown.preventDefault();
             //change the anchor
             this.scaleAnchor = anchor;
             //this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, this.scaleDelta.x, this.scaleDelta.y, anchor.data[0], anchor.data[1]);
@@ -328,8 +320,7 @@ class SVG{
             //this.scaleTo(this.scaleDelta, anchorX, anchorY);
 
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
-            mouseDown.stopPropagation();
-            mouseDown.preventDefault();
+           
           
             //this.group.setAttribute("transform", `translate(0, 0)`);
             
