@@ -179,17 +179,17 @@ class Scale extends Action{
     
     constructor(data){
         super(data);
+        this.svg = SVG.getFromId(this.data.id);
     }
 
     execute(reliable){
-
-        SVG.getFromId(this.data.id).scaleTo(new Vector2(this.data.endScale));
+        this.svg.scaleTo(new Vector2(this.data.end), this.data.anchorX, this.data.anchorY);
     }
 
 
     undo(){
     
-        SVG.getFromId(this.data.id).scaleTo(new Vector2(this.data.startScale));
+        this.svg.scaleTo(new Vector2(this.data.start), this.data.anchorX, this.data.anchorY);
     }
 
 }

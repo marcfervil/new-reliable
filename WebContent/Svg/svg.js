@@ -264,7 +264,6 @@ class SVG{
 
         var rect = this.group.getBoundingClientRect();
         let endDrag = new Vector2(rect.x, rect.y);
-        console.log(endDrag);
         
         Action.commit(this.reliable, {
             action: "Drag",
@@ -469,7 +468,8 @@ class SVG{
             
             let startScale = this.transform.scale.clone();
      
-    
+            this.scaleStart = this.transform.scale;
+
             let moveEvent = (mouseMove) => {
                 //this.group.transform =Z 
                 if(this.stop == true)return;
@@ -483,7 +483,7 @@ class SVG{
                 
                 let deltaPercent = new Vector2(this.scaleAnchor.x * (delta.x/rectWidth), this.scaleAnchor.y * (delta.y/rectHeight)).add(startScale);
                
-                
+               
                 this.scaleTo(deltaPercent, anchorX, anchorY);
                 //setSize();
                 
@@ -494,13 +494,15 @@ class SVG{
                 document.removeEventListener('mousemove', moveRef);
                 document.removeEventListener('mouseup', upRef);
 
-                /*
+                
                 Action.commit(this.reliable, {
                     action: "Scale",
                     id: this.id,
-                    endScale: this.scaleDelta.toJSON(),
-                    startScale: startScale.toJSON(),
-                });   */
+                    start: this.scaleStart,
+                    end: this.transform.scale.toJSON(),
+                    anchorX: anchorX,
+                    anchorY: anchorY
+                });   
             };
 
   
