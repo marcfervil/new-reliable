@@ -1,8 +1,6 @@
 
 
 
-
-
 class SVG{
 
 
@@ -51,8 +49,10 @@ class SVG{
                 pos:  new Vector2(this.canvasRect.x, this.canvasRect.y),
                 translatedPos: new Vector2(0, 0),
                 startMatrix: this.group.transform.baseVal.consolidate().matrix,
-                scale: new Vector2(1, 1)
-               
+                scale: new Vector2(1, 1),
+                anchorX: "left",
+                anchorY: "top",
+
             }
             
             //this.moveTo(this.canvasPos);
@@ -60,6 +60,7 @@ class SVG{
 
         }, 0)
    
+        this.updateAnchor = false; 
        // this.testScale= new Vector2(2, 2);
 
         this.dragStartPos = null;
@@ -67,35 +68,62 @@ class SVG{
         
         this.transPos = new Vector2(0, 0);
 
+        this.test = this.debugRect(0, 0, 10, 10, "yellow")
+
+        this.fix = false;
         
     }
 
     
     
     moveTo(pos){
-        
+        this.transform.pos = pos;
+      /*
         let newPos = pos.subtract(this.transform.pos);
-        //console.log(newPos);
 
-        this.group.transform.baseVal.consolidate().setMatrix(this.transform.startMatrix);
-        //console.log(newPos);
-
+        
+        let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
+           
         
        
-        this.matrix = this.matrix.translate(newPos.x/this.transform.scale.x, newPos.y/this.transform.scale.y);
-        
-        
-        //console.log(this.matrix);
+        this.matrix = this.matrix.translate(newPos.x/this.transform.scale.x, newPos.y/this.transform.scale.y);*/
+       
+        let newPos = pos.subtract(this.transform.startPos);
 
-        //console.log(this.group.transform.baseVal.consolidate().matrix);
+       
+       // console.log(dist);
+
+       // newPos = newPos.add(dist);
+        //this.fix = false;
+       
+
+        this.matrix.e = newPos.x;
+        this.matrix.f = newPos.y;
+       //this.matrix.
+
         this.updateTransform();
-        this.transform.pos = pos;
+        
+
+
+        this.dragBounds = this.group.getBoundingClientRect();
+        let dragPos = new Vector2(this.dragBounds.x, this.dragBounds.y);
+        let dist = pos.subtract(dragPos).divide(this.transform.scale);
+        //console.log(dist.divide(this.transform.scale));
+
+        console.log(dist);
+        this.matrix = this.matrix.translate(dist.x, dist.y);
+
+        
+
+        this.updateTransform();
     }
 
     scaleTo(scale, anchorX, anchorY){
 
         //scale= new Vector2(1,1);
 
+       this.fix = true;
+        
        let deltaScale = scale.subtract(this.transform.scale);
        
         let marginSize = 10 ;
@@ -109,16 +137,27 @@ class SVG{
      //  let marginPad =
 
        //scale.add(new Vetor3)
-
+        
 
         let getPos = () => {
             let bounds = this.selectRect.getBoundingClientRect();
-            return new Vector2(bounds.x, bounds.y);
+            //if(anchorY=="bottom")bounds.x=bounds.height * scale.y;
+            
+            
+            if(this.transform.anchorY!="top"){
+                
+                this.offset =  bounds.height - this.selectBounds.height;
+               
+            }
+            
+            this.transform.anchorY = anchorY;
+            return new Vector2(bounds[anchorX], bounds[anchorY]);
         }
 
 
         let pos = getPos();
 
+        
       
         let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
         this.matrix = this.matrix.scaleNonUniform(oneScalar.x, oneScalar.y);
@@ -139,8 +178,9 @@ class SVG{
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
         this.updateTransform();
      
-
+       
         this.transform.scale = scale;
+        this.dragBounds = this.group.getBoundingClientRect();
     }
 
 
@@ -160,6 +200,7 @@ class SVG{
         debug.style.stroke = color;
         debug.style.fill = "transparent";
         this.parent.appendChild(debug);
+        return debug;
     }
 
     selectedMouseMove(e){
@@ -168,7 +209,7 @@ class SVG{
      
             let clickPos = new Vector2(e.layerX, e.layerY);
             
-           // console.log(this.clickOffset);
+           //console.log(this.clickOffset);
 
             clickPos = clickPos.subtract(this.clickOffset);
 
@@ -182,12 +223,12 @@ class SVG{
     selectedMouseDown(e){
         e.stopPropagation();
 
-        console.log(e.currentTarget);
+       
         var rect = e.currentTarget.getBoundingClientRect();
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left - 10;
-        let offsetY = e.offsetY - rect.top - 10;
+        let offsetX = e.offsetX - rect.left ;
+        let offsetY = e.offsetY - rect.top +5;
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         
@@ -349,7 +390,7 @@ class SVG{
 
         let rectWidth = selectRect.getAttribute("width");
         let rectHeight = selectRect.getAttribute("height");
-        console.log(rectWidth);
+      
        
         
         rightDrag.setAttribute("vector-effect","non-scaling-stroke");
@@ -463,6 +504,7 @@ class SVG{
         if(this.isSelected) return;
         this.isSelected = true;
         this.selectRect = this.createSelectRect();
+        this.selectBounds = this.selectRect.getBoundingClientRect();
         
     }
 

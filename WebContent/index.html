@@ -88,6 +88,9 @@
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
         }
+        if(event.key === 'r'){
+            refresh();
+        }
         if(event.key === "p")app.currentTool ++;
         if(event.key === "o")app.currentTool --;
         if(app.currentTool==app.toolbar.length)app.currentTool=0;
