@@ -78,111 +78,67 @@ class SVG{
     
     
     moveTo(pos){
-        this.transform.pos = pos;
-      /*
-        let newPos = pos.subtract(this.transform.pos);
-
         
-        let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
-           
-        
-       
-        this.matrix = this.matrix.translate(newPos.x/this.transform.scale.x, newPos.y/this.transform.scale.y);*/
-       
+        //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
         let newPos = pos.subtract(this.transform.startPos);
 
-       
-       // console.log(dist);
-
-       // newPos = newPos.add(dist);
-        //this.fix = false;
-       
-
+        //manually set x and y (e and f in the transform matrix) to be our desired location and update the transformation matrix
         this.matrix.e = newPos.x;
         this.matrix.f = newPos.y;
-       //this.matrix.
-
         this.updateTransform();
         
+        //get the actual position of our svg 
+        let svgBounds = this.group.getBoundingClientRect();
+        let svgPos = new Vector2(svgBounds.x, svgBounds.y);
 
-
-        this.dragBounds = this.group.getBoundingClientRect();
-        let dragPos = new Vector2(this.dragBounds.x, this.dragBounds.y);
-        let dist = pos.subtract(dragPos).divide(this.transform.scale);
-        //console.log(dist.divide(this.transform.scale));
-
-     
+        /*
+        offset the position of the svg by the distance between our desired position and our actual position, then update the transformation matrix.
+        This is done because we always want the svg to be moved by the top left coordinate (the orgin), and when we scale an svg by a different anchor/orgin
+        our svg's actual position has been augmented and we need the position that we're dragging it to to reflect that
+        */
+        let dist = pos.subtract(svgPos).divide(this.transform.scale);
         this.matrix = this.matrix.translate(dist.x, dist.y);
-
-        
-
         this.updateTransform();
+
+        //update the position of our svg
+        this.transform.pos = pos;
     }
 
     scaleTo(scale, anchorX, anchorY){
-       
-        //scale= new Vector2(1,1);
-
-       this.fix = true;
         
-       let deltaScale = scale.subtract(this.transform.scale);
-       
-        let marginSize = 10 ;
-        
-//        console.log(this.transform.scale);
+        //prevent scaling from making width & height < 30 because I don't want to deal with that
+        if((this.selectBounds.width ) * scale.x < 30)scale.x = 30/this.selectBounds.width;
+        if((this.selectBounds.height ) * scale.y < 30)scale.y = 30/this.selectBounds.height;
 
-       // console.log(this.transform.scale);
-        //console.log(this.transform.scale);
-      //  let marginPad = new Vector2(0, (marginSize/4));
-     // let marginPad = new Vector2(0, 0 );
-     //  let marginPad =
-
-       //scale.add(new Vetor3)
-        
-
+        //returns position of svg relative to the anchor [top left, bottom right, etc]
         let getPos = () => {
             let bounds = this.selectRect.getBoundingClientRect();
-            //if(anchorY=="bottom")bounds.x=bounds.height * scale.y;
-            
-            
-         
-            this.transform.anchorY = anchorY;
             return new Vector2(bounds[anchorX], bounds[anchorY]);
         }
 
-
+        //get starting position relative to scale anchor
         let pos = getPos();
  
+        //redraw scale anchors and pass in our desired scale to undo the scaling caused by the group's scale, because scaling the group svg also scales the anchors
         this.redrawAnchors(scale);
       
+        //scale it back down to the og size so that we set the absolute size, not the relative size
         let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
-       
         this.matrix = this.matrix.scaleNonUniform(oneScalar.x, oneScalar.y);
-       
-        
-        this.matrix = this.matrix.scaleNonUniform(scale.x, scale.y);
 
-       
+        //scale it to desired size and update the transformation matrix
+        this.matrix = this.matrix.scaleNonUniform(scale.x, scale.y);
         this.updateTransform();
-        //console.log(this.transform.scale);
-        
-        
  
-        let transPos = pos.subtract(getPos());
+        //the amount to offset the svg so it scales relative to the anchor is the difference between the orgin pre-scale and post-scale [the orgin being the anchor]
+        let transPos = pos.subtract(getPos()).divide(scale);
        
-      
-        
-        transPos = transPos.divide(scale);
-       
-        
-        
+        //translate the matrix by our offset and update the transformation matrix
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
-       
         this.updateTransform();
      
-      
+        //update the scale of our svg
         this.transform.scale = scale;
-        this.dragBounds = this.group.getBoundingClientRect();
     }
 
 
@@ -210,8 +166,6 @@ class SVG{
         if(this.isDragging){
      
             let clickPos = new Vector2(e.layerX, e.layerY);
-            
-           //console.log(this.clickOffset);
 
             clickPos = clickPos.subtract(this.clickOffset);
 
@@ -227,7 +181,8 @@ class SVG{
 
        
         var rect = e.currentTarget.getBoundingClientRect();
-        this.startDrag = new Vector2(rect.x, rect.y);
+       
+        this.startDrag = this.transform.pos;
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
         let offsetX = e.offsetX - rect.left + 5;
@@ -256,23 +211,16 @@ class SVG{
         this.parent.removeEventListener('mousemove', this.mouseMoveRef);
         this.parent.removeEventListener('mouseup', this.mouseUpRef);
 
-        
-        //this.group.removeAttribute('transform');
-        
         this.isDragging = false; 
-       
+    
+        let endDrag = this.transform.pos;
 
-        var rect = this.group.getBoundingClientRect();
-        let endDrag = new Vector2(rect.x, rect.y);
-        
         Action.commit(this.reliable, {
             action: "Drag",
             id: this.id,
             end: endDrag.toJSON(),
             start: this.startDrag.toJSON(),
 
-           
-            
         });  
         this.dragStartPos = null;
         
@@ -283,16 +231,6 @@ class SVG{
         let bounds = this.svg.getBoundingClientRect();
    
 
-        /*
-        let left = bounds.left ;
-        let top = bounds.top;
-        let right = (left + bounds.width) * this.scaleDelta.x;
-        let bottom = (top + bounds.height) * this.scaleDelta.y;
-
-        left = Math.min(left, right);
-        right = Math.max(left, right);
-        top = Math.min(top, bottom);
-        bottom = Math.max(top, bottom);*/
         if(scale==undefined) scale = this.transform.scale;
         let x = (bounds.x - this.matrix.e )/scale.x;
         let y = (bounds.y - this.matrix.f )/scale.y;
@@ -323,21 +261,7 @@ class SVG{
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let selectRectGroup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
 
-
-       
         let margin = 10;
-
-        /*
-        let rectX = bounds.x - this.transPos.x - (margin * this.scaleDelta.x);
-        let rectY = bounds.y - this.transPos.y - (margin * this.scaleDelta.y)
-        selectRect.setAttribute('x', rectX);
-        selectRect.setAttribute('y', rectY);
-        //selectRect.setAttribute("transform", `translate(${bounds.x - margin}, ${bounds.y - margin})`)
-
-        let rectWidth = (bounds.width/this.scaleDelta.x) + (margin *2);
-        let rectHeight = (bounds.height/this.scaleDelta.y) + (margin *2);
-        selectRect.setAttribute('width', rectWidth);
-        selectRect.setAttribute('height', rectHeight);*/
 
         selectRect.setAttribute('x', bounds.left);
         selectRect.setAttribute('y', bounds.top);
@@ -354,8 +278,6 @@ class SVG{
         
         selectRectGroup.appendChild(selectRect);
       
-        //this.debugRect(bounds.left, bounds.top, 10, 10, "purple");
-        //this.debugRect(bounds.left, bounds.bottom, 10, 10, "purple");
         let anchorSize = 10;
         let topRightScaleAnchor = this.createDragRect(selectRect, "right", "top", new Vector2(1, -1), "left", "bottom" );
         let bottomRightScaleAnchor = this.createDragRect(selectRect, "right", "bottom", new Vector2(1, 1), "left", "top" );
@@ -368,14 +290,10 @@ class SVG{
         this.anchors.push(bottomLeftScaleAnchor);
         this.anchors.push(topLeftScaleAnchor);
 
-        
-        
         for(let anchor of this.anchors){
             selectRectGroup.appendChild(anchor.svg);
         }
        
-
-        
         this.group.appendChild(selectRectGroup);
         
         
@@ -439,15 +357,12 @@ class SVG{
             mouseDown.preventDefault();
             //change the anchor
             this.scaleAnchor = anchor;
-            //this.matrixTransform(this.dragEndPos.x, this.dragEndPos.y, this.scaleDelta.x, this.scaleDelta.y, anchor.data[0], anchor.data[1]);
-           // this.moveTo(this.transPos);
 
-            //this.scaleTo(this.scaleDelta, anchorX, anchorY);
 
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
            
           
-            //this.group.setAttribute("transform", `translate(0, 0)`);
+   
             
             let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
@@ -455,37 +370,23 @@ class SVG{
             document.addEventListener('mouseup', upRef);
 
             
-           
-            /*
-            let test = new SVGPath(this.parent, this.pos, this.id+"2");
-            test.replacePath(this.pathData);
-            test.createSelectRect();
-        
-                this.scaleTo(new Vector2(2, 2));*/
-      
-                //this.scaleTo(this.testScale);
-                //this.testScale = this.testScale.add(new Vector2(1, 1));
-            
             let startScale = this.transform.scale.clone();
      
             this.scaleStart = this.transform.scale;
 
             let moveEvent = (mouseMove) => {
-                //this.group.transform =Z 
-                if(this.stop == true)return;
+
+       
                 this.scaleAnchor = anchor;
 
                 let mouseEnd = new Vector2(mouseMove.clientX, mouseMove.clientY);
-                
                 let delta = mouseEnd.subtract(mouseStart);
-                
-                //multiply startScale by normalized directional vector to move anchor
-                
+
                 let deltaPercent = new Vector2(this.scaleAnchor.x * (delta.x/rectWidth), this.scaleAnchor.y * (delta.y/rectHeight)).add(startScale);
                
                
                 this.scaleTo(deltaPercent, anchorX, anchorY);
-                //setSize();
+            
                 
             };
 
@@ -494,7 +395,6 @@ class SVG{
                 document.removeEventListener('mousemove', moveRef);
                 document.removeEventListener('mouseup', upRef);
 
-                
                 Action.commit(this.reliable, {
                     action: "Scale",
                     id: this.id,
@@ -504,8 +404,6 @@ class SVG{
                     anchorY: anchorY
                 });   
             };
-
-  
 
         });
         return {svg: rightDrag, setSize};
@@ -518,7 +416,8 @@ class SVG{
         if(this.isSelected) return;
         this.isSelected = true;
         this.selectRect = this.createSelectRect();
-        this.selectBounds = this.selectRect.getBoundingClientRect();
+        
+        if(this.selectBounds===undefined)this.selectBounds = this.selectRect.getBoundingClientRect();
         
     }
 
