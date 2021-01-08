@@ -15,7 +15,7 @@ class SVG{
 
         this.group.reliableSvg = this;
         this.svg.reliableSvg = this;
-        this.svg.setAttribute("vector-effect","non-scaling-stroke");
+        //this.svg.setAttribute("vector-effect","non-scaling-stroke");
 
         this.svg = this.group.appendChild(this.svg);
         this.group = this.parent.appendChild(this.group);
@@ -28,6 +28,7 @@ class SVG{
         this.group.setAttribute("transform", `translate(0, 0)`);
         this.matrix = this.group.transform.baseVal.consolidate().matrix;
         
+        this.selectMargin = 10;
 
         this.scaleDelta = new Vector2(1, 1);
 
@@ -256,7 +257,7 @@ class SVG{
 
     createSelectRect(){
         this.anchors = []
-        let bounds = this.getSelectionBounds(10);
+        let bounds = this.getSelectionBounds(this.selectMargin);
   
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let selectRectGroup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -339,7 +340,7 @@ class SVG{
            
 
             //getSe
-            let bounds = this.getSelectionBounds(10);
+            let bounds = this.getSelectionBounds(this.selectMargin);
     
             rightDrag.setAttribute('x', bounds[x] - (scaleWidth/2));
             rightDrag.setAttribute('y', bounds[y] - (scaleHeight/2));
