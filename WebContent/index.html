@@ -16,6 +16,15 @@
                 z-index: 20;
 
             }
+
+            .toolbar{
+                position: absolute;
+                top: 100px;
+                left: 20px;
+                
+                z-index: 20;
+                background-color: #20252C;
+            }
         </style>
     </head>
     <body>
@@ -29,6 +38,15 @@
             <button onClick="clearAll()">Clear</button>
             <button onClick="refresh()">Refresh</button>
             <button onClick="undo()">Undo</button>
+        </div>
+
+        <div class="toolbar" >
+            <!--
+            <svg>
+                <image width="300" height="300" href="{{path}}/images/pen.svg"/>
+            </svg>-->
+            <img width="100" height="100" src="{{path}}/images/pen.svg">
+            
         </div>
       
     </body>
@@ -60,7 +78,7 @@
     var app = new Reliable(canvas, [
         new Pen(),
         new Selection(),
-        //new Eraser()
+        new Eraser()
     ]);
 
   
