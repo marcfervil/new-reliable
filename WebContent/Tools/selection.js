@@ -163,13 +163,13 @@ class Drag extends Action{
 
     execute(reliable){
 
-        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.endPos));
+        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.end));
     }
 
 
     undo(){
     
-        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.startPos));
+        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.start));
     }
 
 }

@@ -68,10 +68,10 @@ class SVG{
         
         this.transPos = new Vector2(0, 0);
 
-     
 
         this.fix = false;
        
+
         
     }
 
@@ -227,10 +227,11 @@ class SVG{
 
        
         var rect = e.currentTarget.getBoundingClientRect();
+        this.startDrag = new Vector2(rect.x, rect.y);
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left +5;
-        let offsetY = e.offsetY - rect.top +5;
+        let offsetX = e.offsetX - rect.left + 5;
+        let offsetY = e.offsetY - rect.top + 5;
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         
@@ -244,7 +245,7 @@ class SVG{
 
         this.isDragging = true; 
 
-    
+        
     }
 
    
@@ -261,17 +262,19 @@ class SVG{
         this.isDragging = false; 
        
 
+        var rect = this.group.getBoundingClientRect();
+        let endDrag = new Vector2(rect.x, rect.y);
+        console.log(endDrag);
         
-       /*
         Action.commit(this.reliable, {
             action: "Drag",
             id: this.id,
-            endPos: this.dragEndPos.toJSON(),
-            startPos: this.dragStartPos.toJSON(),
+            end: endDrag.toJSON(),
+            start: this.startDrag.toJSON(),
 
            
             
-        });  */
+        });  
         this.dragStartPos = null;
         
     }
@@ -490,7 +493,8 @@ class SVG{
           
                 document.removeEventListener('mousemove', moveRef);
                 document.removeEventListener('mouseup', upRef);
-/*
+
+                /*
                 Action.commit(this.reliable, {
                     action: "Scale",
                     id: this.id,
