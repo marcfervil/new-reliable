@@ -71,6 +71,7 @@ class SVG{
      
 
         this.fix = false;
+       
         
     }
 
@@ -119,7 +120,7 @@ class SVG{
     }
 
     scaleTo(scale, anchorX, anchorY){
-
+       
         //scale= new Vector2(1,1);
 
        this.fix = true;
@@ -144,41 +145,42 @@ class SVG{
             //if(anchorY=="bottom")bounds.x=bounds.height * scale.y;
             
             
-            if(this.transform.anchorY!="top"){
-                
-                this.offset =  bounds.height - this.selectBounds.height;
-               
-            }
-            
+         
             this.transform.anchorY = anchorY;
             return new Vector2(bounds[anchorX], bounds[anchorY]);
         }
 
 
         let pos = getPos();
-
-        
+ 
+        this.redrawAnchors(scale);
       
         let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
+       
         this.matrix = this.matrix.scaleNonUniform(oneScalar.x, oneScalar.y);
-
+       
+        
         this.matrix = this.matrix.scaleNonUniform(scale.x, scale.y);
 
-
+       
         this.updateTransform();
         //console.log(this.transform.scale);
+        
+        
+ 
+        let transPos = pos.subtract(getPos());
+       
+      
+        
+        transPos = transPos.divide(scale);
        
         
-       // let transPos = pos.subtract(getPos()).divide(scale)
-        let transPos = pos.subtract(getPos()).divide(scale);
         
-        
-        
-
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
+       
         this.updateTransform();
      
-       
+      
         this.transform.scale = scale;
         this.dragBounds = this.group.getBoundingClientRect();
     }
@@ -378,9 +380,9 @@ class SVG{
         return selectRectGroup;
     }
 
-    redrawAnchors(){
+    redrawAnchors(size){
         for(let anchor of this.anchors){
-            anchor.setSize();
+            anchor.setSize(size);
         }
     }
 
@@ -404,18 +406,17 @@ class SVG{
         
       
         
-        let setSize = () => {
+        let setSize = (scale) => {
 
-            let scaleX = Math.abs(this.transform.scale.x);
-            let scaleY = Math.abs(this.transform.scale.y);
+            let scaleX = Math.abs(scale.x);
+            let scaleY = Math.abs(scale.y);
             if(scaleX==0) scaleX=1;
             if(scaleY==0) scaleY=1;
             
             let scaleWidth = 10/scaleX;
             let scaleHeight = 10/scaleY
 
-            rightDrag.setAttribute('width', scaleWidth);
-            rightDrag.setAttribute('height', scaleHeight);
+           
 
             //getSe
             let bounds = this.getSelectionBounds(10);
@@ -423,10 +424,12 @@ class SVG{
             rightDrag.setAttribute('x', bounds[x] - (scaleWidth/2));
             rightDrag.setAttribute('y', bounds[y] - (scaleHeight/2));
 
+            rightDrag.setAttribute('width', scaleWidth);
+            rightDrag.setAttribute('height', scaleHeight);
             
         }
 
-        setSize();
+        setSize(this.transform.scale);
 
         rightDrag.addEventListener('mousedown', (mouseDown) => {
 
@@ -480,7 +483,7 @@ class SVG{
                 
                 this.scaleTo(deltaPercent, anchorX, anchorY);
                 //setSize();
-                this.redrawAnchors();
+                
             };
 
             let upEvent = (mouseUp) => {
