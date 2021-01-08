@@ -272,6 +272,7 @@ class SVG{
     }
 
     createSelectRect(){
+        this.anchors = []
         let bounds = this.getSelectionBounds(10);
   
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
@@ -311,15 +312,18 @@ class SVG{
         //this.debugRect(bounds.left, bounds.top, 10, 10, "purple");
         //this.debugRect(bounds.left, bounds.bottom, 10, 10, "purple");
         let anchorSize = 10;
-        //let topRightScaleAnchor = this.createDragRect(, bounds.right, bounds.top, new Vector2(1, -1), "left", "bottom" );
-        let bottomRightScaleAnchor = this.createDragRect(selectRect, bounds.right, bounds.bottom, new Vector2(1, 1), "left", "top" );
+        let topRightScaleAnchor = this.createDragRect(selectRect, "right", "top", new Vector2(1, -1), "left", "bottom" );
+        let bottomRightScaleAnchor = this.createDragRect(selectRect, "right", "bottom", new Vector2(1, 1), "left", "top" );
 
+
+        this.anchors.push(bottomRightScaleAnchor);
+        this.anchors.push(topRightScaleAnchor);
 
         
-
-        
-
-        selectRectGroup.appendChild(bottomRightScaleAnchor);
+        for(let anchor of this.anchors){
+            selectRectGroup.appendChild(anchor.svg);
+        }
+       
 
         
         this.group.appendChild(selectRectGroup);
@@ -328,12 +332,17 @@ class SVG{
         return selectRectGroup;
     }
 
+    redrawAnchors(){
+        for(let anchor of this.anchors){
+            anchor.setSize();
+        }
+    }
+
     createDragRect(selectRect, x, y, anchor, anchorX, anchorY){
 
         let dragBoxSize = 10;
 
-        x -= (dragBoxSize/2);
-        y -= (dragBoxSize/2);
+   
         let margin = 10;
         //let bounds = selectRect.getBoundingClientRect();
         let rightDrag = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
@@ -364,8 +373,9 @@ class SVG{
 
             //getSe
             let bounds = this.getSelectionBounds(10);
-            rightDrag.setAttribute('x', bounds.right - (scaleWidth/2));
-            rightDrag.setAttribute('y', bounds.bottom - (scaleHeight/2));
+    
+            rightDrag.setAttribute('x', bounds[x] - (scaleWidth/2));
+            rightDrag.setAttribute('y', bounds[y] - (scaleHeight/2));
 
             
         }
@@ -423,7 +433,8 @@ class SVG{
                
                 
                 this.scaleTo(deltaPercent, anchorX, anchorY);
-                setSize();
+                //setSize();
+                this.redrawAnchors();
             };
 
             let upEvent = (mouseUp) => {
@@ -442,7 +453,7 @@ class SVG{
   
 
         });
-        return rightDrag;
+        return {svg: rightDrag, setSize};
     }
 
 
