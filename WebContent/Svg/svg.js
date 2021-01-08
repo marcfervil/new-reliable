@@ -68,7 +68,7 @@ class SVG{
         
         this.transPos = new Vector2(0, 0);
 
-        this.test = this.debugRect(0, 0, 10, 10, "yellow")
+     
 
         this.fix = false;
         
@@ -110,7 +110,7 @@ class SVG{
         let dist = pos.subtract(dragPos).divide(this.transform.scale);
         //console.log(dist.divide(this.transform.scale));
 
-        console.log(dist);
+     
         this.matrix = this.matrix.translate(dist.x, dist.y);
 
         
@@ -227,7 +227,7 @@ class SVG{
         var rect = e.currentTarget.getBoundingClientRect();
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left ;
+        let offsetX = e.offsetX - rect.left +5;
         let offsetY = e.offsetY - rect.top +5;
 
         this.clickOffset = new Vector2(offsetX, offsetY);
@@ -355,11 +355,16 @@ class SVG{
         let anchorSize = 10;
         let topRightScaleAnchor = this.createDragRect(selectRect, "right", "top", new Vector2(1, -1), "left", "bottom" );
         let bottomRightScaleAnchor = this.createDragRect(selectRect, "right", "bottom", new Vector2(1, 1), "left", "top" );
+        let bottomLeftScaleAnchor = this.createDragRect(selectRect, "left", "bottom", new Vector2(-1, 1), "right", "top" );
+        let topLeftScaleAnchor = this.createDragRect(selectRect, "left", "top", new Vector2(-1, -1), "right", "bottom" );
 
 
         this.anchors.push(bottomRightScaleAnchor);
         this.anchors.push(topRightScaleAnchor);
+        this.anchors.push(bottomLeftScaleAnchor);
+        this.anchors.push(topLeftScaleAnchor);
 
+        
         
         for(let anchor of this.anchors){
             selectRectGroup.appendChild(anchor.svg);
