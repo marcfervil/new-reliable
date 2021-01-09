@@ -39,7 +39,7 @@ class SVG{
         //console.log(this.matrix);
         //TODO: FIX RACE CONDITION
         //Is it a really a race condition if the timeout is 0?
-        setTimeout(() => {
+        //setTimeout(() => {
             
             this.canvasRect = this.group.getBoundingClientRect();
             this.canvasPos = new Vector2(this.canvasRect.x, this.canvasRect.y).subtract(new Vector2(10, 10));
@@ -59,7 +59,7 @@ class SVG{
             //this.moveTo(this.canvasPos);
 
 
-        }, 0)
+     //   }, 0)
    
         this.updateAnchor = false; 
        // this.testScale= new Vector2(2, 2);
