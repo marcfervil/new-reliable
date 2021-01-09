@@ -10,6 +10,7 @@ class Reliable {
         this.myActionIds = [];
         this.redoActions = [];
         this.svgs = [];
+        console.log(canvas);
         this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
         
         for(let tool of tools)this.addTool(tool);
@@ -43,6 +44,15 @@ class Reliable {
             });
         }
     }
+
+  
+    redo(){
+        if(this.redoActions.length > 0){
+            this.commit({
+                action: "Redo",
+            }, false);
+        }
+    }
     
 
     mouseDownCanvas(e){
@@ -55,7 +65,7 @@ class Reliable {
         this.mouseUpRef = (e) => this.mouseUpCanvas(e);
        
         this.canvas.addEventListener('mousemove', this.mouseMoveRef);
-        this.canvas.addEventLisptener('mouseup', this.mouseUpRef);
+        this.canvas.addEventListener('mouseup', this.mouseUpRef);
         $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
 
         this.getCurrentTool().canvasDragStart(mousePos);

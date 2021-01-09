@@ -71,6 +71,10 @@
         app.undo();
     }
 
+    function redo(){
+        app.redo();
+    }
+
     function refresh(){
         console.clear();
         vscode.postMessage({
@@ -89,6 +93,9 @@
     document.addEventListener('keydown', function(event) {
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
+        }
+        if((event.metaKey && event.key === 'y')){
+            redo();
         }
         if(event.key === 'r'){
             refresh();

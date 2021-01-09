@@ -31,7 +31,7 @@ class Action {
     static commit(reliable, actionData, broadcast){
         if(broadcast==undefined)broadcast = true; 
 
-        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image};
+        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo};
         let action = new actionList[actionData.action](actionData);
 
         //Undo should never be recorded
@@ -46,6 +46,24 @@ class Action {
         if(broadcast)action.broadcast();
         return action; 
         
+    }
+
+}
+
+
+class Redo extends Action{
+    
+    constructor(data){
+        super(data);
+        this.unDoable = false;
+    }
+
+    execute(reliable){
+        
+        if(reliable.redoActions.length > 0) {
+            let redo = reliable.redoActions.pop();
+            reliable.commit(redo.data);
+        }
     }
 
 }
