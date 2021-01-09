@@ -94,7 +94,7 @@
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
         }
-        if((event.metaKey && event.key === 'y') && (event.ctrlKey && event.key === 'y')){
+        if((event.metaKey && event.key === 'y') || (event.ctrlKey && event.key === 'y')){
             redo();
         }
         if(event.key === 'r'){
