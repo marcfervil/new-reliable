@@ -47,7 +47,7 @@ class SVG{
             
             this.transform = {
                 startPos : new Vector2(this.canvasRect.x, this.canvasRect.y),
-                pos:  new Vector2(this.canvasRect.x, this.canvasRect.y),
+                pos:  this.pos,
                 translatedPos: new Vector2(0, 0),
                 startMatrix: this.group.transform.baseVal.consolidate().matrix,
                 scale: new Vector2(1, 1),
