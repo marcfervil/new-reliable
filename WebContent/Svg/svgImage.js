@@ -6,6 +6,10 @@ class SVGImage extends SVG{
         this.selectMargin = 0;
         this.svg.setAttribute('href', imageData);
         this.svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+        setTimeout(() => {
+            this.moveTo(pos.x, pos.y);
+        }, 100);
+       
     }
 }
  

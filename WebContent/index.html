@@ -57,6 +57,7 @@
     var isVsCode = !(typeof acquireVsCodeApi === 'undefined');
     var vscode = acquireVsCodeApi();
     var canvas = $("#canvas")[0];
+    let mousePos = new Vector2();
 
     var app = new Reliable(canvas, [
         new Pen(),
@@ -120,8 +121,8 @@
                     id: Reliable.makeId(10),
                     image: event.target.result,
                     pos: {
-                        x: 0,
-                        y: 0,
+                        x: mousePos.x,
+                        y: mousePos.y,
                     }
                 });   
             };
@@ -129,7 +130,12 @@
         }
     }
 
-
+    canvas.addEventListener("mousemove", (e) => {
+        
+        mousePos.x = e.layerX;
+        mousePos.y = e.layerY;
+        //console.log(mousePos);
+    });
     
 
 

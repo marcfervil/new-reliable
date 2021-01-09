@@ -15,7 +15,7 @@ class SVG{
 
         this.group.reliableSvg = this;
         this.svg.reliableSvg = this;
-        //this.svg.setAttribute("vector-effect","non-scaling-stroke");
+        this.svg.setAttribute("vector-effect","non-scaling-stroke");
 
         this.svg = this.group.appendChild(this.svg);
         this.group = this.parent.appendChild(this.group);
