@@ -10,7 +10,6 @@ class Reliable {
         this.myActionIds = [];
         this.redoActions = [];
         this.svgs = [];
-        console.log(canvas);
         this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
         
         for(let tool of tools)this.addTool(tool);

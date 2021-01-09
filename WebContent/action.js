@@ -34,11 +34,12 @@ class Action {
         let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo};
         let action = new actionList[actionData.action](actionData);
 
-        //Undo should never be recorded
- 
+  
         if(action.unDoable){
             reliable.actions.push(action);
-            if(action.myAction) reliable.myActionIds.push(action.data.actionId);
+            if(action.myAction) {
+                reliable.myActionIds.push(action.data.actionId);
+            }
         }
 
         action.execute(reliable);
@@ -62,6 +63,7 @@ class Redo extends Action{
         
         if(reliable.redoActions.length > 0) {
             let redo = reliable.redoActions.pop();
+            delete redo.data["actionId"];
             reliable.commit(redo.data);
         }
     }
