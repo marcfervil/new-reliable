@@ -53,9 +53,11 @@ class Reliable {
         
         this.mouseMoveRef = (e) => this.mouseMoveCanvas(e);
         this.mouseUpRef = (e) => this.mouseUpCanvas(e);
-
+       
         this.canvas.addEventListener('mousemove', this.mouseMoveRef);
-        this.canvas.addEventListener('mouseup', this.mouseUpRef);
+        this.canvas.addEventLisptener('mouseup', this.mouseUpRef);
+        $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
+
         this.getCurrentTool().canvasDragStart(mousePos);
     }
 
@@ -65,9 +67,11 @@ class Reliable {
     }
 
     mouseUpCanvas(e){
+        
         this.canvasMouseDown = false;
         this.canvas.removeEventListener('mousemove', this.mouseMoveRef);
         this.canvas.removeEventListener('mouseup', this.mouseUpRef);
+        $(this.canvas).off("mouseleave.canvas");
         this.getCurrentTool().canvasDragEnd();
     }
 
