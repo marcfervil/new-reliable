@@ -38,6 +38,7 @@ class Action {
         if(action.unDoable){
             reliable.actions.push(action);
             if(action.myAction) {
+                if(action.data.fromRedo===undefined)reliable.redoActions = [];
                 reliable.myActionIds.push(action.data.actionId);
             }
         }
@@ -64,6 +65,7 @@ class Redo extends Action{
         if(reliable.redoActions.length > 0) {
             let redo = reliable.redoActions.pop();
             delete redo.data["actionId"];
+            redo.data.fromRedo = true;
             reliable.commit(redo.data);
         }
     }
