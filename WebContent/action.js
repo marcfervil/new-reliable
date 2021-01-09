@@ -88,7 +88,7 @@ class Undo extends Action{
     
         if(undo.length > 0) {
             undo[0].undo();
-            reliable.redoActions.push(undo[0]);
+            if(this.myAction)reliable.redoActions.push(undo[0]);
             reliable.actions.splice(reliable.actions.indexOf(undo[0]), 1);
         }else {
             console.log("Undo Desync!!!!!");
