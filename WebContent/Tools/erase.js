@@ -19,7 +19,7 @@ class Eraser extends Tool{
 
     canvasDragEnd(){
     
-        //this.erase();
+        this.erase();
         this.svgRect.delete();
     }
 
@@ -48,7 +48,18 @@ class Eraser extends Tool{
         return (x > x1 && x < x2) && (y > y1 && y < y2)
     }
 
+    eraserConnection(x, y){
+        console.log(x+" first "+ y)
+        x = x - this.svgRect.pos.x
+        y = y - this.svgRect.pos.y
+        let theta = Math.atan(y/x)
+        let r = parseInt(this.svgRect.size)
+        x = r* Math.cos(theta) + this.svgRect.pos.x
+        y = r* Math.sin(theta) + this.svgRect.pos.y
+        console.log("r: "+r+" theta: "+theta+" rectx: "+this.svgRect.pos.x+" recty: "+this.svgRect.pos.y+" x: "+ x+ " y: "+ y)
+        return new Vector2(x,y);
 
+    }
 
     isCollidingLineSegment(path){
         path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
@@ -69,9 +80,17 @@ class Eraser extends Tool{
         let temp = path.splice(minIndex, path.length)
         temp.splice(0,Math.min((maxIndex-minIndex)+2, temp.length));
         let paths = []
+        if(path.length>1){
+        let newPoint = this.eraserConnection(path[path.length-2],path[path.length-1]);
+        path.push(newPoint.x);
+        path.push(newPoint.y);
         paths.push(path)
+        }
         
-        if(temp.length>0){
+        if(temp.length>1){
+            let newPoint = this.eraserConnection(temp[0],temp[1]);
+            temp.unshift(newPoint.y);
+            temp.unshift(newPoint.x);
             paths.push(temp)
         }
         return paths
