@@ -116,13 +116,17 @@ class SVG{
 
     scaleTo(scale, anchorX, anchorY){
         
-        //prevent scaling from making width & height < 30 because I don't want to deal with that
-      //  if((this.selectBounds.width ) * scale.x < 30)scale.x = 30/this.selectBounds.width;
-        //if((this.selectBounds.height ) * scale.y < 30)scale.y = 30/this.selectBounds.height;
+       
 
-        //returns position of svg relative to the anchor [top left, bottom right, etc]
+       //if not selected, create fake selection box so un/redos still work 
         let fakeSelect = this.isSelected;
         if(!fakeSelect)this.select();
+
+         //prevent scaling from making width & height < 30 because I don't want to deal with that
+         if((this.selectBounds.width ) * scale.x < 30)scale.x = 30/this.selectBounds.width;
+         if((this.selectBounds.height ) * scale.y < 30)scale.y = 30/this.selectBounds.height;
+
+        //returns position of svg relative to the anchor [top left, bottom right, etc]
         let getPos = () => {
             let bounds = this.selectRect.getBoundingClientRect();
             return new Vector2(bounds[anchorX], bounds[anchorY]);
