@@ -16,6 +16,11 @@ class SVGImage extends SVG{
     }
 
 
+    getSelectMargin(){
+        return 0;
+    }
+
+
 }
  
 

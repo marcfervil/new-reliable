@@ -27,8 +27,6 @@ class SVG{
 
         this.group.setAttribute("transform", `translate(0, 0)`);
         this.matrix = this.group.transform.baseVal.consolidate().matrix;
-        
-        this.selectMargin = 10;
 
         this.scaleDelta = new Vector2(1, 1);
 
@@ -81,11 +79,16 @@ class SVG{
     setContent(){
 
     }
+
+    getSelectMargin(){
+        return 10;
+    }
     
     moveTo(pos){
-        
+        console.log(this.getSelectMargin());
         //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
-        if(this.isSelected)pos = pos.subtract(new Vector2(15, 15));
+        let selectMargin = new Vector2(5+this.getSelectMargin(), 5+this.getSelectMargin());
+        if(this.isSelected)pos = pos.subtract(selectMargin);
         let newPos = pos.subtract(this.transform.startPos);
        
 
@@ -108,7 +111,7 @@ class SVG{
         this.updateTransform();
 
         //update the position of our svg
-        if(this.isSelected)pos = pos.add(new Vector2(15, 15));
+        if(this.isSelected)pos = pos.add(selectMargin);
         this.transform.pos = pos;
         this.pos = pos;
     }
@@ -204,8 +207,8 @@ class SVG{
         this.startDrag = this.transform.pos;
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left - 10;
-        let offsetY = e.offsetY - rect.top - 10;
+        let offsetX = e.offsetX - rect.left - this.getSelectMargin();
+        let offsetY = e.offsetY - rect.top - this.getSelectMargin();
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         
@@ -304,7 +307,7 @@ class SVG{
 
     createSelectRect(){
         this.anchors = []
-        let bounds = this.getSelectionBounds(this.selectMargin);
+        let bounds = this.getSelectionBounds(this.getSelectMargin());
   
         let selectRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let selectRectGroup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
@@ -387,7 +390,7 @@ class SVG{
            
 
             //getSe
-            let bounds = this.getSelectionBounds(this.selectMargin);
+            let bounds = this.getSelectionBounds(this.getSelectMargin());
     
             rightDrag.setAttribute('x', bounds[x] - (scaleWidth/2));
             rightDrag.setAttribute('y', bounds[y] - (scaleHeight/2));
