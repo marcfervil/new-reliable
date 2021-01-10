@@ -79,7 +79,7 @@ async function activate(context) {
 				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
 				{
 					enableScripts: true, 
-		
+					retainContextWhenHidden: true,
 					localResourceRoots: [vscode.Uri.file(contentPath)]
 				} // Webview options. More on these later.
 			
