@@ -56,7 +56,7 @@ class Reliable {
     setState(state){
         let svgs = {SVGPath, SVGImage};
         for(let svgData of state){
-            let args = [this.canvas, svgData.pos, svgData.id];
+            let args = [this.canvas, new Vector2(svgData.pos.x, svgData.pos.y), svgData.id];
             for (var key of Object.keys(svgData.args)) {
                 args.push(svgData.args[key]);
             }

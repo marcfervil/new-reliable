@@ -100,6 +100,7 @@ async function activate(context) {
 				service = await liveshare.getSharedService(serviceName);
 				vscode.window.showInformationMessage("Starting as guest");
 				let data = await service.request("state", []);
+				console.log(data);
 				currentPanel.webview.postMessage({
 					action: "State",
 					state : data
