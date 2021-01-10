@@ -103,6 +103,7 @@ class SVG{
 
         //update the position of our svg
         this.transform.pos = pos;
+        this.pos = pos;
     }
 
 
