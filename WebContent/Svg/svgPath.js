@@ -25,7 +25,15 @@ class SVGPath extends SVG{
         /*this.svg.setAttribute("stroke-line-join", "square")
         this.svg.setAttribute("stroke-line-cap", "round")
         this.svg.setAttribute("stroke-miterlimit", 8)*/
+        this.canvasRect = this.group.getBoundingClientRect();
+        this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
+        this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
+     
+    }
 
+
+    setContent(){
+        
     }
 
     addPoint(pos){

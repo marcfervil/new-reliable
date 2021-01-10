@@ -42,12 +42,15 @@ class SVG{
         //setTimeout(() => {
             
             this.canvasRect = this.group.getBoundingClientRect();
+
+
+    
             this.canvasPos = new Vector2(this.canvasRect.x, this.canvasRect.y).subtract(new Vector2(10, 10));
             this.dragEndPos = this.canvasPos;
             
             this.transform = {
                 startPos : new Vector2(this.canvasRect.x, this.canvasRect.y),
-                pos:  this.pos,
+                pos:   new Vector2(this.canvasRect.x, this.canvasRect.y),
                 translatedPos: new Vector2(0, 0),
                 startMatrix: this.group.transform.baseVal.consolidate().matrix,
                 scale: new Vector2(1, 1),
@@ -55,12 +58,11 @@ class SVG{
                 anchorY: "top",
 
             }
+          
             
-            //this.moveTo(this.canvasPos);
-
 
      //   }, 0)
-   
+     
         this.updateAnchor = false; 
        // this.testScale= new Vector2(2, 2);
 
@@ -71,17 +73,21 @@ class SVG{
 
 
         this.fix = false;
-       
+        
 
         
     }
 
-    
+    setContent(){
+
+    }
     
     moveTo(pos){
         
         //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
+        if(this.isSelected)pos = pos.subtract(new Vector2(15, 15));
         let newPos = pos.subtract(this.transform.startPos);
+       
 
         //manually set x and y (e and f in the transform matrix) to be our desired location and update the transformation matrix
         this.matrix.e = newPos.x;
@@ -102,6 +108,7 @@ class SVG{
         this.updateTransform();
 
         //update the position of our svg
+        if(this.isSelected)pos = pos.add(new Vector2(15, 15));
         this.transform.pos = pos;
         this.pos = pos;
     }
@@ -110,10 +117,12 @@ class SVG{
     scaleTo(scale, anchorX, anchorY){
         
         //prevent scaling from making width & height < 30 because I don't want to deal with that
-        if((this.selectBounds.width ) * scale.x < 30)scale.x = 30/this.selectBounds.width;
-        if((this.selectBounds.height ) * scale.y < 30)scale.y = 30/this.selectBounds.height;
+      //  if((this.selectBounds.width ) * scale.x < 30)scale.x = 30/this.selectBounds.width;
+        //if((this.selectBounds.height ) * scale.y < 30)scale.y = 30/this.selectBounds.height;
 
         //returns position of svg relative to the anchor [top left, bottom right, etc]
+        let fakeSelect = this.isSelected;
+        if(!fakeSelect)this.select();
         let getPos = () => {
             let bounds = this.selectRect.getBoundingClientRect();
             return new Vector2(bounds[anchorX], bounds[anchorY]);
@@ -121,9 +130,10 @@ class SVG{
 
         //get starting position relative to scale anchor
         let pos = getPos();
- 
+        //if(!this.isSelected)pos = pos.subtract(new Vector2(10, 10));
+
         //redraw scale anchors and pass in our desired scale to undo the scaling caused by the group's scale, because scaling the group svg also scales the anchors
-        this.redrawAnchors(scale);
+        if(this.isSelected)this.redrawAnchors(scale);
       
         //scale it back down to the og size so that we set the absolute size, not the relative size
         let oneScalar = new Vector2(1, 1).divide(this.transform.scale);
@@ -135,13 +145,15 @@ class SVG{
  
         //the amount to offset the svg so it scales relative to the anchor is the difference between the orgin pre-scale and post-scale [the orgin being the anchor]
         let transPos = pos.subtract(getPos()).divide(scale);
-       
+        
+
         //translate the matrix by our offset and update the transformation matrix
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
         this.updateTransform();
      
         //update the scale of our svg
         this.transform.scale = scale;
+        if(!fakeSelect)this.unselect();
     }
 
 
@@ -188,8 +200,8 @@ class SVG{
         this.startDrag = this.transform.pos;
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left + 5;
-        let offsetY = e.offsetY - rect.top + 5;
+        let offsetX = e.offsetX - rect.left - 10;
+        let offsetY = e.offsetY - rect.top - 10;
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         

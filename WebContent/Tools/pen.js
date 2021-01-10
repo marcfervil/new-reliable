@@ -49,11 +49,11 @@ class Draw extends Action{
 
        // this.svgPath.replacePath(this.data.path);
         this.svgPath.svg.style.stroke = this.data.color;
-        reliable.svgs.push(this.svgPath);
+        reliable.addSVG(this.svgPath);
     }
 
     undo(){
-        this.reliable.svgs.splice(this.reliable.svgs.indexOf(this.svgPath), 1);
+        this.reliable.removeSVG(this.svgPath);
         this.svgPath.delete();
     }
 

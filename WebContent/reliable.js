@@ -102,7 +102,14 @@ class Reliable {
             }, false);
         }
     }
+
+    removeSVG(svg){
+        this.svgs.splice(this.svgs.indexOf(svg), 1);
+    }
     
+    addSVG(svg){
+        this.svgs.push(svg);
+    }
 
     mouseDownCanvas(e){
         

@@ -168,8 +168,9 @@ class Drag extends Action{
 
 
     undo(){
-    
-        SVG.getFromId(this.data.id).moveTo(new Vector2(this.data.start));
+        let svg = SVG.getFromId(this.data.id);
+    //    svg.select();
+        svg.moveTo(new Vector2(this.data.start));
     }
 
 }
@@ -188,7 +189,7 @@ class Scale extends Action{
 
 
     undo(){
-    
+      //  this.svg.select();
         this.svg.scaleTo(new Vector2(this.data.start), this.data.anchorX, this.data.anchorY);
     }
 
@@ -207,7 +208,7 @@ class Delete extends Action{
         this.reliable = reliable;
         SVG.forEachSVG(this.data.ids, (svg) => {
             this.saves.push(svg.serialize());
-            reliable.svgs.splice(reliable.svgs.indexOf(svg), 1);
+            reliable.removeSVG(svg);
             svg.delete();
         });
     }

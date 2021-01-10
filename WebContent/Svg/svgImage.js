@@ -12,7 +12,7 @@ class SVGImage extends SVG{
 
 
     getSerializableProperties(){
-        return ["imageData"]
+        return ["imageData"];
     }
 
 
@@ -32,11 +32,11 @@ class Image extends Action{
         //this.svgPath = new SVGPath(reliable.canvas, new Vector2(),this.data.id);
         this.svgImage = new SVGImage(reliable.canvas, this.pos, this.data.id, this.data.image);
        
-        reliable.svgs.push(this.svgImage);
+        reliable.addSVG(this.svgImage);
     }
 
     undo(){
-        this.reliable.svgs.splice(this.reliable.svgs.indexOf(this.svgImage), 1);
+        this.reliable.removeSVG(this.svgImage);
         this.svgImage.delete();
     }
 
