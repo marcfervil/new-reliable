@@ -87,7 +87,7 @@ async function activate(context) {
 			}else if (liveshare.session.role === vsls.Role.Guest) {
 				service = await liveshare.getSharedService(serviceName);
 				vscode.window.showInformationMessage("Starting as guest");
-				let data = service.request("state", []);
+				let data = await service.request("state", []);
 				currentPanel.webview.postMessage({
 					action: "State",
 					state : data
