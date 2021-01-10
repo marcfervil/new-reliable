@@ -1,9 +1,10 @@
 class SVGPath extends SVG{
 
-    constructor(parent, pos, id){
+    constructor(parent, pos, id, pathData){
         super("path", parent, pos, id)
         
-        this.pathData = "M "+pos.toString();
+        this.pathData = (pathData===undefined) ? "M "+pos.toString() : pathData;
+        
         this.path = [pos];
         this.svg.setAttribute("d", this.pathData); 
         this.svg.style.stroke = "#AAB2C0"; 
@@ -15,6 +16,9 @@ class SVGPath extends SVG{
         this.svg.style.strokeLinecap = "round";
         this.svg.style.strokeMiterlimit = 10;
         this.svg.style.strokeDasharray = "none";
+
+
+
         //this.svg.style.strokeDashoffset= 0;
 
         //<path stroke="#595959" stroke-opacity="1" stroke-width="381" stroke-linecap="butt" stroke-linejoin="square" stroke-miterlimit="8"></path>
@@ -30,6 +34,9 @@ class SVGPath extends SVG{
     
     }
 
+    getSerializableProperties(){
+        return ["pathData"]
+    }
 
 
     smoothify(){

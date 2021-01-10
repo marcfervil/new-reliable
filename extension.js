@@ -35,7 +35,7 @@ class ReliableTreeItem {
   /** 
 	@param {vscode.ExtensionContext} context 
  */
-
+let state = [];
 async function activate(context) {
 	try{
 
@@ -56,11 +56,7 @@ async function activate(context) {
 			if (!currentPanel)return;        
 			
 			//vscode.window.showInformationMessage('Hello World from New Reliable!');
-			currentPanel.webview.postMessage({
-				command: "Drag",
-				id: "image",
-				pos: {x: "50px", y: "100px"}
-			});
+			
 		});
 
 		context.subscriptions.push(disposable);
@@ -77,17 +73,42 @@ async function activate(context) {
 			
 			
 
+			currentPanel = vscode.window.createWebviewPanel(
+				'newReliable', // Identifies the type of the webview. Used internally
+				'New Reliable', // Title of the panel displayed to the user
+				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+				{
+					enableScripts: true, 
+					retainContextWhenHidden: true,
+					localResourceRoots: [vscode.Uri.file(contentPath)]
+				} // Webview options. More on these later.
+			
+			);
+
 			let timer = null;
 			let service = undefined;
 			//vscode.window.showInformationMessage("Session Chage");
 			if (liveshare.session.role === vsls.Role.Host) {
 				service = await liveshare.shareService(serviceName);
 				vscode.window.showInformationMessage("Starting as host");
-
+				service.onRequest("state", () => {
+					return new Promise(resolve => {
+						resolve(state);
+					});
+				});
+				currentPanel.webview.postMessage({
+					action: "State",
+					state : state
+				});
 			}else if (liveshare.session.role === vsls.Role.Guest) {
 				service = await liveshare.getSharedService(serviceName);
 				vscode.window.showInformationMessage("Starting as guest");
-				
+				let data = await service.request("state", []);
+				console.log(data);
+				currentPanel.webview.postMessage({
+					action: "State",
+					state : data
+				});
 			}
 
 
@@ -98,36 +119,23 @@ async function activate(context) {
 			});
 
 			
-
-				
-
-			currentPanel = vscode.window.createWebviewPanel(
-				'newReliable', // Identifies the type of the webview. Used internally
-				'New Reliable', // Title of the panel displayed to the user
-				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-				{
-					enableScripts: true, 
-		
-					localResourceRoots: [vscode.Uri.file(contentPath)]
-				} // Webview options. More on these later.
-			
-			);
-			
 			currentPanel.webview.onDidReceiveMessage(message => {
 				if(message.action == "Refresh"){
 					currentPanel.webview.html = "stupid";
 					currentPanel.webview.html = getWebviewContent();
 					console.clear();
 
+				}else if(message.action == "State"){
+					state = message.data;
 				}else{
 					service.notify("message", message);
 				}
 
 			}, undefined, context.subscriptions);
-			
+			/*
 			currentPanel.onDidDispose(() => {
 				if(timer!=null)clearInterval(timer);
-			}, null, context.subscriptions);
+			}, null, context.subscriptions);*/
 			
 			currentPanel.webview.html = getWebviewContent();
 			
