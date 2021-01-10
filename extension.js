@@ -73,6 +73,18 @@ async function activate(context) {
 			
 			
 
+			currentPanel = vscode.window.createWebviewPanel(
+				'newReliable', // Identifies the type of the webview. Used internally
+				'New Reliable', // Title of the panel displayed to the user
+				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+				{
+					enableScripts: true, 
+		
+					localResourceRoots: [vscode.Uri.file(contentPath)]
+				} // Webview options. More on these later.
+			
+			);
+
 			let timer = null;
 			let service = undefined;
 			//vscode.window.showInformationMessage("Session Chage");
@@ -105,17 +117,6 @@ async function activate(context) {
 
 				
 
-			currentPanel = vscode.window.createWebviewPanel(
-				'newReliable', // Identifies the type of the webview. Used internally
-				'New Reliable', // Title of the panel displayed to the user
-				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-				{
-					enableScripts: true, 
-		
-					localResourceRoots: [vscode.Uri.file(contentPath)]
-				} // Webview options. More on these later.
-			
-			);
 			
 			currentPanel.webview.onDidReceiveMessage(message => {
 				if(message.action == "Refresh"){
