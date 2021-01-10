@@ -15,6 +15,7 @@ class Reliable {
         for(let tool of tools)this.addTool(tool);
         
     }
+    
 
     /**
     * @returns {Tool}
@@ -29,6 +30,51 @@ class Reliable {
         tool.reliable = this;
     }
 
+    test(){
+        
+        let state = this.getState();
+        for(let svg of this.svgs){
+            svg.delete();
+
+        }
+        this.svgs = [];
+        console.log("restoring from serialized state...");
+        setTimeout(() => {
+            
+            this.setState(state);
+        }, 1000);
+    }
+
+    getState(){
+        let state = [];
+        for(let svg of this.svgs){
+            state.push(svg.serialize())
+        }
+        return state;
+    }
+
+    setState(state){
+        let svgs = {SVGPath, SVGImage};
+        for(let svgData of state){
+            let args = [this.canvas, svgData.pos, svgData.id];
+            for (var key of Object.keys(svgData.args)) {
+                args.push(svgData.args[key]);
+            }
+            let svg = new svgs[svgData.name](...args);
+            svg.transform.scale = svgData.scale;
+            let matrix = svgData.transform;
+            svg.matrix.a = matrix.a;
+            svg.matrix.b = matrix.b;
+            svg.matrix.c = matrix.c;
+            svg.matrix.d = matrix.d;
+            svg.matrix.e = matrix.e;
+            svg.matrix.f = matrix.f;
+
+            svg.updateTransform();
+
+            this.svgs.push(svg);
+        }
+    }
     
     commit(action, broadcast){
         Action.commit(this, action, broadcast);

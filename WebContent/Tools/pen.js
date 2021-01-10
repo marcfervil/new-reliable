@@ -45,9 +45,9 @@ class Draw extends Action{
     execute(reliable){
         super.execute(reliable);
         //this.svgPath = new SVGPath(reliable.canvas, new Vector2(),this.data.id);
-        this.svgPath = new SVGPath(reliable.canvas, this.pos, this.data.id);
+        this.svgPath = new SVGPath(reliable.canvas, this.pos, this.data.id, this.data.path);
 
-        this.svgPath.replacePath(this.data.path);
+       // this.svgPath.replacePath(this.data.path);
         this.svgPath.svg.style.stroke = this.data.color;
         reliable.svgs.push(this.svgPath);
     }

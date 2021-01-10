@@ -11,6 +11,10 @@ class SVGImage extends SVG{
     }
 
 
+    getSerializableProperties(){
+        return ["imageData"]
+    }
+
 
 }
  

@@ -90,7 +90,7 @@
     //Events:
 
     //keypress events
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', (event)=> {
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
         }
@@ -99,6 +99,9 @@
         }
         if(event.key === 'r'){
             refresh();
+        }
+        if(event.key === 't'){
+           app.test();
         }
         if(event.key === "p")app.currentTool ++;
         if(event.key === "o")app.currentTool --;

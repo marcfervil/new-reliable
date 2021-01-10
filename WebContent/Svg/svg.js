@@ -105,6 +105,7 @@ class SVG{
         this.transform.pos = pos;
     }
 
+
     scaleTo(scale, anchorX, anchorY){
         
         //prevent scaling from making width & height < 30 because I don't want to deal with that
@@ -227,6 +228,35 @@ class SVG{
         
     }
 
+    serialize(){
+        let data = {
+            "transform": this.serializeMatrix(),
+            "name": this.constructor.name,
+            "scale": this.transform.scale,
+            "pos": this.pos,
+            "id": this.id,
+            "args": {}
+        }
+        for(let prop of this.getSerializableProperties()){
+            data["args"][prop] = this[prop];
+        }
+        return data; 
+    }
+
+    serializeMatrix(){
+        return {
+            "a": this.matrix.a,
+            "b": this.matrix.b,
+            "c": this.matrix.c,
+            "d": this.matrix.d,
+            "e": this.matrix.e,
+            "f": this.matrix.f,
+        }
+    }
+
+    getSerializableProperties(){
+        return [];
+    }
 
     getSelectionBounds(margin, scale){
         let bounds = this.svg.getBoundingClientRect();
