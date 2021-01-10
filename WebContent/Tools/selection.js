@@ -199,19 +199,22 @@ class Delete extends Action{
     constructor(data){
         super(data);
         this.unDoable = false;
+        this.saves = [];
+        
     }
 
     execute(reliable){
-
+        this.reliable = reliable;
         SVG.forEachSVG(this.data.ids, (svg) => {
+            this.saves.push(svg.serialize());
+            reliable.svgs.splice(reliable.svgs.indexOf(svg), 1);
             svg.delete();
         });
     }
 
 
     undo(){
-    
-        
+        this.reliable.setState(this.saves);
     }
 
 }

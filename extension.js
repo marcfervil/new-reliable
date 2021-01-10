@@ -35,7 +35,7 @@ class ReliableTreeItem {
   /** 
 	@param {vscode.ExtensionContext} context 
  */
-
+let state = [];
 async function activate(context) {
 	try{
 
@@ -67,7 +67,7 @@ async function activate(context) {
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
 			
-			let state = [];
+			
 			
 			let serviceName = "newReliable";
 			
@@ -96,6 +96,10 @@ async function activate(context) {
 						resolve(state);
 					});
 				});
+				currentPanel.webview.postMessage({
+					action: "State",
+					state : state
+				});
 			}else if (liveshare.session.role === vsls.Role.Guest) {
 				service = await liveshare.getSharedService(serviceName);
 				vscode.window.showInformationMessage("Starting as guest");
@@ -113,10 +117,6 @@ async function activate(context) {
 				currentPanel.webview.postMessage(data);
 
 			});
-
-			
-
-				
 
 			
 			currentPanel.webview.onDidReceiveMessage(message => {

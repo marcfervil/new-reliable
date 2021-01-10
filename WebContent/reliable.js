@@ -30,14 +30,18 @@ class Reliable {
         tool.reliable = this;
     }
 
-    test(){
+    clear(){
         
-        let state = this.getState();
         for(let svg of this.svgs){
             svg.delete();
 
         }
         this.svgs = [];
+    }
+
+    test(){
+        let state = this.getState();
+        this.clear();
         console.log("restoring from serialized state...");
         setTimeout(() => {
             
