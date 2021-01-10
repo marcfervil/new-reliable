@@ -31,7 +31,7 @@ class Action {
     static commit(reliable, actionData, broadcast){
         if(broadcast==undefined)broadcast = true; 
 
-        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo};
+        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo, State};
         let action = new actionList[actionData.action](actionData);
 
   
@@ -46,6 +46,12 @@ class Action {
         action.execute(reliable);
 
         if(broadcast)action.broadcast();
+
+        vscode.postMessage({
+            action: "State",
+            data: reliable.getState()
+        });
+
         return action; 
         
     }
@@ -74,8 +80,6 @@ class Redo extends Action{
 
 
 
-
-
 class Undo extends Action{
     
     constructor(data){
@@ -96,6 +100,20 @@ class Undo extends Action{
             console.log("Undo Desync!!!!!");
         }
         
+    }
+
+}
+
+
+
+class State extends Action{
+    
+    constructor(data){
+        super(data);
+    }
+
+    execute(reliable){
+        reliable.setState(this.data.state);
     }
 
 }

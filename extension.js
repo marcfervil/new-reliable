@@ -56,11 +56,7 @@ async function activate(context) {
 			if (!currentPanel)return;        
 			
 			//vscode.window.showInformationMessage('Hello World from New Reliable!');
-			currentPanel.webview.postMessage({
-				command: "Drag",
-				id: "image",
-				pos: {x: "50px", y: "100px"}
-			});
+			
 		});
 
 		context.subscriptions.push(disposable);
@@ -71,7 +67,7 @@ async function activate(context) {
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
 			
-			
+			let state = [];
 			
 			let serviceName = "newReliable";
 			
@@ -83,11 +79,19 @@ async function activate(context) {
 			if (liveshare.session.role === vsls.Role.Host) {
 				service = await liveshare.shareService(serviceName);
 				vscode.window.showInformationMessage("Starting as host");
-
+				service.onRequest("state", () => {
+					return new Promise(resolve => {
+						resolve(state);
+					});
+				});
 			}else if (liveshare.session.role === vsls.Role.Guest) {
 				service = await liveshare.getSharedService(serviceName);
 				vscode.window.showInformationMessage("Starting as guest");
-				
+				let data = service.request("state", []);
+				currentPanel.webview.postMessage({
+					action: "State",
+					state : data
+				});
 			}
 
 
@@ -119,15 +123,17 @@ async function activate(context) {
 					currentPanel.webview.html = getWebviewContent();
 					console.clear();
 
+				}else if(message.action == "State"){
+					state = message.data;
 				}else{
 					service.notify("message", message);
 				}
 
 			}, undefined, context.subscriptions);
-			
+			/*
 			currentPanel.onDidDispose(() => {
 				if(timer!=null)clearInterval(timer);
-			}, null, context.subscriptions);
+			}, null, context.subscriptions);*/
 			
 			currentPanel.webview.html = getWebviewContent();
 			
