@@ -22,17 +22,18 @@
                
                 left: 20px;
                 top: 40px;
-                background-color: #313743;
-                border-radius: 5px;
+                
+                background-color: #29303A;
                 box-shadow: 2px 2px #20252C;
                 line-height: 0px;
                 border-radius: 5px;
+                overflow: hidden;
             }
 
             .toolbar img{
                 width: 40px;
                 height: 40px;
-                cursor: pointer;
+                
             }
 
            
@@ -40,13 +41,13 @@
 
             .selected{
                 pointer-events: none;
-                background-color: #29303A;
-                border-radius: 5px;
+               
+                background-color: #313743;
             }
 
             .unselected:hover{
                 background-color: #404A58;
-                border-radius: 5px;
+                cursor: pointer;
                 
                
             }
@@ -161,11 +162,12 @@
         if(event.key === 't'){
            app.test();
         }
+        /*
         if(event.key === "p")app.currentTool ++;
         if(event.key === "o")app.currentTool --;
         if(app.currentTool==app.toolbar.length)app.currentTool=0;
-        if(app.currentTool<0)app.currentTool=app.toolbar.length-1;
-        $("#toolName").text(app.getCurrentTool().name);
+        if(app.currentTool<0)app.currentTool=app.toolbar.length-1;*/
+        //$("#toolName").text(app.getCurrentTool().name);
     });
 
     //recieve message from VSCode

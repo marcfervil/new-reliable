@@ -6,6 +6,9 @@ class Eraser extends Tool{
         super("Eraser", "images/eraser.svg");
     }
 
+    getImage(){
+        return "erase2.svg";
+    }
 
     canvasDragStart(pos){
         this.svgRect = new SVGPointer(this.reliable.canvas, pos)

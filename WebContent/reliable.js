@@ -44,8 +44,8 @@ class Reliable {
         tool.reliable = this;
 
         if(tool.getImage()!=""){
-            let img = $("<img/>").attr("src", `${this.path}/images/icons/${tool.getImage()}`).on("click", () => this.swapTool(tool));
-            let imgDiv = $("<div/>").attr("class", "iconDiv unselected").append(img);
+            let img = $("<img/>").attr("src", `${this.path}/images/icons/${tool.getImage()}`);
+            let imgDiv = $("<div/>").attr("class", "iconDiv unselected").append(img).on("click", () => this.swapTool(tool));
             tool.imgDiv = imgDiv;
             
             this.toolbarDiv.append(imgDiv);

@@ -15,6 +15,14 @@ class Selection extends Tool{
         });
     }
 
+    dectivated(){
+        Action.commit(this.reliable, {
+            action: "UnSelect",
+            ids: this.selected,
+        });  
+        this.selected = [];
+    }
+
     getImage(){
         return "point2.svg";
     }
