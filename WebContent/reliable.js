@@ -2,7 +2,7 @@
 
 class Reliable {
 
-    constructor(canvas, tools){
+    constructor(canvas, path, tools){
         this.toolbar = [];
         this.currentTool = 0;
         this.canvas = canvas;
@@ -10,10 +10,12 @@ class Reliable {
         this.myActionIds = [];
         this.redoActions = [];
         this.svgs = [];
+        this.path = path;
         this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
-        
+        this.toolbarDiv = $("#toolbar");
         for(let tool of tools)this.addTool(tool);
-        
+        //console.log(path);
+        this.swapTool(tools[0]);
     }
     
 
@@ -24,10 +26,30 @@ class Reliable {
         return this.toolbar[this.currentTool];
     }
 
+    swapTool(tool){
+        let lastTool = this.getCurrentTool()
+        lastTool.dectivated();
+        lastTool.imgDiv.removeClass("selected");
+        lastTool.imgDiv.addClass("unselected");
+        //lastTool.imgDiv.removeClass("hover");
+        this.currentTool = this.toolbar.indexOf(tool);
+        tool.activated();
+        tool.imgDiv.addClass("selected");
+        tool.imgDiv.removeClass("unselected");
+    }
+
     addTool(tool){
-       
+        
         this.toolbar.push(tool);
         tool.reliable = this;
+
+        if(tool.getImage()!=""){
+            let img = $("<img/>").attr("src", `${this.path}/images/icons/${tool.getImage()}`).on("click", () => this.swapTool(tool));
+            let imgDiv = $("<div/>").attr("class", "iconDiv unselected").append(img);
+            tool.imgDiv = imgDiv;
+            
+            this.toolbarDiv.append(imgDiv);
+        }
     }
 
     clear(){

@@ -3,14 +3,10 @@ class Tool {
 
 
    
-    constructor(name, img){
+    constructor(name){
         
         this.name = name;
-        this.img = img;
-       
-       
         this.canvas = undefined;
-      
     }
 
   
@@ -28,7 +24,20 @@ class Tool {
 
     }
 
+    getImage()
+    {
+        return "";
+    }
 
+    activated(){
+        
+    }
+
+    dectivated(){
+        
+    }
+
+    
 }
 
 

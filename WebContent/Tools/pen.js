@@ -5,6 +5,9 @@ class Pen extends Tool{
         super("Pen", "images/pen.svg");
     }
 
+    getImage(){
+        return "draw2.svg";
+    }
 
     canvasDragStart(pos){
         this.svgPath = new SVGPath(this.reliable.canvas, pos);

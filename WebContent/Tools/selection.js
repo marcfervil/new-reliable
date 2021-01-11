@@ -15,6 +15,9 @@ class Selection extends Tool{
         });
     }
 
+    getImage(){
+        return "point2.svg";
+    }
 
     canvasDragStart(pos){
  
