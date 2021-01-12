@@ -123,6 +123,8 @@
     var vscode = acquireVsCodeApi();
     var canvas = $("#canvas")[0];
     let mousePos = new Vector2();
+    let zoom = new Vector2(1, 1);
+    let pan = new Vector2(0, 0);
 
     var app = new Reliable(canvas, "{{path}}", [
         new Pen(),
@@ -155,8 +157,7 @@
     $("#toolName").text(app.getCurrentTool().name);
     //Events:
    // let pageOffset = new Vector2(0, 0);
-    let zoom = new Vector2(1, 1);
-    let pan = new Vector2(0, 0);
+    
 
     document.addEventListener('keydown', (event)=> {
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {

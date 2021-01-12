@@ -37,19 +37,15 @@ class Pan extends Tool{
                     
                 }
             }, 200);
-
+           
         };
-
+        
 
 
         document.addEventListener('keydown', (event)=> {
             if(event.key === 'f'){
   
-                zoom = new Vector2(1.5, 1.5);
-                this.updateView();
-
-                /*
-
+  
                 let cx = parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
                 let cy = parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
                 let canvasOffset = new Vector2(-cx, -cy);
@@ -61,15 +57,19 @@ class Pan extends Tool{
                 let w = document.body.clientWidth;
                 let h = document.documentElement.clientHeight;
 
-                let center = new Vector2((w/2)-cx, (h/2)-cy);
+                let center = new Vector2((w/2), (h/2));
 
-                let mouseOffset = mousePos.multiply(zoom).subtract(new Vector2(cx, cy)).subtract(center);
+                let mouseOffset = mousePos.multiply(zoom).subtract(center);
 
-                let centerMouse = center.add(mouseOffset);
+                let centerMouse = center.add(mouseOffset).add(pan);
                 this.debugRect(centerMouse.x, centerMouse.y, 10, 10, "red");
-                */
-             
+                
+                zoom = new Vector2(1.5, 1.5);
+                this.updateView();
+                this.centerPan(centerMouse);
     
+
+                
             }
     
         });
@@ -92,12 +92,12 @@ class Pan extends Tool{
 
  
 
-        let w = document.body.clientWidth/2;
+        let w = document.documentElement.clientWidth/2;
         let h = document.documentElement.clientHeight/2;
 
-        let centerScreen = new Vector2(w, h);
+        let centerScreen = new Vector2(w, h).multiply(zoom);
 
-        this.pan(delta.scale(-1).add(centerScreen), true);
+        this.pan(delta.scale(-1).add(pan).add(centerScreen), true);
 
     }
 
@@ -106,8 +106,13 @@ class Pan extends Tool{
     }
 
     pan(delta, hard){
+        //if(hard==true){
+        //    pan = delta.scale(1);
+        //}else{
         
-        pan = pan.subtract(delta);
+            pan = pan.subtract(delta);
+     
+        
         this.updateView();
         
         /*
