@@ -16,6 +16,7 @@ class Reliable {
         for(let tool of tools)this.addTool(tool);
         //console.log(path);
         this.swapTool(tools[0]);
+        
     }
     
 
@@ -135,7 +136,7 @@ class Reliable {
 
     mouseDownCanvas(e){
         
-        let mousePos = new Vector2(e.layerX, e.layerY);
+        let mousePos = new Vector2(e.layerX, e.layerY).multiply(zoom);
         this.canvasMouseDown = true;
         this.canvasDragMouseStart = mousePos;
         
@@ -150,7 +151,7 @@ class Reliable {
     }
 
     mouseMoveCanvas(e){
-        let pos = new Vector2(e.layerX, e.layerY);
+        let pos = new Vector2(e.layerX, e.layerY).multiply(zoom);
         this.getCurrentTool().canvasDrag(pos);
     }
 

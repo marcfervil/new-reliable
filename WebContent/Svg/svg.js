@@ -85,7 +85,7 @@ class SVG{
     }
     
     moveTo(pos){
-        console.log(this.getSelectMargin());
+        
         //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
         let selectMargin = new Vector2(5+this.getSelectMargin(), 5+this.getSelectMargin());
         if(this.isSelected)pos = pos.subtract(selectMargin);
@@ -187,7 +187,7 @@ class SVG{
 
         if(this.isDragging){
      
-            let clickPos = new Vector2(e.layerX, e.layerY);
+            let clickPos = new Vector2(e.layerX, e.layerY).multiply(zoom);
 
             clickPos = clickPos.subtract(this.clickOffset);
 
@@ -207,8 +207,8 @@ class SVG{
         this.startDrag = this.transform.pos;
 
         //add 5 to account for larger bounding box due to anchors.  It is halfed because they are half out
-        let offsetX = e.offsetX - rect.left - this.getSelectMargin();
-        let offsetY = e.offsetY - rect.top - this.getSelectMargin();
+        let offsetX = (e.offsetX*zoom.x) - rect.left - this.getSelectMargin();
+        let offsetY = (e.offsetY*zoom.y) - rect.top - this.getSelectMargin();
 
         this.clickOffset = new Vector2(offsetX, offsetY);
         
@@ -410,7 +410,7 @@ class SVG{
             this.scaleAnchor = anchor;
 
 
-            let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY);
+            let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY).multiply(zoom);
            
           
    
@@ -430,7 +430,7 @@ class SVG{
        
                 this.scaleAnchor = anchor;
 
-                let mouseEnd = new Vector2(mouseMove.clientX, mouseMove.clientY);
+                let mouseEnd = new Vector2(mouseMove.clientX, mouseMove.clientY).multiply(zoom);
                 let delta = mouseEnd.subtract(mouseStart);
 
                 let deltaPercent = new Vector2(this.scaleAnchor.x * (delta.x/rectWidth), this.scaleAnchor.y * (delta.y/rectHeight)).add(startScale);
