@@ -21,6 +21,7 @@ class Pan extends Tool{
         super("Pan");
         this.scolled = 0;
         this.panVal = new Vector2(0, 0);
+
         window.onwheel = (e)=> {
             
            
@@ -31,7 +32,7 @@ class Pan extends Tool{
             this.reliable.swapTool(this, false);
             
             if(e.ctrlKey){
-                this.zoom((e.deltaY) * 0.005);
+                this.zoom((e.deltaY) * 0.01);
                 
             }else{
                 this.pan(new Vector2(-e.deltaX, -e.deltaY));
@@ -135,10 +136,23 @@ class Pan extends Tool{
         //if(hard==true){
         //    pan = delta.scale(1);
         //}else{
-        
-            pan = pan.subtract(delta);
+      
+
+        //console.log(document.documentElement.clientWidth + pan.y);
+        console.log();
+//        
+       // if(pan.y + document.documentElement.clientWidtht > 5000)delta.y =0;
+        pan = pan.subtract(delta);
      
+        if(delta.x> 0 && pan.x<0)pan.x = 0;
+        if(delta.y> 0 && pan.y<0)pan.y = 0;
         
+        //infinite scroll lol
+        //if(delta.y< 0 && pan.y + document.documentElement.clientWidth > 5000) pan.y = pan.y - document.documentElement.clientWidth;
+        if(delta.y< 0 && pan.y + document.documentElement.clientHeight > 5000) pan.y = 5000 - document.documentElement.clientHeight;
+        if(delta.x < 0 && pan.x + document.documentElement.clientWidth > 5000) pan.x = 5000 - document.documentElement.clientWidth;
+
+
         this.updateView();
         
         /*
