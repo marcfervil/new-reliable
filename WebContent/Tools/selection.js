@@ -74,8 +74,8 @@ class Selection extends Tool{
         let rect = this.drawRect.getBoundingClientRect();
         let svgRect = this.reliable.canvas.createSVGRect();
 
-        svgRect.x = rect.x/zoom.x;
-        svgRect.y = rect.y/zoom.y;
+        svgRect.x = (rect.x-pan.x)/zoom.x;
+        svgRect.y = (rect.y-pan.y)/zoom.y;
         svgRect.width = rect.width/zoom.x;
         svgRect.height = rect.height/zoom.y;
         

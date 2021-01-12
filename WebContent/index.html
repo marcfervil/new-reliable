@@ -172,8 +172,12 @@
            app.test();
         }
 
-      
-
+        if(event.keyCode >= 49 && event.keyCode <= 57){
+            let tool = app.toolbar[parseInt(event.key)-1];
+            if(tool !== undefined){
+                app.swapTool(tool);
+            }
+        }
         
 
         if(event.key === 'p'){
@@ -236,11 +240,13 @@
     Element.prototype.getBoundingClientRect = function() {
         let rect = this.getBoundingClientRectOld();
 
-        let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
-        let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
+        //let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
+        //let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
   
-        //let deltaX = -pan.x;
-        //let deltaY = -pan.y
+
+
+        let deltaX = pan.x;
+        let deltaY = pan.y;
 
         //let deltaX = pan.x;
         //let deltaY = pan.y;

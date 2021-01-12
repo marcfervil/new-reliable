@@ -27,9 +27,9 @@ class Reliable {
         return this.toolbar[this.currentTool];
     }
 
-    swapTool(tool){
+    swapTool(tool, deactivate){
         let lastTool = this.getCurrentTool()
-        lastTool.dectivated();
+        if(deactivate === undefined || deactivate==true)lastTool.dectivated();
         lastTool.imgDiv.removeClass("selected");
         lastTool.imgDiv.addClass("unselected");
         //lastTool.imgDiv.removeClass("hover");
@@ -134,9 +134,20 @@ class Reliable {
         this.svgs.push(svg);
     }
 
+    getMousPos(e){
+  
+        var pt = canvas.createSVGPoint();
+        pt.x = e.clientX; 
+        pt.y = e.clientY;
+        pt.matrixTransform(canvas.getScreenCTM().inverse())
+       
+        //return new Vector2(e.layerX, e.layerY).multiply(zoom);
+        return new Vector2(pt.x, pt.y).add(pan);
+    }
+
     mouseDownCanvas(e){
         
-        let mousePos = new Vector2(e.layerX, e.layerY).multiply(zoom);
+        let mousePos = this.getMousPos(e);
         this.canvasMouseDown = true;
         this.canvasDragMouseStart = mousePos;
         
@@ -151,7 +162,7 @@ class Reliable {
     }
 
     mouseMoveCanvas(e){
-        let pos = new Vector2(e.layerX, e.layerY).multiply(zoom);
+        let pos = this.getMousPos(e);
         this.getCurrentTool().canvasDrag(pos);
     }
 
