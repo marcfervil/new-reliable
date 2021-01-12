@@ -23,12 +23,19 @@ class Pan extends Tool{
         this.panVal = new Vector2(0, 0);
         window.onwheel = (e)=> {
             
+           
+
             if(this.scolled ==0 )this.lastTool = this.reliable.getCurrentTool();
             this.scolled += 1;
 
             this.reliable.swapTool(this, false);
-            this.pan(new Vector2(-e.deltaX, -e.deltaY));
             
+            if(e.ctrlKey){
+                this.zoom((e.deltaY) * 0.005);
+                
+            }else{
+                this.pan(new Vector2(-e.deltaX, -e.deltaY));
+            }
             //somebody tell me if this is dumb
             this.timer = setTimeout(() => {
                 this.scolled-=1;
@@ -43,18 +50,18 @@ class Pan extends Tool{
 
 
         document.addEventListener('keydown', (event)=> {
-            if(event.key === 'f'){
+            if(event.key === '='){
   
                 
-                this.zoom(.5);
+                this.zoom(-.5);
              
                 
             }
-            if(event.key === 'g'){
+            if(event.key === '-'){
   
                 
-                this.zoom(2);
-                console.log(zoom);
+                this.zoom(.5);
+                
                 
             }
     
@@ -75,9 +82,11 @@ class Pan extends Tool{
     }
 
     zoom(zoomFactor){
-
-        
-
+        const maxZoom = 0.2;
+       
+        let deltaZoom = new Vector2(zoomFactor, zoomFactor);
+       
+       
         let w = document.documentElement.clientWidth;
         let h = document.documentElement.clientHeight;
 
@@ -86,10 +95,18 @@ class Pan extends Tool{
         let mouseOffset = mousePos.multiply(zoom).subtract(center);
 
         let centerMouse = center.add(mouseOffset).add(pan);
-        this.debugRect(centerMouse.x, centerMouse.y, 10, 10, "red");
+        //this.debugRect(centerMouse.x, centerMouse.y, 10, 10, "red");
         
-        let deltaZoom = new Vector2(zoomFactor, zoomFactor);
-        zoom = zoom.multiply(deltaZoom);
+        
+   
+        zoom = zoom.add(deltaZoom);
+
+        if(zoomFactor < 0 && zoom.x < maxZoom){
+            zoom = new Vector2(maxZoom, maxZoom);
+
+            return;
+        }
+
         this.updateView();
         this.centerPan(centerMouse);
     }
