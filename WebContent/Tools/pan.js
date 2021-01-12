@@ -45,30 +45,16 @@ class Pan extends Tool{
         document.addEventListener('keydown', (event)=> {
             if(event.key === 'f'){
   
-  
-                let cx = parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
-                let cy = parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
-                let canvasOffset = new Vector2(-cx, -cy);
-                let canvasBounds = canvas.getBoundingClientRectOld();
-
-                //let dist = mousePos.subtract(new Vector2((screen.width/2),(screen.height/2).add()));
-                //console.log(canvas.clienrtX+(canvas.clientWidth));
-
-                let w = document.body.clientWidth;
-                let h = document.documentElement.clientHeight;
-
-                let center = new Vector2((w/2), (h/2));
-
-                let mouseOffset = mousePos.multiply(zoom).subtract(center);
-
-                let centerMouse = center.add(mouseOffset).add(pan);
-                this.debugRect(centerMouse.x, centerMouse.y, 10, 10, "red");
                 
-                zoom = new Vector2(1.5, 1.5);
-                this.updateView();
-                this.centerPan(centerMouse);
-    
-
+                this.zoom(.5);
+             
+                
+            }
+            if(event.key === 'g'){
+  
+                
+                this.zoom(2);
+                console.log(zoom);
                 
             }
     
@@ -88,6 +74,26 @@ class Pan extends Tool{
 
     }
 
+    zoom(zoomFactor){
+
+        
+
+        let w = document.documentElement.clientWidth;
+        let h = document.documentElement.clientHeight;
+
+        let center = new Vector2((w/2), (h/2));
+
+        let mouseOffset = mousePos.multiply(zoom).subtract(center);
+
+        let centerMouse = center.add(mouseOffset).add(pan);
+        this.debugRect(centerMouse.x, centerMouse.y, 10, 10, "red");
+        
+        let deltaZoom = new Vector2(zoomFactor, zoomFactor);
+        zoom = zoom.multiply(deltaZoom);
+        this.updateView();
+        this.centerPan(centerMouse);
+    }
+
     centerPan(delta){
 
  
@@ -97,7 +103,10 @@ class Pan extends Tool{
 
         let centerScreen = new Vector2(w, h).multiply(zoom);
 
-        this.pan(delta.scale(-1).add(pan).add(centerScreen), true);
+        let panPos = delta.scale(-1).add(pan).add(centerScreen);
+        let mouseOffset = mousePos.multiply(zoom).subtract(centerScreen);
+       
+        this.pan(panPos.add(mouseOffset), true);
 
     }
 
