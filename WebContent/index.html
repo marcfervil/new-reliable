@@ -78,7 +78,7 @@
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
        
         
-        <svg width="100%" height="100%" preserveAspectRatio="none" style="position: absolute; top:0px; left:0px; z-index: -1" id="canvas"> 
+        <svg width="5000px" height="5000px" preserveAspectRatio="none" style="position: absolute; top:0px; left:0px; z-index: -1" id="canvas"> 
             
             <foreignobject class="node" x="0" y="0" width="100%" height="100%">
                 <div class="backdrop"></div>
@@ -172,23 +172,7 @@
            app.test();
         }
 
-        if(event.key === 'f'){
-  
-            //console.log(canvas.clientHeight);
-            canvas.setAttribute("viewBox", `0 0 ${canvas.clientWidth*2} ${canvas.clientHeight*2}`)
-            zoom = new Vector2(2, 2);
-
-
-
-            //canvas.setAttribute("transform", `translate(100% 100%)`)
-            //canvas.style.transform = `translate(${canvas.clientWidth/4}px, ${canvas.clientWidth/4}px)`;
-            
-            
-            //canvas.style.transform = `scale(0.5, 0.5)`;
-            
-            //$(canvas).css( 'left', `+=${canvas.clientWidth/2}px` );
-        }
-
+      
 
         
 
@@ -238,8 +222,9 @@
 
     canvas.addEventListener("mousemove", (e) => {
         
-        mousePos.x = e.layerX;
-        mousePos.y = e.layerY;
+        mousePos.x = e.clientX;
+        mousePos.y = e.clientY;
+        
         //console.log(mousePos);
     });
     
@@ -252,8 +237,11 @@
         let rect = this.getBoundingClientRectOld();
 
         let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
-        let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) 
+        let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
   
+        //let deltaX = -pan.x;
+        //let deltaY = -pan.y
+
         //let deltaX = pan.x;
         //let deltaY = pan.y;
 
