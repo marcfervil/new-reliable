@@ -247,9 +247,17 @@
 
         let deltaX = pan.x;
         let deltaY = pan.y;
+    
 
-        //let deltaX = pan.x;
-        //let deltaY = pan.y;
+        let deltaZoom = zoom;
+        rect.left *= deltaZoom.x;
+        rect.right *= deltaZoom.x;
+        rect.top *= deltaZoom.y;
+        rect.bottom *= deltaZoom.y;
+        rect.x *= deltaZoom.x;
+        rect.y *= deltaZoom.y;
+        rect.width *= deltaZoom.x;
+        rect.height *= deltaZoom.y;
 
         rect.left += deltaX;
         rect.right += deltaX;
@@ -258,15 +266,6 @@
         rect.x += deltaX;
         rect.y += deltaY;
 
-
-        rect.left *= zoom.x;
-        rect.right *= zoom.x;
-        rect.top *= zoom.y;
-        rect.bottom *= zoom.y;
-        rect.x *= zoom.x;
-        rect.y *= zoom.y;
-        rect.width *= zoom.x;
-        rect.height *= zoom.y;
         return rect;
     };
 </script>

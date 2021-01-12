@@ -45,18 +45,11 @@ class Pan extends Tool{
         document.addEventListener('keydown', (event)=> {
             if(event.key === 'f'){
   
-                zoom = new Vector2(0.5, 0.5);
-                canvas.setAttribute("viewBox", `0 0 ${canvas.clientWidth*zoom.x} ${canvas.clientHeight*zoom.y}`);
+                zoom = new Vector2(1.5, 1.5);
+                this.updateView();
 
+                /*
 
-                //let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
-                //let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) 
-          
-                //canvas.setAttribute("viewBox", `${deltaX} ${deltaY} ${canvas.clientWidth*0.5} ${canvas.clientHeight*0.5}`);
-                
-                //
-
-                //let offset = new Vector2(-(canvas.clientWidth*zoom.x)/2, -(canvas.clientHeight*zoom.y)/2);
                 let cx = parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
                 let cy = parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
                 let canvasOffset = new Vector2(-cx, -cy);
@@ -74,9 +67,7 @@ class Pan extends Tool{
 
                 let centerMouse = center.add(mouseOffset);
                 this.debugRect(centerMouse.x, centerMouse.y, 10, 10, "red");
-
-//                this.centerPan(centerMouse);
-
+                */
              
     
             }
@@ -110,10 +101,14 @@ class Pan extends Tool{
 
     }
 
+    updateView(){
+        canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth*zoom.x} ${canvas.clientHeight*zoom.y}`);
+    }
+
     pan(delta, hard){
         
         pan = pan.subtract(delta);
-        canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth*zoom.x} ${canvas.clientHeight*zoom.y}`);
+        this.updateView();
         
         /*
         if(hard==true){

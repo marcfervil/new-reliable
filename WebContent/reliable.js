@@ -142,7 +142,7 @@ class Reliable {
         pt.matrixTransform(canvas.getScreenCTM().inverse())
        
         //return new Vector2(e.layerX, e.layerY).multiply(zoom);
-        return new Vector2(pt.x, pt.y).add(pan);
+        return new Vector2(pt.x, pt.y).multiply(zoom).add(pan);
     }
 
     mouseDownCanvas(e){
