@@ -48,6 +48,7 @@
                 height: 100%;
                 background-size: 70px 70px;
                 opacity: 0.1;
+               
                 background-image:
                 linear-gradient(to right, grey 1px, transparent 1px),
                 linear-gradient(to bottom, grey 1px, transparent 1px);
@@ -126,7 +127,8 @@
     var app = new Reliable(canvas, "{{path}}", [
         new Pen(),
         new Selection(),
-        new Eraser()
+        new Eraser(),
+        new Pan()
     ]);
 
     canvas.setAttribute("viewBox", `0 0 ${canvas.clientWidth} ${canvas.clientHeight}`)
@@ -152,8 +154,10 @@
 
     $("#toolName").text(app.getCurrentTool().name);
     //Events:
-    let pageOffset = new Vector2(0, 0);
+   // let pageOffset = new Vector2(0, 0);
     let zoom = new Vector2(1, 1);
+    let pan = new Vector2(0, 0);
+
     document.addEventListener('keydown', (event)=> {
         if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
             undo();
@@ -169,10 +173,13 @@
         }
 
         if(event.key === 'f'){
-            console.log("fw");
+  
             //console.log(canvas.clientHeight);
             canvas.setAttribute("viewBox", `0 0 ${canvas.clientWidth*2} ${canvas.clientHeight*2}`)
             zoom = new Vector2(2, 2);
+
+
+
             //canvas.setAttribute("transform", `translate(100% 100%)`)
             //canvas.style.transform = `translate(${canvas.clientWidth/4}px, ${canvas.clientWidth/4}px)`;
             
@@ -187,7 +194,9 @@
 
         if(event.key === 'p'){
             //offset+=10;
-           $(canvas).css( 'left', '+=10px' );;
+           $(canvas).css( 'left', '+=10px' );
+           //canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`);
+           pan.x += 10;
         }
         /*
         if(event.key === "p")app.currentTool ++;
@@ -245,6 +254,9 @@
         let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
         let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) 
   
+        //let deltaX = pan.x;
+        //let deltaY = pan.y;
+
         rect.left += deltaX;
         rect.right += deltaX;
         rect.top += deltaY;
