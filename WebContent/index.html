@@ -124,7 +124,7 @@
     var canvas = $("#canvas")[0];
     let mousePos = new Vector2();
     let zoom = new Vector2(1, 1);
-    let pan = new Vector2(0, 0);
+    let pan = new Vector2(2500, 2500);
 
     var app = new Reliable(canvas, "{{path}}", [
         new Pen(),
@@ -133,7 +133,7 @@
         new Pan()
     ]);
 
-    canvas.setAttribute("viewBox", `0 0 ${canvas.clientWidth} ${canvas.clientHeight}`)
+    canvas.setAttribute("viewBox", `2500 2500 ${canvas.clientWidth} ${canvas.clientHeight}`)
 
     function undo(){
         app.undo();
