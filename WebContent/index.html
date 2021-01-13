@@ -68,6 +68,21 @@
                
             }
 
+            .SVGInput{
+                background-color: transparent;
+                outline: none;
+                width: 100%;
+                border:  none;
+                color: #AAB2C0;
+                
+                font-size: 40px;
+            }
+
+            .SVGInput:focus {
+                outline: none;
+                
+            }
+
             #canvas{
                 position: absolute; 
                 top:0px; 
@@ -176,6 +191,8 @@
     function redo(){
         app.redo();
     }
+
+    window.onscroll = function () { window.scrollTo(0, 0); };
 
     function refresh(){
         console.clear();
