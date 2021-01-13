@@ -35,7 +35,7 @@ class Pan extends Tool{
                 this.zoom((e.deltaY) * 0.01);
                 
             }else{
-                this.pan(new Vector2(-e.deltaX, -e.deltaY));
+                this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom));
             }
             //somebody tell me if this is dumb
             this.timer = setTimeout(() => {
