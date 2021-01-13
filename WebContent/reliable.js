@@ -11,7 +11,8 @@ class Reliable {
         this.redoActions = [];
         this.svgs = [];
         this.path = path;
-        this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
+        //this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
+        $(this.canvas).on("mousedown", (e) => this.mouseDownCanvas(e))
         this.toolbarDiv = $("#toolbar");
         for(let tool of tools)this.addTool(tool);
         //console.log(path);
@@ -85,7 +86,7 @@ class Reliable {
     }
 
     setState(state){
-        let svgs = {SVGPath, SVGImage};
+        let svgs = {SVGPath, SVGImage, SVGText};
         for(let svgData of state){
             let args = [this.canvas, new Vector2(svgData.pos.x, svgData.pos.y), svgData.id];
             for (var key of Object.keys(svgData.args)) {
@@ -150,7 +151,8 @@ class Reliable {
     }
 
     mouseDownCanvas(e){
-        
+      
+        if(this.getCurrentTool().eatCanvasDrag() && e.target.id!="backdrop") return;
         let mousePos = this.getMousPos(e);
         this.canvasMouseDown = true;
         this.canvasDragMouseStart = mousePos;

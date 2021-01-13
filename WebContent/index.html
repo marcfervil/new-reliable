@@ -72,6 +72,7 @@
                 background-color: transparent;
                 outline: none;
                 width: 100%;
+                fill: #AAB2C0;
                 border:  none;
                 color: #AAB2C0;
                 
@@ -103,7 +104,7 @@
         <svg width="5000px" height="5000px" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
             
             <foreignobject class="node" x="0" y="0" width="5000px" height="5000px">
-                <div class="backdrop"></div>
+                <div id="backdrop" class="backdrop"></div>
             </foreignobject>
           
         </svg>
@@ -128,6 +129,7 @@
 <script src="{{path}}/action.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svg.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgPath.js" type="text/javascript"></script>
+<script src="{{path}}/Svg/svgText.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgImage.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgPointer.js" type="text/javascript"></script>
 <script src="{{path}}/tools/tools.js" type="text/javascript"></script>
@@ -148,29 +150,31 @@
     let mousePos = new Vector2();
     let zoom = new Vector2(1, 1);
     let pan = new Vector2(2500, 2500);
+    let hotkeysEnabled = true;
 
 
-    document.addEventListener('keydown', (event)=> {
-        if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
-            undo();
-        }
-        if((event.metaKey && event.key === 'y') || (event.ctrlKey && event.key === 'y')){
-            redo();
-        }
-        if(event.key === 'r'){
-            refresh();
-        }
-        if(event.key === 't'){
-           app.test();
-        }
+    document.addEventListener('keydown', (event) => {
+        if(hotkeysEnabled){
+            if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
+                undo();
+            }
+            if((event.metaKey && event.key === 'y') || (event.ctrlKey && event.key === 'y')){
+                redo();
+            }
+            if(event.key === 'r'){
+                refresh();
+            }
+            if(event.key === 't'){
+            app.test();
+            }
 
-        if(event.keyCode >= 49 && event.keyCode <= 57){
-            let tool = app.toolbar[parseInt(event.key)-1];
-            if(tool !== undefined){
-                app.swapTool(tool);
+            if(event.keyCode >= 49 && event.keyCode <= 57){
+                let tool = app.toolbar[parseInt(event.key)-1];
+                if(tool !== undefined){
+                    app.swapTool(tool);
+                }
             }
         }
-        
 
     });
 
@@ -179,7 +183,7 @@
         new Selection(),
         new Eraser(),
         new Pan(),
-        new Text()
+        new TextTool()
     ]);
 
     canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`)

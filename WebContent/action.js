@@ -31,7 +31,7 @@ class Action {
     static commit(reliable, actionData, broadcast){
         if(broadcast==undefined)broadcast = true; 
 
-        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo, State};
+        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo, State, Text};
         let action = new actionList[actionData.action](actionData);
 
   

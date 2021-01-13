@@ -16,7 +16,7 @@ class SVGPath extends SVG{
         this.svg.style.strokeLinecap = "round";
         this.svg.style.strokeMiterlimit = 10;
         this.svg.style.strokeDasharray = "none";
-
+        this.svg.setAttribute("vector-effect","non-scaling-stroke");
 
 
         //this.svg.style.strokeDashoffset= 0;

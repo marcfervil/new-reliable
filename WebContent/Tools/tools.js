@@ -10,7 +10,9 @@ class Tool {
         this.active = false;
     }
 
-  
+    eatCanvasDrag(){
+        return false;
+    }
 
   
     canvasDragStart(){
