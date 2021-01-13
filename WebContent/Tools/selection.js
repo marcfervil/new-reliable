@@ -76,8 +76,8 @@ class Selection extends Tool{
 
         svgRect.x = (rect.x);
         svgRect.y = (rect.y);
-        svgRect.width = rect.width * zoom.x;
-        svgRect.height = rect.height * zoom.y;
+        svgRect.width = rect.width ;
+        svgRect.height = rect.height ;
         
 
 
