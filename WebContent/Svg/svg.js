@@ -184,11 +184,11 @@ class SVG{
     }
 
     selectedMouseMove(e){
-
+       
         if(this.isDragging){
-     
-            let clickPos = new Vector2(e.layerX, e.layerY).multiply(zoom);
-
+            //used to layerX, layerY...look into this..
+            let clickPos = new Vector2(e.clientX, e.clientY).multiply(zoom);
+       
             clickPos = clickPos.subtract(this.clickOffset);
 
             
@@ -211,12 +211,13 @@ class SVG{
         let offsetY = (e.offsetY*zoom.y) - rect.top - this.getSelectMargin();
 
         this.clickOffset = new Vector2(offsetX, offsetY);
-        
+       // console.log(this.clickOffset);
 
 
         this.mouseMoveRef = (e) => this.selectedMouseMove(e);
         this.mouseUpRef = (e) => this.selectedMouseUp(e);
 
+       
         this.parent.addEventListener('mousemove', this.mouseMoveRef);
         this.parent.addEventListener('mouseup', this.mouseUpRef);
 

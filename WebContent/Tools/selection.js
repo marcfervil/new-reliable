@@ -77,8 +77,7 @@ class Selection extends Tool{
         svgRect.x = (rect.x);
         svgRect.y = (rect.y);
         svgRect.width = rect.width ;
-        svgRect.height = rect.height ;
-        
+        svgRect.height = rect.height ;   
 
 
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
