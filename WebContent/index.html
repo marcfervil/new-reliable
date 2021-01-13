@@ -80,7 +80,7 @@
         
         <svg width="5000px" height="5000px" preserveAspectRatio="none" style="position: absolute; top:0px; left:0px; z-index: -1" id="canvas"> 
             
-            <foreignobject class="node" x="0" y="0" width="100%" height="100%">
+            <foreignobject class="node" x="0" y="0" width="5000px" height="5000px">
                 <div class="backdrop"></div>
             </foreignobject>
         </svg>
@@ -133,7 +133,7 @@
         new Pan()
     ]);
 
-    canvas.setAttribute("viewBox", `2500 2500 ${canvas.clientWidth} ${canvas.clientHeight}`)
+    canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`)
 
     function undo(){
         app.undo();
