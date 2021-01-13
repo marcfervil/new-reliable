@@ -68,6 +68,13 @@
                
             }
 
+            #canvas{
+                position: absolute; 
+                top:0px; 
+                left:0px; 
+                z-index: -1
+            }
+
             .iconDiv{
                 padding: 10px;
             }
@@ -76,13 +83,14 @@
     </head>
     <body>
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
-       
+     
         
-        <svg width="5000px" height="5000px" preserveAspectRatio="none" style="position: absolute; top:0px; left:0px; z-index: -1" id="canvas"> 
+        <svg width="5000px" height="5000px" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
             
             <foreignobject class="node" x="0" y="0" width="5000px" height="5000px">
                 <div class="backdrop"></div>
             </foreignobject>
+          
         </svg>
         
         <!--img id="image" style="position:absolute;" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" /-->
@@ -126,11 +134,37 @@
     let zoom = new Vector2(1, 1);
     let pan = new Vector2(2500, 2500);
 
+
+    document.addEventListener('keydown', (event)=> {
+        if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
+            undo();
+        }
+        if((event.metaKey && event.key === 'y') || (event.ctrlKey && event.key === 'y')){
+            redo();
+        }
+        if(event.key === 'r'){
+            refresh();
+        }
+        if(event.key === 't'){
+           app.test();
+        }
+
+        if(event.keyCode >= 49 && event.keyCode <= 57){
+            let tool = app.toolbar[parseInt(event.key)-1];
+            if(tool !== undefined){
+                app.swapTool(tool);
+            }
+        }
+        
+
+    });
+
     var app = new Reliable(canvas, "{{path}}", [
         new Pen(),
         new Selection(),
         new Eraser(),
-        new Pan()
+        new Pan(),
+        new Text()
     ]);
 
     canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`)
@@ -159,41 +193,7 @@
    // let pageOffset = new Vector2(0, 0);
     
 
-    document.addEventListener('keydown', (event)=> {
-        if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
-            undo();
-        }
-        if((event.metaKey && event.key === 'y') || (event.ctrlKey && event.key === 'y')){
-            redo();
-        }
-        if(event.key === 'r'){
-            refresh();
-        }
-        if(event.key === 't'){
-           app.test();
-        }
 
-        if(event.keyCode >= 49 && event.keyCode <= 57){
-            let tool = app.toolbar[parseInt(event.key)-1];
-            if(tool !== undefined){
-                app.swapTool(tool);
-            }
-        }
-        
-
-        if(event.key === 'p'){
-            //offset+=10;
-           $(canvas).css( 'left', '+=10px' );
-           //canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`);
-           pan.x += 10;
-        }
-        /*
-        if(event.key === "p")app.currentTool ++;
-        if(event.key === "o")app.currentTool --;
-        if(app.currentTool==app.toolbar.length)app.currentTool=0;
-        if(app.currentTool<0)app.currentTool=app.toolbar.length-1;*/
-        //$("#toolName").text(app.getCurrentTool().name);
-    });
 
     //recieve message from VSCode
     window.addEventListener('message', (message) => {
@@ -209,16 +209,12 @@
 
             var reader = new FileReader();
             reader.onload = function(event) {
-                //let img = new ImageSVG("path", new Vector2(), event.target.result);
-                //svgs.push(img);
+   
                 app.commit({
                     action: "Image",
                     id: Reliable.makeId(10),
                     image: event.target.result,
-                    pos: {
-                        x: (mousePos.x*zoom.x) + pan.x,
-                        y: (mousePos.y*zoom.y) + pan.y,
-                    }
+                    pos: getMousePos().toJSON()
                 });   
             };
             reader.readAsDataURL(blob);
@@ -232,6 +228,10 @@
         
         //console.log(mousePos);
     });
+
+    function getMousePos(){
+        return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y);
+    }
     
 
     //break in case of canvas postion change

@@ -2,7 +2,7 @@
 class Pen extends Tool{
 
     constructor(){
-        super("Pen", "images/pen.svg");
+        super("Pen");
     }
 
     getImage(){
@@ -21,7 +21,7 @@ class Pen extends Tool{
     canvasDragEnd(){
        
         let smoothed = this.svgPath.smoothify();
-        if(smoothed){
+        if(smoothed){  
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: this.svgPath.id,

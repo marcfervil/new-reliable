@@ -7,6 +7,7 @@ class Tool {
         
         this.name = name;
         this.canvas = undefined;
+        this.active = false;
     }
 
   

@@ -28,13 +28,17 @@ class Reliable {
     }
 
     swapTool(tool, deactivate){
-        let lastTool = this.getCurrentTool()
-        if(deactivate === undefined || deactivate==true)lastTool.dectivated();
+        let lastTool = this.getCurrentTool();
+        if(deactivate === undefined || deactivate==true){
+            lastTool.active = false;
+            lastTool.dectivated();
+        }
         lastTool.imgDiv.removeClass("selected");
         lastTool.imgDiv.addClass("unselected");
         //lastTool.imgDiv.removeClass("hover");
         this.currentTool = this.toolbar.indexOf(tool);
         tool.activated();
+        tool.active = true;
         tool.imgDiv.addClass("selected");
         tool.imgDiv.removeClass("unselected");
     }
