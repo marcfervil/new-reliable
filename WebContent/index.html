@@ -216,8 +216,8 @@
                     id: Reliable.makeId(10),
                     image: event.target.result,
                     pos: {
-                        x: mousePos.x,
-                        y: mousePos.y,
+                        x: (mousePos.x*zoom.x) + pan.x,
+                        y: (mousePos.y*zoom.y) + pan.y,
                     }
                 });   
             };
