@@ -29,6 +29,7 @@ class TextTool extends Tool{
 
     canvasDragStart(pos){
        if(this.typing)this.currentInput.commit();
+       else if(this.active) this.creatTextInput(this.reliable, getMousePos());
     
     }
 
@@ -53,7 +54,7 @@ class TextTool extends Tool{
     }
 
     getImage(){
-        return "image2.svg";
+        return "text2.svg";
     }
 
 }

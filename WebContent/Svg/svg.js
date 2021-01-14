@@ -161,6 +161,9 @@ class SVG{
         if(!fakeSelect)this.unselect();
     }
 
+    rotateTo(){
+        this.svg.setAttribute("transform", `translate(${this.transform.pos.x}, ${this.transform.pos.y}) rotate(90) translate(-${this.transform.pos.x}, -${this.transform.pos.y}) `);
+    }
 
     updateTransform(){
         
