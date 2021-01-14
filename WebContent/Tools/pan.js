@@ -36,6 +36,7 @@ class Pan extends Tool{
                 
             }else{
                 this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom));
+                //window.requestAnimationFrame(()=>{this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom))});
             }
             //somebody tell me if this is dumb
             this.timer = setTimeout(() => {

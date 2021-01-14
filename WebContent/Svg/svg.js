@@ -119,8 +119,6 @@ class SVG{
 
     scaleTo(scale, anchorX, anchorY){
         
-       
-
        //if not selected, create fake selection box so un/redos still work 
         let fakeSelect = this.isSelected;
         if(!fakeSelect)this.select();

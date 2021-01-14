@@ -92,9 +92,10 @@ class Selection extends Tool{
         this.selected = [];
         
         for(let hit of hits){
+            console.log(hit);
             if(hit.parentNode== null || hit.parentNode.reliableSvg===undefined)continue;
             let id = hit.parentNode.id;
-
+         
 
             if(id != "canvas" && !hit.parentNode.reliableSvg.isSelected){
                 this.selected.push(id);
