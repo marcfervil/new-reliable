@@ -287,18 +287,25 @@
         if(lastMousePos==null){
             firstPos = getMousePos();
             lastMousePos = currentPos;
-        }else if(lastMousePos.distance(currentPos) > 50){        
+            setInterval(() => {
+               
+                if(mousePosList.length > 0)replayMousePos();
+            }, 100)
+        }else if(lastMousePos.distance(currentPos) > 20){  
             lastMousePos = currentPos;
             mousePosList.push(currentPos);
-            if(mousePosList.length > 10){
-                replayMousePos();
-            }
+           
         }
     });
     
+    
+
     function replayMousePos(){
+        
         if(mouse==null) mouse = new Mouse(firstPos);
         if(mouse.animating)return;
+        // /console.log(mousePosList.length);
+
         mouse.moveToPath(mousePosList);
         mousePosList = [];
     }
