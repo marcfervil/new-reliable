@@ -31,6 +31,7 @@ class SVGPath extends SVG{
      
     }
 
+    
 
     setContent(){
         
