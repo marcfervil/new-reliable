@@ -141,6 +141,7 @@
 <script src="{{path}}/Tools/erase.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/image.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/pan.js" type="text/javascript"></script>
+<script src="{{path}}/mouse.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 
@@ -152,6 +153,7 @@
     let pan = new Vector2(2500, 2500);
     let hotkeysEnabled = true;
 
+    let path = "{{path}}";
 
     document.addEventListener('keydown', (event) => {
         if(hotkeysEnabled){
@@ -178,6 +180,28 @@
 
     });
 
+    function animate({duration, draw, timing, completed}) {
+
+        let start = performance.now();
+
+        requestAnimationFrame(function animate(time) {
+            let timeFraction = (time - start) / duration;
+            if (timeFraction > 1) timeFraction = 1;
+
+            let progress = timing(timeFraction)
+
+            draw(progress);
+
+            if (timeFraction < 1) {
+                requestAnimationFrame(animate);
+            }else if(completed!=undefined){
+                completed();
+            }
+
+        });
+    }
+
+
     var app = new Reliable(canvas, "{{path}}", [
         new Pen(),
         new Selection(),
@@ -185,6 +209,7 @@
         new Pan(),
         new TextTool()
     ]);
+    
 
     canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`)
 
@@ -208,11 +233,6 @@
     function clearAll(){
         $(canvas).empty();
     }
-
-    $("#toolName").text(app.getCurrentTool().name);
-    //Events:
-   // let pageOffset = new Vector2(0, 0);
-    
 
 
 
@@ -241,14 +261,35 @@
             reader.readAsDataURL(blob);
         }
     }
-
+    let lastMousePos = null;
+    let mousePosList = [];
+    let firstPos = null;
+    mouse = null;
     canvas.addEventListener("mousemove", (e) => {
-        
+
         mousePos.x = e.clientX;
         mousePos.y = e.clientY;
         
-        //console.log(mousePos);
+        let currentPos = getMousePos();
+
+        if(lastMousePos==null){
+            firstPos = getMousePos();
+            lastMousePos = currentPos;
+        }else if(lastMousePos.distance(currentPos) > 50){        
+            lastMousePos = currentPos;
+            mousePosList.push(currentPos);
+            if(mousePosList.length > 10){
+                replayMousePos();
+            }
+        }
     });
+    
+    function replayMousePos(){
+        if(mouse==null) mouse = new Mouse(firstPos);
+        if(mouse.animating)return;
+        mouse.moveToPath(mousePosList);
+        mousePosList = [];
+    }
 
     function getMousePos(){
         return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y);

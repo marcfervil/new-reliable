@@ -4,10 +4,10 @@ class SVGText extends SVG{
         super("foreignObject", parent, pos, id);
         this.text = text;
         let textNode = document.createTextNode(this.text);
-        this.span = $("<span/>").attr("class", "SVGInput");
+        this.span = $("<span/>").attr("class", "SVGInput").css("white-space", "nowrap");
         this.span.append(textNode);
  
-       
+       //professor: Some of you clearly waited unitl the last minute to do this assignment 
         
         $(this.svg).append(this.span);
       
@@ -25,9 +25,9 @@ class SVGText extends SVG{
         boundRect.setAttribute("fill", "transparent");
         this.group.appendChild(boundRect)
 
-        
+
         /*
-        
+
         DO NOT DELETE - WILL USE WHEN TURNING foreignObject INTO IMAGE
         I don't use the the "text" SVG element because the scaling is weird and it introduces lag??
 
@@ -44,13 +44,31 @@ class SVGText extends SVG{
     
     }
 
+    //https://javascript.info/js-animation
+
+    /*
+    scaleTo(scale, anchorX, anchorY){
+        let self = this;
+        animate({
+            duration: 1000,
+            timing(timeFraction) {
+                if (timeFraction < .5)
+                  return timing(2 * timeFraction) / 2;
+                else
+                  return (2 - timing(2 * (1 - timeFraction))) / 2;
+              },
+            draw(progress) {
+                self.svg.setAttribute("x", self.pos.x + (progress * 100));
+             
+            }
+        });
+    }*/
+
 
     getSerializableProperties(){
         return ["text"];
     }
 
-    
-    
 
 }
  

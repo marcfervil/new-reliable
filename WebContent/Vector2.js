@@ -1,16 +1,15 @@
-function Vector2(x, y, ...data) {
+function Vector2(x, y) {
 	
 	if(x !== undefined && y !== undefined){
 		this.x = x;
 		this.y = y;
 	}else if(x !==undefined && y===undefined){
 		this.x = x.x;
-		this.y = x.y
+		this.y = x.y;
 	}else{
 		this.x = 0;
 		this.y = 0;
 	}
-	this.data = data
 }
 
 Vector2.prototype = {
