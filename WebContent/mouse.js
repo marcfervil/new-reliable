@@ -21,12 +21,14 @@ class Mouse{
 
     moveToPath(path, start){
         if(start!==undefined)this.moveTo(start);
-
+        //path = [this.pos].concat(path);
+        //console.log(path.length);
         this.animating = true;
        // console.log(path.length);
         let self = this;
         let startPos = this.pos
         let pos = path.splice(0, 1)[0];
+       
         //console.log(pos);
         animate({
             duration: 100,
@@ -39,8 +41,8 @@ class Mouse{
             
             },
             completed(){
-                console.log("done")
-                if(path.length>0){
+
+                if(path.length>1){
                     self.moveToPath(path);
                 }else{
                     self.animating = false;
