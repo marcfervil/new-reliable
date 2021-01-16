@@ -70,9 +70,11 @@ async function activate(context) {
 			
 			
 			let serviceName = "newReliable";
-			
-			
 
+
+			
+			console.log(vscode.Uri.file(contentPath));
+			console.log(contentPath);
 			currentPanel = vscode.window.createWebviewPanel(
 				'newReliable', // Identifies the type of the webview. Used internally
 				'New Reliable', // Title of the panel displayed to the user
@@ -80,10 +82,19 @@ async function activate(context) {
 				{
 					enableScripts: true, 
 					retainContextWhenHidden: true,
-					localResourceRoots: [vscode.Uri.file(contentPath)]
+					localResourceRoots: [vscode.Uri.file(contentPath),vscode.Uri.file(path.join(context.extensionPath, '/WebContent')),
+					vscode.Uri.file(path.join(context.extensionPath, '\WebContent')),
+					vscode.Uri.file(path.join(context.extensionPath, '\WebContent\\')),
+					vscode.Uri.file(path.join(context.extensionPath, '/WebContent\\'))]
 				} // Webview options. More on these later.
 			
 			);
+			console.log("correct")
+			const onDiskPath = vscode.Uri.file(
+				path.join(context.extensionPath, 'WebContent', 'images', "cat.jpeg")
+			  );
+			const catGifSrc = currentPanel.webview.asWebviewUri(onDiskPath);
+			console.log(catGifSrc);
 
 			let timer = null;
 			let service = undefined;
@@ -95,7 +106,7 @@ async function activate(context) {
 					return new Promise(resolve => {
 						resolve(state);
 					});
-				});
+				}); 
 				currentPanel.webview.postMessage({
 					action: "State",
 					state : state

@@ -50,7 +50,10 @@ class Reliable {
         tool.reliable = this;
 
         if(tool.getImage()!=""){
-            let img = $("<img/>").attr("src", `${this.path}/images/icons/${tool.getImage()}`);
+            console.log(`${this.path}`);
+            let thecoolerpath = `vscode-webview-resource://744a304d-943b-4306-b653-9c6a635e1e3d/file//c:Users/Diamo/code/new-reliable/WebContent`
+            
+            let img = $("<img/>").attr("src", `${thecoolerpath}images/icons/${tool.getImage()}`);
             let imgDiv = $("<div/>").attr("class", "iconDiv unselected").append(img).on("click", () => this.swapTool(tool));
             tool.imgDiv = imgDiv;
             
