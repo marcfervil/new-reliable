@@ -52,7 +52,9 @@ class Draw extends Action{
 
        // this.svgPath.replacePath(this.data.path);
         this.svgPath.svg.style.stroke = this.data.color;
+        this.svgPath.makePath();
         reliable.addSVG(this.svgPath);
+        
     }
 
     undo(){

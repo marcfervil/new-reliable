@@ -50,12 +50,7 @@ class Eraser extends Tool{
         svgRect.width = 30 ;
         svgRect.height = 30 ;   
 
-
-//        this.debugRect(svgRect.x, svgRect.y, svgRect.width, svgRect.height, "purple");
-        
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
-        console.log(hits.length);
-        if(hits.length>0) console.log("erasing")
         let realHits = [];
         for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas")realHits.push(hit.reliableSvg);
         return realHits;
@@ -103,11 +98,76 @@ class Eraser extends Tool{
 
     }
 
+    /*
+
+    
+    {
+    transform = "matrix(0, 0, 0, 0, 0, 0, 0, 0)"
+    svg.d = "M 0 0"
+    svg.path = [(0, 0)]
+    }
+    -------------------------------------------
+    {
+    transform = "matrix(0, 0, 0, 0, 0, 0, 1, 0)"
+    svg.d = "M 0 0"
+    svg.path = [(1, 0)]
+    }
+    ---------------------------------------------------
+    clicked: 3, 6
+    
+    transform = "matrix(0, 0, 0, 0, 0, 0, 1, 0)"
+    svg.d= "M 0 0 L 2 6"
+    svg.path = [(1, 0), (3, 6)]
+
+    ---------------------------------------------------
+    erase at (3,6)
+
+    svg.path = [(1,0)]
+    svg.d = "M 0 0"
+    
+    
+
+
+        SvgPath <PathNodes> {
+            Curve
+                vector
+                vector
+                vector
+            Curve
+            Curve
+        }
+
+
+        Curve extends PathNode[
+            list<Vector2>(3)
+        ]
+
+        "M"
+        (5,5)
+        (4,5)
+        (4,6)
+
+        M 2 4 C 3 4 2 6 
+
+        somesvg.path[0].x
+        somesvg.pathData[0]
+
+        
+        somesvg.path[5]+ somevector
+
+        somesvg.pathData[10] + somevector.x
+        somesvg.pathData[11] + somevector.y
+
+       
+        
+
+    */
+
+
     isCollidingLineSegment(path){
 
-        console.log(path);
 
-        path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
+        //path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
         let erased = false;
         let removeIndex = [];
         for(let i = 0; i<path.length; i+=2){
@@ -126,9 +186,7 @@ class Eraser extends Tool{
         let temp = path.splice(minIndex, path.length)
         temp.splice(0,Math.min((maxIndex-minIndex)+2, temp.length));
         let paths = []
-        /*
-<<<<<<< HEAD
-
+        
         if(erased){
             if(path.length>1){
             let newPoint = this.eraserConnection(path[path.length-2],path[path.length-1]);
@@ -145,32 +203,32 @@ class Eraser extends Tool{
             }
         }else{
             paths.push(path)
-=======
-*/
-        if(path.length>1){
-        let newPoint = this.eraserConnection(path[path.length-2],path[path.length-1]);
-        path.push(newPoint.x);
-        path.push(newPoint.y);
-        paths.push(path)
-        }
-        
-        if(temp.length>1){
-            let newPoint = this.eraserConnection(temp[0],temp[1]);
-            temp.unshift(newPoint.y);
-            temp.unshift(newPoint.x);
-            paths.push(temp)
-//>>>>>>> b8a5b9855f9afc87601b947854dd6695447630d3
         }
         return paths
     }
     
+    
+    //temporary helper function to use svg.path instead of svg.pathdata
+    pathToDTranslator(Vpath){
+        let ret = [];
+        for(let point of Vpath ){
+            ret.push(point.x+"");
+            ret.push(point.y+"");
+
+        }
+        //console.log(ret)
+        return ret;
+    }
+
     lineSegmentColisions(svgs){
         let eraseables = []
         for(let svg of svgs){
-            let edited = svg.pathData.split(" ")
-            //let edited = svg.path;
+            //let edited = svg.pathData.split(" ")
+            //console.log(svg.pathData.split(" "));
+            let edited = this.pathToDTranslator(svg.path);
 
-            let paths = this.isCollidingLineSegment(edited.splice(1,edited.length)); //gets rid of the M
+            //let paths = this.isCollidingLineSegment(edited.splice(1,edited.length)); //gets rid of the M
+            let paths = this.isCollidingLineSegment(edited);
             let firstPass = true;
             for(let temp of paths){
                 //temp.length-2 has to be divisable by 6
@@ -188,7 +246,7 @@ class Eraser extends Tool{
                             SVGID: svg.id,
                             newPath: temp
                         })
-                        svg.replacePath(temp);
+                        //svg.replacePath(temp);
                         firstPass = false;
                     }
                     else{
@@ -216,7 +274,13 @@ class Eraser extends Tool{
         return eraseables;
     }
 
+    //translates array of vector2 into array
+    glorifiedMiddleMan(){
+
+    }
+
     erase(){
+
         this.lineSegmentColisions(this.svgCollisions());
     }
 }
@@ -234,6 +298,7 @@ class Replace extends Action{
             id: this.data.SVGID,
             path: tempSvg.pathData
         }
+        tempSvg.makePath();
         tempSvg.replacePath(this.data.newPath);   
     }
 

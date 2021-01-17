@@ -10,9 +10,6 @@ class Reliable {
         this.myActionIds = [];
         this.redoActions = [];
         this.svgs = [];
-        console.log("constructor2")
-        console.log(path);
-        console.log("to make sure")
         this.path = path;
         //this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
         $(this.canvas).on("mousedown", (e) => this.mouseDownCanvas(e))

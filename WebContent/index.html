@@ -149,6 +149,7 @@
     let mousePos = new Vector2();
     let zoom = new Vector2(1, 1);
     let pan = new Vector2(2500, 2500);
+    //let pan = new Vector2(0, 0);
     let hotkeysEnabled = true;
 
 
@@ -212,7 +213,11 @@
     //Events:
    // let pageOffset = new Vector2(0, 0);
     
-
+   function isNumeric(str) {
+        if (typeof str != "string") return false // we only process strings!  
+        return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    }
 
 
     //recieve message from VSCode

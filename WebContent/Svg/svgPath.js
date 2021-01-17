@@ -1,3 +1,6 @@
+
+
+
 class SVGPath extends SVG{
 
     constructor(parent, pos, id, pathData){
@@ -28,13 +31,41 @@ class SVGPath extends SVG{
         this.canvasRect = this.group.getBoundingClientRect();
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
+
+        
     }
 
     moveTo(pos){
+        let lastPos = this.transform.pos;
         super.moveTo(pos);
+        let delta = pos.subtract(lastPos) // pos = 1 last = 0 
+        console.log(delta); // = 1
+        let newPath = [];
+        for (let point of this.path){
+            newPath.push(point.add(delta));
+        }
+        this.path = newPath;
+    }
 
-
-
+    
+    makePath(){
+        this.path = [];
+        let pair = [];
+        //console.log(this.pathData)
+        
+        let points = this.pathData.replace("C","").split(" ");
+        
+        for (let point of points){
+            if(isNumeric(point)){
+                pair.push(point);
+                if(pair.length == 2){
+                    //console.log(pair)
+                    this.path.push(new Vector2(parseFloat(pair[0]), parseFloat(pair[1])));
+                    pair = [];
+                }
+            }
+        }
+        //if(pair.length>0)console.log("")
     }
 
 

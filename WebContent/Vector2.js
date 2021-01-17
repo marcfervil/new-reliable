@@ -113,7 +113,6 @@ Vector2.prototype = {
 
 	toString: function () {
 		var vector = this.toPrecision(1);
-		//return ("[" + vector.x + "; " + vector.y + "]");
 		return vector.x +" " +vector.y;
 	}
 };
