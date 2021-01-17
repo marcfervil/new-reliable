@@ -4,7 +4,7 @@ class Platform{
         if(isVsCode){
             vscode.postMessage(message);
         }else{
-            if(message.action=="State")return;
+           
             Platform.socket.emit('data', message);
         }
     }
@@ -14,6 +14,7 @@ class Platform{
             let slug = window.location.pathname;
             Platform.socket = io();
             Platform.socket.on('data', (message) => {
+          
                 app.commit(message, false);
             });
         }else{
