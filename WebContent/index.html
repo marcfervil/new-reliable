@@ -264,7 +264,9 @@
     let lastMousePos = null;
     let mousePosList = [];
     let firstPos = null;
+    let lastTime = null;
     mouse = null;
+    let mouseTime = null;
     canvas.addEventListener("mousemove", (e) => {
 
         mousePos.x = e.clientX;
@@ -274,23 +276,33 @@
 
         if(lastMousePos==null){
             firstPos = getMousePos();
+            
             lastMousePos = currentPos;
-            setInterval(() => {
-               
-                if(mousePosList.length > 0)replayMousePos();
-            }, 100)
+            mouse = new Mouse(firstPos);
         }else if(lastMousePos.distance(currentPos) > 20){  
+            if(lastTime==null)lastTime = new Date().getTime()
             lastMousePos = currentPos;
-            mousePosList.push(currentPos);
+            let currentTime = new Date().getTime();
+            let duration = currentTime - lastTime;
+            if(duration==0)duration=1;
+            lastTime = currentTime;
+            let lerp = {pos: currentPos, dur: duration};
+
+            mouse.lerpTo(lerp);
            
         }
+        if(mouseTime!=null)clearTimeout(mouseTime);
+        mouseTime = setInterval(()=>{  
+            
+            lastTime = null;
+        },100);
     });
     
     
 
     function replayMousePos(){
         
-        if(mouse==null) mouse = new Mouse(firstPos);
+        if(mouse==null) 
         if(mouse.animating)return;
         // /console.log(mousePosList.length);
 
