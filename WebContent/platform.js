@@ -8,10 +8,14 @@ class Platform{
         }
     }
 
+    static init(){
+        if(!isVsCode){
+            var socket = io();
+        }
+    }
 
 }
 
 
-var socket = io();
 
 //console.log("???");
