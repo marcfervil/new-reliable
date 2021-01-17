@@ -9,7 +9,10 @@ let handlebars = require("handlebars");
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
-
+String.prototype.replaceAll = function(str1, str2, ignore) 
+{
+    return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+} 
 
 class ReliableTreeItem {
 	
@@ -82,19 +85,11 @@ async function activate(context) {
 				{
 					enableScripts: true, 
 					retainContextWhenHidden: true,
-					localResourceRoots: [vscode.Uri.file(contentPath),vscode.Uri.file(path.join(context.extensionPath, '/WebContent')),
-					vscode.Uri.file(path.join(context.extensionPath, '\WebContent')),
-					vscode.Uri.file(path.join(context.extensionPath, '\WebContent\\')),
-					vscode.Uri.file(path.join(context.extensionPath, '/WebContent\\'))]
+					localResourceRoots: [vscode.Uri.file(contentPath)]
 				} // Webview options. More on these later.
 			
 			);
-			console.log("correct")
-			const onDiskPath = vscode.Uri.file(
-				path.join(context.extensionPath, 'WebContent', 'images', "cat.jpeg")
-			  );
-			const catGifSrc = currentPanel.webview.asWebviewUri(onDiskPath);
-			console.log(catGifSrc);
+
 
 			let timer = null;
 			let service = undefined;
@@ -115,7 +110,6 @@ async function activate(context) {
 				service = await liveshare.getSharedService(serviceName);
 				vscode.window.showInformationMessage("Starting as guest");
 				let data = await service.request("state", []);
-				console.log(data);
 				currentPanel.webview.postMessage({
 					action: "State",
 					state : data
@@ -160,8 +154,10 @@ async function activate(context) {
 
 		function getWebviewContent() {
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
-			//
-			return handlebars.compile(file)({path: "vscode-resource://"+contentPath}) ;
+			console.log("content path")
+			console.log("vscode-resource:/"+contentPath);
+			
+			return handlebars.compile(file)({path: ("vscode-resource:/"+contentPath).replaceAll("\\","/")}) ;
 		}
 
 
@@ -172,7 +168,6 @@ async function activate(context) {
 	}catch(e){
 		console.error(e);
 	}
-	
 }
 exports.activate = activate;
 
