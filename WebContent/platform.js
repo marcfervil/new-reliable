@@ -4,13 +4,24 @@ class Platform{
         if(isVsCode){
             vscode.postMessage(message);
         }else{
-    
+            if(message.action=="State")return;
+            Platform.socket.emit('data', message);
         }
     }
 
     static init(){
         if(!isVsCode){
-            var socket = io();
+            let slug = window.location.pathname;
+            Platform.socket = io();
+            Platform.socket.on('data', (message) => {
+                app.commit(message, false);
+            });
+        }else{
+
+            //recieve message from VSCode
+            window.addEventListener('message', (message) => {
+                app.commit(message.data, false);
+            });
         }
     }
 

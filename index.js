@@ -19,13 +19,20 @@ app.get('/*', (req, res) => {
     var html = fs.readFileSync(indexPath, 'utf8');
     html = handlebars.compile(html)({path: "/static"}) ;
     res.send(html);
-    
 });
 
 
 io.on('connection', (socket) => {
     console.log('a user connected');
-    console.log("Fewijfwei???")
+
+    let roomSlug = socket.request.headers.referer.replace("http://","").replace("/","").replace(socket.request.headers.host,"");
+    socket.join(roomSlug);
+    console.log("User connected to "+roomSlug);
+    
+    socket.on('data', (msg) => {
+        
+        socket.to(roomSlug).emit("data", msg);
+    });
 });
   
 
