@@ -11,6 +11,7 @@ class Mouse{
         canvas.appendChild(svg);
         this.svg = svg;
         this.animating = false;
+        this.queue=[];
     }
 
     moveTo(pos){
@@ -19,6 +20,38 @@ class Mouse{
         this.svg.setAttribute("y", this.pos.y);
     }
 
+    lerpTo(lerp){
+
+        if(this.animating){
+            this.queue.push(lerp);
+            return;
+        }
+        
+        let self = this;
+        let startPos = this.pos;
+        this.animating = true;
+        animate({
+            duration: lerp.dur/2,
+            timing(timeFraction) {
+                return timeFraction
+            },
+            draw(progress) {
+                let dest = startPos.moveTowards(lerp.pos, progress);
+                self.moveTo(dest);
+            
+            },
+            completed(){
+               
+                self.animating = false;
+                if(self.queue.length>0){
+                    self.lerpTo(self.queue.splice(0,1)[0]);
+              
+                }
+            }
+        });
+    }
+
+    /*
     moveToPath(path, start){
         if(start!==undefined)this.moveTo(start);
         //path = [this.pos].concat(path);
@@ -49,7 +82,7 @@ class Mouse{
                 }
             }
         });
-    }
+    }*/
 
 
 }
