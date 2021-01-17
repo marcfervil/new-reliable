@@ -10,3 +10,8 @@ class Platform{
 
 
 }
+
+
+var socket = io();
+
+//console.log("???");
