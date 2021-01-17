@@ -95,7 +95,7 @@ class SVG{
         //manually set x and y (e and f in the transform matrix) to be our desired location and update the transformation matrix
         this.matrix.e = newPos.x;
         this.matrix.f = newPos.y;
-        this.updateTransform();
+         this.updateTransform();
         
         //get the actual position of our svg 
         let svgBounds = this.group.getBoundingClientRect();

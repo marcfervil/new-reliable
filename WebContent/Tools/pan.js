@@ -32,8 +32,9 @@ class Pan extends Tool{
             this.reliable.swapTool(this, false);
             
             if(e.ctrlKey){
-                this.zoom((e.deltaY) * 0.01);
-                
+                //this.zoom((e.deltaY) * 0.01);
+                //console.log("fewfjkew");
+                this.zoom((e.deltaY) * 0.0005);
             }else{
                 this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom));
                 //window.requestAnimationFrame(()=>{this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom))});

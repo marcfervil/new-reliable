@@ -16,7 +16,7 @@ class Eraser extends Tool{
 
     canvasDrag(pos){
         this.erase();
-        this.svgRect.updateLocation(new Vector2(pos.x, pos.y));
+        this.svgRect.updateLocation(getMousePos());
     }
 
 
@@ -25,20 +25,43 @@ class Eraser extends Tool{
         this.erase();
         this.svgRect.delete();
     }
+    
+    debugRect(x, y, w, h, color){
+        let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+        debug.setAttribute("x", x);
+        debug.setAttribute("y", y);
+        debug.setAttribute("width", w);
+        debug.setAttribute("height", h);
+        debug.style.stroke = color;
+        debug.style.fill = "transparent";
+        this.reliable.canvas.appendChild(debug);
+        return debug;
+    }
+
 
     svgCollisions(){
+        
+
+        let rect = this.svgRect.svg.getBoundingClientRectOld();
         let svgRect = this.reliable.canvas.createSVGRect();
 
-        svgRect.x = this.svgRect.pos.x;
-        svgRect.y = this.svgRect.pos.y;
-        svgRect.width = this.svgRect.size;
-        svgRect.height = this.svgRect.size;
+        svgRect.x = (rect.x);
+        svgRect.y = (rect.y);
+        svgRect.width = 30 ;
+        svgRect.height = 30 ;   
+
+
+//        this.debugRect(svgRect.x, svgRect.y, svgRect.width, svgRect.height, "purple");
         
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
+        console.log(hits.length);
+        if(hits.length>0) console.log("erasing")
         let realHits = [];
         for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas")realHits.push(hit.reliableSvg);
         return realHits;
     }
+
+   
 
     insideCursor(x, y){
         let x1 = parseInt(this.svgRect.pos.x);
@@ -55,7 +78,7 @@ class Eraser extends Tool{
         console.log(x+" first "+ y)
         x = x - this.svgRect.pos.x
         y = y - this.svgRect.pos.y
-        let theta = Math.atan(y/x)
+        let theta = Math.atan2(y/x)
         let r = parseInt(this.svgRect.size)
         x = r* Math.cos(theta) + this.svgRect.pos.x
         y = r* Math.sin(theta) + this.svgRect.pos.y
@@ -81,6 +104,9 @@ class Eraser extends Tool{
     }
 
     isCollidingLineSegment(path){
+
+        console.log(path);
+
         path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
         let erased = false;
         let removeIndex = [];
@@ -142,7 +168,8 @@ class Eraser extends Tool{
         let eraseables = []
         for(let svg of svgs){
             let edited = svg.pathData.split(" ")
-           
+            //let edited = svg.path;
+
             let paths = this.isCollidingLineSegment(edited.splice(1,edited.length)); //gets rid of the M
             let firstPass = true;
             for(let temp of paths){
@@ -181,8 +208,6 @@ class Eraser extends Tool{
                             action: "DeleteSVGPath",
                             id: svg.id
                         })
-
-                        //svg.delete();
                     }
                 }
                 firstPass = false;

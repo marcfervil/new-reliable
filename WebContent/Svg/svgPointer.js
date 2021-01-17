@@ -6,8 +6,8 @@ class SVGPointer extends SVG{
         this.svg.style.stroke = "#AAB2C0"; 
         //this.svg.style.fill = "orange";
         this.size = "30";
-        this.svg.setAttributeNS(null, 'x', pos.x);
-        this.svg.setAttributeNS(null, 'y', pos.y);
+        this.svg.setAttributeNS(null, 'x', pos.x-(this.size/2));
+        this.svg.setAttributeNS(null, 'y', pos.y-(this.size/2));
         this.svg.setAttributeNS(null, 'height', this.size);
         this.svg.setAttributeNS(null, 'width', this.size);
         this.svg.setAttributeNS(null, 'fill', '#'+Math.round(0xffffff * Math.random()).toString(16));
@@ -17,8 +17,8 @@ class SVGPointer extends SVG{
 
     updateLocation(pos){
         this.pos = pos;
-        this.svg.setAttributeNS(null, 'x', pos.x);
-        this.svg.setAttributeNS(null, 'y', pos.y);
+        this.svg.setAttributeNS(null, 'x', pos.x-(this.size/2));
+        this.svg.setAttributeNS(null, 'y', pos.y-(this.size/2));
         //this.svg.setAttribute("transform", "translate(100,100)");
 
     } 

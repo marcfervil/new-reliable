@@ -28,7 +28,13 @@ class SVGPath extends SVG{
         this.canvasRect = this.group.getBoundingClientRect();
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-     
+    }
+
+    moveTo(pos){
+        super.moveTo(pos);
+
+
+
     }
 
 
