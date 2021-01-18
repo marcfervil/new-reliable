@@ -64,48 +64,79 @@ class Room {
 
 app.use("/static",express.static(path.join(__dirname, 'WebContent')));
 
-app.get('/*', (req, res) => {
-    let indexPath = path.join(__dirname, 'WebContent', "index.html");
-    var html = fs.readFileSync(indexPath, 'utf8');
-    html = handlebars.compile(html)({path: "/static"}) ;
-    res.send(html);
+function makeId(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+app.get('/favicon.ico', (req, res) => {
+    res.send();
 });
 
+app.get('/:slug', (req, res) => {
+    
+   
+    if(rooms[req.params.slug] === undefined){
+
+        let roomId = makeId(15);
+        console.log("Cultivating new vibe sesh: "+roomId);
+        rooms[roomId] = new Room(roomId);
+        res.redirect("/"+roomId);
+    }else{
+        let indexPath = path.join(__dirname, 'WebContent', "index.html");
+        var html = fs.readFileSync(indexPath, 'utf8');
+        html = handlebars.compile(html)({path: "/static"}) ;
+        res.send(html);
+    }
+    
+});
+
+app.get('/', (req, res) => {
+    
+
+
+    let roomId = makeId(15);
+    console.log("Making vibe sesh: "+roomId);
+    rooms[roomId] = new Room(roomId);
+    res.redirect("/"+roomId);
+
+});
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    try{
+        let roomSlug = socket.request.headers.referer.replace("http://","").replace("/","").replace(socket.request.headers.host,"");
+    
 
-    let roomSlug = socket.request.headers.referer.replace("http://","").replace("/","").replace(socket.request.headers.host,"");
-   
-
-    if(rooms[roomSlug]===undefined){
-        rooms[roomSlug] = new Room(roomSlug);
+        let room = rooms[roomSlug];
+        room.addUser(socket);
         
+        //console.log("User connected to "+roomSlug);
+        let ignoredActions = ["Refresh"];
+        socket.on('data', (msg) => {
+            if(msg.action == "State"){
+                //console.log(msg);
+                room.updateState(socket, msg.data);
+            }else if(!ignoredActions.includes(msg.action)){
+                socket.to(roomSlug).emit("data", msg);
+            }
+        });
+
+    
+
+        socket.on('disconnect', function() {
+            room.removeUser(socket);
+        });
+    }catch(e){
+        console.error(`This ain't it bruh...${e}`)
     }
-    let room = rooms[roomSlug];
-    room.addUser(socket);
-
-    //console.log("User connected to "+roomSlug);
-    let ignoredActions = ["Refresh"];
-    socket.on('data', (msg) => {
-        if(msg.action == "State"){
-            //console.log(msg);
-            room.updateState(socket, msg.data);
-        }else if(!ignoredActions.includes(msg.action)){
-            socket.to(roomSlug).emit("data", msg);
-        }
-    });
-
-  
-
-    socket.on('disconnect', function() {
-
-        room.removeUser(socket);
-    });
-      
 });
 
 
 http.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Reliable app listening at http://localhost:${port}`)
 })

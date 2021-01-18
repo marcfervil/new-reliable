@@ -10,9 +10,14 @@ class Platform{
     }
 
     static init(){
+        
         if(!isVsCode){
             let slug = window.location.pathname;
             Platform.socket = io();
+            window.addEventListener("beforeunload", function(e){
+                Platform.socket.disconnect();
+             }, false);
+
             Platform.socket.on('data', (message) => {
           
                 app.commit(message, false);
