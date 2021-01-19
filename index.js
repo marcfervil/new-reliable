@@ -109,6 +109,9 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     try{
+
+        console.log("HEY, GET A LOAD OF THIS GUY");
+
         let roomSlug = socket.request.headers.referer.replace("http://","").replace("/","").replace(socket.request.headers.host,"");
     
 
@@ -137,7 +140,7 @@ io.on('connection', (socket) => {
 });
 
 
-http.listen(process.env.PORT, () => {
+http.listen(process.env.PORT || 3005, () => {
     console.log(`Reliable app listening at http://localhost:${port}`)
 })
 
