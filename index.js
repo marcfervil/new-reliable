@@ -110,11 +110,12 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     try{
 
-        console.log("HEY, GET A LOAD OF THIS GUY");
+        
 
         let roomSlug = socket.request.headers.referer.replace("http://","").replace("/","").replace(socket.request.headers.host,"");
+        console.log("HEY, GET A LOAD OF THIS GUY "+roomSlug);
+        console.log(socket.request.headers.referer);
     
-
         let room = rooms[roomSlug];
         room.addUser(socket);
         
