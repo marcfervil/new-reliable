@@ -158,7 +158,7 @@
     var vscode = (isVsCode)? acquireVsCodeApi() : null;
     var canvas = $("#canvas")[0];
     let mousePos = new Vector2();
-    let zoom = new Vector2(1, 1);
+    let zoom = new Vector2(1.5, 1.5);
     let pan = new Vector2(2500, 2500);
     let hotkeysEnabled = true;
 
@@ -201,7 +201,7 @@
     ]);
     
 
-    canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth} ${canvas.clientHeight}`)
+    canvas.setAttribute("viewBox",  `${pan.x} ${pan.y} ${canvas.clientWidth*zoom.x} ${canvas.clientHeight*zoom.y}`);
 
     function undo(){
         app.undo();

@@ -90,8 +90,9 @@ Vector2.prototype = {
 		return vector;
 	},
 
-	angle: function() {
-		return Math.atan2(this.y, this.x);
+	angle: function(vector) {
+		//return Math.atan2(this.y, this.x);
+		return Math.atan2(vector.y - this.y, vector.x - this.x) * 180 / Math.PI;
 	},
 
 	rotate: function(alpha) {
