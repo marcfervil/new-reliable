@@ -112,9 +112,9 @@ io.on('connection', (socket) => {
 
         
 
-        let roomSlug = socket.request.headers.referer.replace("http://","").replace("/","").replace(socket.request.headers.host,"");
-        console.log("HEY, GET A LOAD OF THIS GUY "+roomSlug);
-        console.log(socket.request.headers.referer);
+        let roomSlug = socket.request.headers.referer.replace("http://","").replace("https://","").replace("/","").replace(socket.request.headers.host,"");
+       // console.log("HEY, GET A LOAD OF THIS GUY "+roomSlug);
+       // console.log(socket.request.headers.referer);
     
         let room = rooms[roomSlug];
         room.addUser(socket);
