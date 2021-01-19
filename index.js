@@ -17,6 +17,7 @@ class Room {
         this.users = {};
         this.state = null;
         this.userNum = 0;
+        this.toShutdown = null;
     }
 
     addUser(socket){
@@ -35,10 +36,13 @@ class Room {
     }
 
     updateState(socket, state){
-        console.log("user count: "+this.userNum)
         if(socket.id == this.owner){
             console.log("Recieved state from daddy 😰😍");
             this.state = state;
+        }
+        if(this.toShutdown!=null){
+            clearTimeout(this.toShutdown);
+            this.toShutdown = null;
         }
     }
 
@@ -50,8 +54,11 @@ class Room {
         if(this.owner === socket.id){
             if(this.userNum == 0){
                 //start countdown to destroy room
-                console.log("Shutting down the function! 🛑✋🏿")
-                delete rooms[this.name];
+                this.toShutdown = setTimeout(()=>{
+                    console.log("Shutting down the function! 🛑✋🏿")
+                    delete rooms[this.name];
+                }, 1000 * 60 * 5)
+                
             }else{
                 console.log("oooh new man 👀");
                 
@@ -84,7 +91,7 @@ app.get('/:slug', (req, res) => {
     if(rooms[req.params.slug] === undefined){
 
         let roomId = makeId(15);
-        console.log("Cultivating new vibe sesh: "+roomId);
+        console.log("~Curating new vibe sesh~: "+roomId);
         rooms[roomId] = new Room(roomId);
         res.redirect("/"+roomId);
     }else{
