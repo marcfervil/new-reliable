@@ -137,6 +137,6 @@ io.on('connection', (socket) => {
 });
 
 
-http.listen(port, () => {
+http.listen(process.env.PORT, () => {
     console.log(`Reliable app listening at http://localhost:${port}`)
 })
