@@ -234,6 +234,20 @@
         $(canvas).empty();
     }
 
+    function debugRect(x, y, w, h, color){
+        let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+        debug.setAttribute("class", "debug");
+        debug.setAttribute("x", x);
+        debug.setAttribute("y", y);
+        debug.setAttribute("width", w);
+        debug.setAttribute("height", h);
+        debug.style.stroke = color;
+        debug.style.fill = "transparent";
+        canvas.appendChild(debug);
+        return debug;
+    }
+
+
 
 
     //recieve message from VSCode
@@ -261,55 +275,7 @@
             reader.readAsDataURL(blob);
         }
     }
-    let lastMousePos = null;
-    let mousePosList = [];
-    let firstPos = null;
-    let lastTime = null;
-    mouse = null;
-    let mouseTime = null;
-    canvas.addEventListener("mousemove", (e) => {
-
-        mousePos.x = e.clientX;
-        mousePos.y = e.clientY;
-        
-        let currentPos = getMousePos();
-
-        if(lastMousePos==null){
-            firstPos = getMousePos();
-            
-            lastMousePos = currentPos;
-            mouse = new Mouse(firstPos);
-        }else if(lastMousePos.distance(currentPos) > 20){  
-            if(lastTime==null)lastTime = new Date().getTime()
-            lastMousePos = currentPos;
-            let currentTime = new Date().getTime();
-            let duration = currentTime - lastTime;
-            if(duration==0)duration=1;
-            lastTime = currentTime;
-            let lerp = {pos: currentPos, dur: duration};
-
-            mouse.lerpTo(lerp);
-           
-        }
-        if(mouseTime!=null)clearTimeout(mouseTime);
-        mouseTime = setInterval(()=>{  
-            
-            lastTime = null;
-        },100);
-    });
     
-    
-
-    function replayMousePos(){
-        
-        if(mouse==null) 
-        if(mouse.animating)return;
-        // /console.log(mousePosList.length);
-
-        mouse.moveToPath(mousePosList);
-        mousePosList = [];
-    }
-
     function getMousePos(){
         return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y);
     }

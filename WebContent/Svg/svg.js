@@ -172,18 +172,7 @@ class SVG{
     }
 
 
-    debugRect(x, y, w, h, color){
-        let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-        debug.setAttribute("x", x);
-        debug.setAttribute("y", y);
-        debug.setAttribute("width", w);
-        debug.setAttribute("height", h);
-        debug.style.stroke = color;
-        debug.style.fill = "transparent";
-        this.parent.appendChild(debug);
-        return debug;
-    }
-
+  
     selectedMouseMove(e){
        
         if(this.isDragging){
