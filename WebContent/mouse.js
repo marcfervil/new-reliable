@@ -97,7 +97,8 @@ mouse = null;
 let mouseTime = null;
 let totalDist = 0;
 let lerpList = [];
-let x = true
+let x = true;
+let average = (array) => array.reduce((a, b) => a + b) / array.length;
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
@@ -128,7 +129,8 @@ canvas.addEventListener("mousemove", (e) => {
         let lerp = {pos: currentPos, dur: duration};
         lerpList.push(lerp);
         //mouse.lerpTo(lerp);
-        if(totalDist > 800 && x){
+        let ogLerp = [];
+        if(totalDist > 900 && x){
            x = false;
             //for(let i of $(".debug"))i.remove();
             
@@ -137,6 +139,7 @@ canvas.addEventListener("mousemove", (e) => {
             let distList = [];
             let lastPoint = null;
             for(let [i, lerp] of lerpList.entries()){
+                ogLerp.push(lerp);
                 if(i > 0 && i<lerpList.length - 1){
                     let last = lastPoint.pos;
                     let cur = lerp.pos;
@@ -149,7 +152,7 @@ canvas.addEventListener("mousemove", (e) => {
                     slopeList.push([new Vector2(xSlope, ySlope),slope]);
                     let slopSense = 25;
                     let distToLast = cur.distance(lerpList[lerpList.length-1].pos);
-                    let slopeCond = (Math.abs(xSlope) >slopSense || Math.abs(ySlope) >slopSense) && distToLast>200 ;
+                    let slopeCond = (Math.abs(xSlope) >slopSense || Math.abs(ySlope) >slopSense) /*&& distToLast>200*/ ;
                     if(slopeCond ){
                         if(slopeCond)console.log("slope")
                         else if(dist>150)console.log("dist");
@@ -159,17 +162,58 @@ canvas.addEventListener("mousemove", (e) => {
                         smoothLerp.push(lerp);
                         lastPoint = lerp;
                     }
+                    
                 }else{
              
                     smoothLerp.push(lerp);
                     lastPoint = lerp;
                 }
             }
-            console.log(slopeList);
-            console.log(distList);
-            for(let lerp of lerpList)debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "red");
-            for(let lerp of smoothLerp)debugRect(lerp.pos.x, lerp.pos.y+100, 10, 10, "green");
-            
+            let smoothLerp2 = []
+            let col = "green";
+            let sample =[];
+            for(let [i, lerp] of smoothLerp.entries()){
+                if(i>0){
+                    
+                    let last = smoothLerp[i-1].pos;
+                    let current = lerp.pos;
+                    let angle = last.angle(current);
+
+                   
+                    if(sample.length>2){
+                        let avg = average(sample);
+                   
+                        
+                        if(Math.abs(avg - angle) >15){
+                            console.log(`------${avg}----${angle}-------`)
+                            col = randColor();
+                            sample=[];
+                        }
+                    }
+                    sample.push(angle);
+
+                    console.log(i+": "+angle);
+
+                    lerp.col = col;
+                    smoothLerp2.push(lerp);
+                   
+                }else{
+                    lerp.col = "green";
+                    smoothLerp2.push(lerp);
+                }
+                
+            }
+            console.log(ogLerp.length);
+            for(let lerp of ogLerp)debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "orange");
+            for(let lerp of smoothLerp)debugRect(lerp.pos.x, lerp.pos.y+300, 10, 10, "red");
+            for(let lerp of smoothLerp2)debugRect(lerp.pos.x, lerp.pos.y+600, 10, 10, lerp.col);
+            let lastcol = smoothLerp2[0];
+            for(let lerp of smoothLerp2){
+                if(lastcol != lerp.col || lerp==smoothLerp2[smoothLerp2.length-1]){
+                    debugRect(lerp.pos.x, lerp.pos.y+900, 10, 10, "yellow");
+                    lastcol = lerp.col;
+                };
+            }
             totalDist = 0;
             lerpList = [];
             mouse.moveToPath(smoothLerp,firstPos);
@@ -184,7 +228,9 @@ canvas.addEventListener("mousemove", (e) => {
     },100);*/
 });
 
-
+function randColor(){
+    return '#'+Math.round(0xffffff * Math.random()).toString(16);
+}
 
 function replayMousePos(){
     
