@@ -140,3 +140,4 @@ io.on('connection', (socket) => {
 http.listen(port, () => {
     console.log(`Reliable app listening at http://localhost:${port}`)
 })
+

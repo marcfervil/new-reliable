@@ -18,7 +18,7 @@ variables:
   environmentName: 'newreliable'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'windows-latest'
 
 stages:
 - stage: Build
@@ -71,7 +71,6 @@ stages:
             displayName: 'Azure Web App Deploy: newreliable'
             inputs:
               azureSubscription: $(azureSubscription)
-              appType: webAppLinux
               appName: $(webAppName)
               runtimeStack: 'NODE|10.10'
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
