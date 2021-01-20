@@ -21,6 +21,7 @@
 
             .toolbar{
                 position: absolute;
+                
                 user-select: none;
                 left: 20px;
                 top: 40px;
@@ -46,7 +47,7 @@
            .backdrop{
                 z-index: -20;
       
-                position: fixed;
+     
                 width: 100%;
                 height: 100%;
                 background-size: 70px 70px;
@@ -104,12 +105,12 @@
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
      
         
-        <svg width="5000px" height="5000px" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
+        <svg width="5000px" height="5000px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
             
-            <foreignobject class="node" x="0" y="0" width="5000px" height="5000px">
+            
+            <foreignobject class="node"  x="0" y="0" xml:space="preserve" width="5000px" height="5000px">
                 <div id="backdrop" class="backdrop"></div>
             </foreignobject>
-          
         </svg>
         
         <!--img id="image" style="position:absolute;" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" /-->
@@ -190,6 +191,34 @@
 
     });
 
+    function animate({duration, draw, timing, completed}) {
+
+        let start = performance.now();
+        this.canComplete = true;
+        self = this;
+        this.anim =requestAnimationFrame(function animate(time) {
+            let timeFraction = (time - start) / duration;
+            if (timeFraction > 1) timeFraction = 1;
+
+            let progress = timing(timeFraction)
+
+            draw(progress);
+            console.log(this.canComplete);
+            if (timeFraction < 1) {
+                if(this.canComplete)requestAnimationFrame(animate);
+            }else if(completed!=undefined){
+                if(this.canComplete)completed();
+            }
+
+        }.bind(this));
+        this.stop=()=>{
+            console.log("fowfeij");
+          //  cancelAnimationFrame(this.anim);
+            this.canComplete=false;
+        }
+
+        return this;
+    }
 
 
     var app = new Reliable(canvas, "{{path}}", [

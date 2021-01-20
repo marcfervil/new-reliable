@@ -77,6 +77,10 @@ Vector2.prototype = {
 		return (deltaX * deltaX + deltaY * deltaY);
 	},
 
+	equals: function (o) {
+		return o.x === this.x && o.y === this.y;
+	},
+
 	normalize: function() {
 		var mag = this.magnitude();
 		var vector = this.clone();

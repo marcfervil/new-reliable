@@ -157,6 +157,7 @@ class Pan extends Tool{
         
         //infinite scroll lol
         //if(delta.y< 0 && pan.y + document.documentElement.clientWidth > 5000) pan.y = pan.y - document.documentElement.clientWidth;
+        
         if(delta.y< 0 && pan.y + document.documentElement.clientHeight > 5000) pan.y = 5000 - document.documentElement.clientHeight;
         if(delta.x < 0 && pan.x + document.documentElement.clientWidth > 5000) pan.x = 5000 - document.documentElement.clientWidth;
 
