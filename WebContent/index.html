@@ -159,7 +159,7 @@
     var vscode = (isVsCode)? acquireVsCodeApi() : null;
     var canvas = $("#canvas")[0];
     let mousePos = new Vector2();
-    let zoom = new Vector2(1.5, 1.5);
+    let zoom = new Vector2(1.8, 1.8);
     let pan = new Vector2(2500, 2500);
     let hotkeysEnabled = true;
 
@@ -203,7 +203,7 @@
             let progress = timing(timeFraction)
 
             draw(progress);
-            console.log(this.canComplete);
+           // console.log(this.canComplete);
             if (timeFraction < 1) {
                 if(this.canComplete)requestAnimationFrame(animate);
             }else if(completed!=undefined){
@@ -212,7 +212,7 @@
 
         }.bind(this));
         this.stop=()=>{
-            console.log("fowfeij");
+     
           //  cancelAnimationFrame(this.anim);
             this.canComplete=false;
         }

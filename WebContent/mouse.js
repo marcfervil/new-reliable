@@ -71,7 +71,7 @@ class Mouse{
        
         //console.log(pos);
         let dur = this.pos.distance(pos)/0.7;
-        console.log("last: "+last)
+       // console.log("last: "+last)
         if(dur==0)dur = 1;
         this.animation = animate({
             duration: dur  ,
@@ -116,8 +116,11 @@ mouse = null;
 let mouseTime = null;
 let totalDist = 0;
 let lerpList = [];
-let x = true;
+let x = false;
 let average = (array) => array.reduce((a, b) => a + b) / array.length;
+canvas.addEventListener("mousedown", (e) => {
+    x=true;
+});
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
@@ -155,27 +158,28 @@ canvas.addEventListener("mousemove", (e) => {
        if(totalDist>300){
             //if(lerpList.length>10){
                 
-              smoothLerp(lerpList);
+           //   smoothLerp(lerpList);
                 //mouse.moveToPath([lerp]);
-               lerpList = [];
+             //  lerpList = [];
            
             //}
        }
     }
 
-    
-    if(mouseTime!=null)clearTimeout(mouseTime);
-    let ogPos = getMousePos();
-    mouseTime = setTimeout(()=>{  
-        if(ogPos.equals(getMousePos())){
-         //   console.log("im resting")
-            smoothLerp([{pos: currentPos, dur: 0}], true);
-                //mouse.moveToPath([lerp]);
-                
-                lerpList = [];
-        }
-        mouseTime = null;
-    },1000);
+    if(x){
+        if(mouseTime!=null)clearTimeout(mouseTime);
+        let ogPos = getMousePos();
+        mouseTime = setTimeout(()=>{  
+            if(ogPos.equals(getMousePos())){
+                console.log("im resting")
+                smoothLerp(lerpList, true);
+                    //mouse.moveToPath([lerp]);
+                    
+                    lerpList = [];
+            }
+            mouseTime = null;
+        },100);
+    }
 });
 /*
 setInterval(()=>{
@@ -188,6 +192,7 @@ setInterval(()=>{
 
 function smoothLerp(lerpList, last){
     let ogLerp = [];
+    x=false;
     //if(totalDist > 400 && x){
       // x = false;
         //for(let i of $(".debug"))i.remove();
@@ -246,7 +251,8 @@ function smoothLerp(lerpList, last){
                     if(x > 45){
                         //console.log(`------(${avg})----(${angle})-------(${sample.length})`)
                         col = randColor();
-                      //  lerp.key = true;
+
+                      lerp.key = true;
                         smoothLerp2[smoothLerp2.length -1 - sample.length].key = true;
                         //if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
                         sample=[];
@@ -279,16 +285,29 @@ function smoothLerp(lerpList, last){
         let xx = 0;
         let compressedLerp = [];
         let just = false;
+        let path= new SVGPath(canvas, smoothLerp2[0].pos.add(new Vector2(1000,0)), "ifdjofj")
+        
         for(let lerp of smoothLerp2){
             if(lerp.key){
                 xx+=1;
-                //debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
+                debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
                 lastcol = lerp.col;
                 compressedLerp.push(lerp);
+                path.addPoint(lerp.pos.add(new Vector2(1000,0)));
                 if(just==false)just = true;
                 else if(just) just = false;
-            };
+            }else{
+                debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "red");
+               
+            }
         }
+        let smoovpath= new SVGPath(canvas, ogLerp[0].pos.add(new Vector2(1000,1000)), "ifdjofj");
+        for(let lerp of ogLerp){
+            //debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "orange");
+            smoovpath.addPoint(lerp.pos.add(new Vector2(1000,1000)));
+        }
+        smoovpath.smoothify();
+
         //console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
         //console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
         totalDist = 0;
