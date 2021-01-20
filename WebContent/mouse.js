@@ -66,7 +66,7 @@ class Mouse{
        
         //console.log(pos);
         animate({
-            duration: lerp.dur,
+            duration: 100,
             timing(timeFraction) {
                 return timeFraction
             },
@@ -78,6 +78,7 @@ class Mouse{
             completed(){
 
                 if(path.length>0){
+                    console.log("here");
                     self.moveToPath(path);
                 }else{
                     self.animating = false;
@@ -130,7 +131,7 @@ canvas.addEventListener("mousemove", (e) => {
         lerpList.push(lerp);
         //mouse.lerpTo(lerp);
         let ogLerp = [];
-        if(totalDist > 900 && x){
+        if(totalDist > 2000 && x){
            x = false;
             //for(let i of $(".debug"))i.remove();
             
@@ -153,7 +154,7 @@ canvas.addEventListener("mousemove", (e) => {
                     let slopSense = 25;
                     let distToLast = cur.distance(lerpList[lerpList.length-1].pos);
                     let slopeCond = (Math.abs(xSlope) >slopSense || Math.abs(ySlope) >slopSense) /*&& distToLast>200*/ ;
-                    if(slopeCond ){
+                    if( slopeCond ){
                         if(slopeCond)console.log("slope")
                         else if(dist>150)console.log("dist");
                         slopeList.push("-----------------------")
@@ -180,13 +181,18 @@ canvas.addEventListener("mousemove", (e) => {
                     let angle = last.angle(current);
 
                    
-                    if(sample.length>2){
+                    if(sample.length>0){
                         let avg = average(sample);
                    
-                        
-                        if(Math.abs(avg - angle) >15){
-                            console.log(`------${avg}----${angle}-------`)
+                        let x = 180 - Math.abs(Math.abs(avg - angle) - 180); 
+                        //let x = Math.abs(avg - angle)
+                        console.log("COMAPS "+x);
+                        if(x > 45){
+                            console.log(`------(${avg})----(${angle})-------(${sample.length})`)
                             col = randColor();
+                            lerp.key = true;
+                            smoothLerp2[smoothLerp2.length -1 - sample.length].key = true;
+                            //if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
                             sample=[];
                         }
                     }
@@ -195,28 +201,43 @@ canvas.addEventListener("mousemove", (e) => {
                     console.log(i+": "+angle);
 
                     lerp.col = col;
+                   
                     smoothLerp2.push(lerp);
                    
                 }else{
                     lerp.col = "green";
+                    lerp.key = true;
                     smoothLerp2.push(lerp);
                 }
                 
             }
+            smoothLerp2[smoothLerp2.length -1].key = true;
             console.log(ogLerp.length);
-            for(let lerp of ogLerp)debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "orange");
-            for(let lerp of smoothLerp)debugRect(lerp.pos.x, lerp.pos.y+300, 10, 10, "red");
+            console.log(100 - ((7/ogLerp.length) * 100))
+
+
+         //   for(let lerp of ogLerp)debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "orange");
+            //for(let lerp of smoothLerp)debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "red");
             for(let lerp of smoothLerp2)debugRect(lerp.pos.x, lerp.pos.y+600, 10, 10, lerp.col);
             let lastcol = smoothLerp2[0];
+            let xx = 0;
+            let compressedLerp = [];
+            let just = false;
             for(let lerp of smoothLerp2){
-                if(lastcol != lerp.col || lerp==smoothLerp2[smoothLerp2.length-1]){
-                    debugRect(lerp.pos.x, lerp.pos.y+900, 10, 10, "yellow");
+                if(lerp.key){
+                    xx+=1;
+                    debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
                     lastcol = lerp.col;
+                    compressedLerp.push(lerp);
+                    if(just==false)just = true;
+                    else if(just) just = false;
                 };
             }
+            console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
+            console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
             totalDist = 0;
             lerpList = [];
-            mouse.moveToPath(smoothLerp,firstPos);
+            mouse.moveToPath(compressedLerp,firstPos);
         }
     }
 
