@@ -59,6 +59,7 @@ class SVGPath extends SVG{
         let skip = 0;
         let total = 0;
         let smoothed = false;
+        let x = 0;
         while(tempPath.length >= 3) { 
             total+=1;
             let curve = tempPath.splice(0, 3);
@@ -66,11 +67,12 @@ class SVGPath extends SVG{
             //20;
             if(lastPos!=undefined && curve[2].distance(lastPos) < 20){
                 skip +=1;
-                //lastPos = curve[2];
-               // continue;
+                lastPos = curve[2];
+               continue;
             }
             lastPos = curve[2];
             svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
+            x+=3;
             smoothed = true;
         }
 
@@ -78,7 +80,10 @@ class SVGPath extends SVG{
 
         svgData = "M "+start.toString() + "C"+ svgData;
         let ogPath = this.replacePath(svgData);
-    
+        
+
+        console.log(100 - ((x/this.path.length) * 100)+"% og smoothify compression")
+
         return true;
             /*
             let uncompressedSVG = new SVG(this.parentId, this.pos);
