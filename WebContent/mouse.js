@@ -140,7 +140,7 @@ canvas.addEventListener("mousemove", (e) => {
         mouse = new Mouse(firstPos);
         mouse.moveTo(firstPos);
        
-    }else{ 
+    }else if(x){ 
 
         totalDist += lastMousePos.distance(currentPos);
         lastMousePos = currentPos;
@@ -273,7 +273,7 @@ function smoothLerp(lerpList, last){
             }
             
         }
-        smoothLerp2[smoothLerp2.length -1].key = true;
+        smoothLerp2[smoothLerp2.length - 1].key = true;
         //console.log(ogLerp.length);
         //console.log(100 - ((7/ogLerp.length) * 100))
 
@@ -308,8 +308,8 @@ function smoothLerp(lerpList, last){
         }
         smoovpath.smoothify();
 
-        //console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
-        //console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
+        console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
+        console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
         totalDist = 0;
         lerpList = [];
         mouse.moveToPath(compressedLerp,last);
