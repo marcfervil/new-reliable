@@ -38,6 +38,7 @@
 
             body{
               overflow: hidden;
+              touch-action: none;
             }
 
            .backdrop{
@@ -222,7 +223,11 @@
     
 
 
-
+   function isTouchDevice() {
+        return (('ontouchstart' in window) ||
+           (navigator.maxTouchPoints > 0) ||
+           (navigator.msMaxTouchPoints > 0));
+    }
 
     //Paste Image 
     document.onpaste = function(pasteEvent) {
@@ -245,13 +250,26 @@
         }
     }
 
-    canvas.addEventListener("mousemove", (e) => {
-        
-        mousePos.x = e.clientX;
-        mousePos.y = e.clientY;
-        
-        //console.log(mousePos);
-    });
+    if(!isTouchDevice()){
+        console.log("DONT TOUCH ME ")
+        canvas.addEventListener("mousemove", (e) => {
+            
+            mousePos.x = e.clientX;
+            mousePos.y = e.clientY;
+            
+            //console.log(mousePos);
+        });
+    }else{
+        console.log("TOUCH ME ")
+        canvas.addEventListener("touchmove", (e) => {
+
+            
+            mousePos.x = e.touches[0].clientX;
+            mousePos.y = e.touches[0].clientY;
+            
+
+        });
+    }
 
     function getMousePos(){
         return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y);

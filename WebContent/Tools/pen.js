@@ -15,11 +15,12 @@ class Pen extends Tool{
     }
 
     canvasDrag(pos){
+        
         this.svgPath.addPoint(new Vector2(pos.x, pos.y));
     }
 
     canvasDragEnd(){
-       
+        
         let smoothed = this.svgPath.smoothify();
         if(smoothed){  
             Action.commit(this.reliable, {

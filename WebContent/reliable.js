@@ -12,7 +12,15 @@ class Reliable {
         this.svgs = [];
         this.path = path;
         //this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
-        $(this.canvas).on("mousedown", (e) => this.mouseDownCanvas(e))
+
+        if(!isTouchDevice()){
+            $(this.canvas).on("mousedown", (e) => this.mouseDownCanvas(e))
+        }else{
+            $(this.canvas).on("touchstart", (e) => this.mouseDownCanvas(e))
+        }
+       
+
+
         this.toolbarDiv = $("#toolbar");
         for(let tool of tools)this.addTool(tool);
         //console.log(path);
@@ -85,6 +93,8 @@ class Reliable {
         return state;
     }
 
+   
+
     setState(state){
         let svgs = {SVGPath, SVGImage, SVGText};
         for(let svgData of state){
@@ -140,10 +150,18 @@ class Reliable {
     }
 
     getMousPos(e){
-  
+        
         var pt = canvas.createSVGPoint();
-        pt.x = e.clientX; 
-        pt.y = e.clientY;
+       
+
+        if(!isTouchDevice()){
+            pt.x = e.clientX; 
+            pt.y = e.clientY;
+        }else{
+            pt.x = e.touches[0].clientX; 
+            pt.y = e.touches[0].clientY;
+        }
+
         pt.matrixTransform(canvas.getScreenCTM().inverse())
        
         //return new Vector2(e.layerX, e.layerY).multiply(zoom);
@@ -151,8 +169,10 @@ class Reliable {
     }
 
     mouseDownCanvas(e){
-      
+        
         if(this.getCurrentTool().eatCanvasDrag() && e.target.id!="backdrop") return;
+
+
         let mousePos = this.getMousPos(e);
         this.canvasMouseDown = true;
         this.canvasDragMouseStart = mousePos;
@@ -160,20 +180,32 @@ class Reliable {
         this.mouseMoveRef = (e) => this.mouseMoveCanvas(e);
         this.mouseUpRef = (e) => this.mouseUpCanvas(e);
        
-        this.canvas.addEventListener('mousemove', this.mouseMoveRef);
-        this.canvas.addEventListener('mouseup', this.mouseUpRef);
-        $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
+        if(!isTouchDevice()){
+            this.canvas.addEventListener('mousemove', this.mouseMoveRef);
+            this.canvas.addEventListener('mouseup', this.mouseUpRef);
+
+            
+            $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
+        }else{
+            this.canvas.addEventListener('touchmove', this.mouseMoveRef);
+            this.canvas.addEventListener('touchend', this.mouseUpRef);
+
+            
+            $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
+        }
 
         this.getCurrentTool().canvasDragStart(mousePos);
     }
 
     mouseMoveCanvas(e){
+        
         let pos = this.getMousPos(e);
+        //console.log(pos);
         this.getCurrentTool().canvasDrag(pos);
     }
 
     mouseUpCanvas(e){
-        
+        console.log("UPPIES")
         this.canvasMouseDown = false;
         this.canvas.removeEventListener('mousemove', this.mouseMoveRef);
         this.canvas.removeEventListener('mouseup', this.mouseUpRef);

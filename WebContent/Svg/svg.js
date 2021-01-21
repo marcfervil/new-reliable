@@ -359,6 +359,7 @@ class SVG{
         }
     }
 
+
     createDragRect(selectRect, x, y, anchor, anchorX, anchorY){
 
         let dragBoxSize = 10;

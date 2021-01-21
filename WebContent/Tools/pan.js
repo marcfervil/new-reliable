@@ -22,9 +22,9 @@ class Pan extends Tool{
         this.scolled = 0;
         this.panVal = new Vector2(0, 0);
 
-        window.onwheel = (e)=> {
+        document.addEventListener("wheel",(e)=> {
             
-           
+           e.preventDefault();
 
             if(this.scolled ==0 )this.lastTool = this.reliable.getCurrentTool();
             this.scolled += 1;
@@ -47,7 +47,7 @@ class Pan extends Tool{
                 }
             }, 200);
            
-        };
+        }, {passive: false});
         
 
 
