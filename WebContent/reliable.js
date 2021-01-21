@@ -14,7 +14,7 @@ class Reliable {
         //this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
 
         if(!isTouchDevice()){
-            $(this.canvas).on("mousedown", (e) => this.mouseDownCanvas(e))
+            $(this.canvas).on("pointerdown", (e) => this.mouseDownCanvas(e))
         }else{
             $(this.canvas).on("touchstart", (e) => this.mouseDownCanvas(e))
         }
@@ -169,7 +169,7 @@ class Reliable {
     }
 
     mouseDownCanvas(e){
-        
+      
         if(this.getCurrentTool().eatCanvasDrag() && e.target.id!="backdrop") return;
 
 
@@ -181,11 +181,11 @@ class Reliable {
         this.mouseUpRef = (e) => this.mouseUpCanvas(e);
        
         if(!isTouchDevice()){
-            this.canvas.addEventListener('mousemove', this.mouseMoveRef);
-            this.canvas.addEventListener('mouseup', this.mouseUpRef);
+            this.canvas.addEventListener('pointermove', this.mouseMoveRef);
+            this.canvas.addEventListener('pointerup', this.mouseUpRef);
 
             
-            $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
+            $(this.canvas).on("pointerleave.canvas", this.mouseUpRef);
         }else{
             this.canvas.addEventListener('touchmove', this.mouseMoveRef);
             this.canvas.addEventListener('touchend', this.mouseUpRef);
@@ -207,8 +207,8 @@ class Reliable {
     mouseUpCanvas(e){
         console.log("UPPIES")
         this.canvasMouseDown = false;
-        this.canvas.removeEventListener('mousemove', this.mouseMoveRef);
-        this.canvas.removeEventListener('mouseup', this.mouseUpRef);
+        this.canvas.removeEventListener('pointermove', this.mouseMoveRef);
+        this.canvas.removeEventListener('pointerup', this.mouseUpRef);
         $(this.canvas).off("mouseleave.canvas");
         this.getCurrentTool().canvasDragEnd();
     }

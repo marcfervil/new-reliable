@@ -185,7 +185,7 @@ class SVG{
     }
 
     selectedMouseMove(e){
-       
+        Selection.locked = true;
         if(this.isDragging){
             //used to layerX, layerY...look into this..
             let clickPos = new Vector2(e.clientX, e.clientY).multiply(zoom);
@@ -219,8 +219,8 @@ class SVG{
         this.mouseUpRef = (e) => this.selectedMouseUp(e);
 
        
-        this.parent.addEventListener('mousemove', this.mouseMoveRef);
-        this.parent.addEventListener('mouseup', this.mouseUpRef);
+        this.parent.addEventListener('pointermove', this.mouseMoveRef);
+        this.parent.addEventListener('pointerup', this.mouseUpRef);
 
         this.isDragging = true; 
 
@@ -230,10 +230,10 @@ class SVG{
    
 
     selectedMouseUp(e){
-
+        Selection.locked = false;
       
-        this.parent.removeEventListener('mousemove', this.mouseMoveRef);
-        this.parent.removeEventListener('mouseup', this.mouseUpRef);
+        this.parent.removeEventListener('pointermove', this.mouseMoveRef);
+        this.parent.removeEventListener('pointerup', this.mouseUpRef);
 
         this.isDragging = false; 
     
@@ -420,8 +420,8 @@ class SVG{
             
             let moveRef = (e) => {moveEvent(e)};
             let upRef = (e) => {upEvent(e)}
-            document.addEventListener('mousemove', moveRef);
-            document.addEventListener('mouseup', upRef);
+            document.addEventListener('pointermove', moveRef);
+            document.addEventListener('pointerup', upRef);
 
             
             let startScale = this.transform.scale.clone();
@@ -429,7 +429,7 @@ class SVG{
             this.scaleStart = this.transform.scale;
 
             let moveEvent = (mouseMove) => {
-
+                
        
                 this.scaleAnchor = anchor;
 
@@ -446,8 +446,8 @@ class SVG{
 
             let upEvent = (mouseUp) => {
           
-                document.removeEventListener('mousemove', moveRef);
-                document.removeEventListener('mouseup', upRef);
+                document.removeEventListener('pointermove', moveRef);
+                document.removeEventListener('pointerup', upRef);
 
                 Action.commit(this.reliable, {
                     action: "Scale",
