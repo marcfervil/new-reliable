@@ -410,6 +410,7 @@ class SVG{
             mouseDown.stopPropagation();
             mouseDown.preventDefault();
             //change the anchor
+            Selection.locked = true;
             this.scaleAnchor = anchor;
 
 
@@ -448,7 +449,7 @@ class SVG{
           
                 document.removeEventListener('pointermove', moveRef);
                 document.removeEventListener('pointerup', upRef);
-
+                Selection.locked = false;
                 Action.commit(this.reliable, {
                     action: "Scale",
                     id: this.id,
