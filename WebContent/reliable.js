@@ -209,7 +209,7 @@ class Reliable {
         this.canvasMouseDown = false;
         this.canvas.removeEventListener('pointermove', this.mouseMoveRef);
         this.canvas.removeEventListener('pointerup', this.mouseUpRef);
-        $(this.canvas).off("mouseleave.canvas");
+        $(this.canvas).off("pointerleave.canvas");
         this.getCurrentTool().canvasDragEnd();
     }
 
