@@ -256,6 +256,13 @@
         return debug;
     }
 
+    function debugRect2(pos, size, color="blue"){
+        if(pos===undefined || size===undefined)return;
+
+        let x = debugRect(pos.x, pos.y, size, size, color);
+        return x;
+    }
+
 
 
 

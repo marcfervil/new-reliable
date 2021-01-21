@@ -19,7 +19,8 @@ class Pen extends Tool{
     }
 
     canvasDragEnd(){
-       /*
+       
+        
         let smoothed = this.svgPath.smoothify();
         if(smoothed){  
             Action.commit(this.reliable, {
@@ -33,7 +34,7 @@ class Pen extends Tool{
                 }
             });   
         }
-        this.svgPath.delete();*/
+        this.svgPath.delete();
     }
 }
 

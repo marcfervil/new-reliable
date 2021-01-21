@@ -116,10 +116,11 @@ mouse = null;
 let mouseTime = null;
 let totalDist = 0;
 let lerpList = [];
-let x = false;
+let one = false;
 let average = (array) => array.reduce((a, b) => a + b) / array.length;
 canvas.addEventListener("mousedown", (e) => {
-    x=true;
+   
+    if(one!=2)one=true;
 });
 canvas.addEventListener("mousemove", (e) => {
 
@@ -140,7 +141,7 @@ canvas.addEventListener("mousemove", (e) => {
         mouse = new Mouse(firstPos);
         mouse.moveTo(firstPos);
        
-    }else if(x){ 
+    }else if(one==true){ 
 
         totalDist += lastMousePos.distance(currentPos);
         lastMousePos = currentPos;
@@ -166,7 +167,7 @@ canvas.addEventListener("mousemove", (e) => {
        }
     }
 
-    if(x){
+    if(one==true){
         if(mouseTime!=null)clearTimeout(mouseTime);
         let ogPos = getMousePos();
         mouseTime = setTimeout(()=>{  
@@ -182,6 +183,7 @@ canvas.addEventListener("mousemove", (e) => {
     }
 });
 /*
+https://blog.demofox.org/2015/07/05/the-de-casteljeau-algorithm-for-evaluating-bezier-curves/
 setInterval(()=>{
     if(lerpList.length>10){
         smoothLerp(lerpList);
@@ -192,7 +194,7 @@ setInterval(()=>{
 
 function smoothLerp(lerpList, last){
     let ogLerp = [];
-    x=false;
+    one=2;
     //if(totalDist > 400 && x){
       // x = false;
         //for(let i of $(".debug"))i.remove();
@@ -234,6 +236,8 @@ function smoothLerp(lerpList, last){
         let smoothLerp2 = []
         let col = "green";
         let sample =[];
+        let lineSegments = [];
+        let lineSegment = []
         for(let [i, lerp] of smoothLerp.entries()){
             if(i>0){
                 
@@ -248,17 +252,20 @@ function smoothLerp(lerpList, last){
                     let x = 180 - Math.abs(Math.abs(avg - angle) - 180); 
                     //let x = Math.abs(avg - angle)
                     //console.log("COMAPS "+x);
-                    if(x > 45){
+                    if(x > 30){
                         //console.log(`------(${avg})----(${angle})-------(${sample.length})`)
                         col = randColor();
 
-                      lerp.key = true;
+                        lerp.key = true;
                         smoothLerp2[smoothLerp2.length -1 - sample.length].key = true;
                         //if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
+                        lineSegments.push(lineSegment);
+                        lineSegment=[];
                         sample=[];
                     }
                 }
                 sample.push(angle);
+                lineSegment.push(lerp.pos)
 
                 //console.log(i+": "+angle);
 
@@ -285,15 +292,27 @@ function smoothLerp(lerpList, last){
         let xx = 0;
         let compressedLerp = [];
         let just = false;
-        let path= new SVGPath(canvas, smoothLerp2[0].pos.add(new Vector2(1000,0)), "ifdjofj")
-        
+
+
+        let path = new SVGPath(canvas, smoothLerp2[0].pos.add(new Vector2(0, 0)), "ifdjofj");
+        console.log(JSON.parse(JSON.stringify(lineSegments)));
+
+        setTimeout(()=>{
+            path.smootherfy(lineSegments);
+        }   
+        ,100)
+       
+
+
+        path.svg.setAttribute('transform','translate(1000,0)')
+      
         for(let lerp of smoothLerp2){
             if(lerp.key){
                 xx+=1;
                 debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
                 lastcol = lerp.col;
                 compressedLerp.push(lerp);
-                path.addPoint(lerp.pos.add(new Vector2(1000,0)));
+                path.addPoint(lerp.pos.add(new Vector2(0,0)));
                 if(just==false)just = true;
                 else if(just) just = false;
             }else{
@@ -301,12 +320,7 @@ function smoothLerp(lerpList, last){
                
             }
         }
-        let smoovpath= new SVGPath(canvas, ogLerp[0].pos.add(new Vector2(1000,1000)), "ifdjofj");
-        for(let lerp of ogLerp){
-            //debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "orange");
-            smoovpath.addPoint(lerp.pos.add(new Vector2(1000,1000)));
-        }
-        smoovpath.smoothify();
+       
 
         console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
         console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
