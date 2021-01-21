@@ -190,8 +190,8 @@ class Reliable {
             this.canvas.addEventListener('touchmove', this.mouseMoveRef);
             this.canvas.addEventListener('touchend', this.mouseUpRef);
 
-            
-            $(this.canvas).on("mouseleave.canvas", this.mouseUpRef);
+            //this.mouseUpRef
+            $(document).on("touchend.canvas", this.mouseUpRef);
         }
 
         this.getCurrentTool().canvasDragStart(mousePos);
@@ -205,11 +205,13 @@ class Reliable {
     }
 
     mouseUpCanvas(e){
-        console.log("UPPIES")
         this.canvasMouseDown = false;
         this.canvas.removeEventListener('pointermove', this.mouseMoveRef);
         this.canvas.removeEventListener('pointerup', this.mouseUpRef);
+        this.canvas.removeEventListener('touchmove', this.mouseMoveRef);
+        this.canvas.removeEventListener('touchend', this.mouseUpRef);
         $(this.canvas).off("pointerleave.canvas");
+        $(document).off("touchend.canvas");
         this.getCurrentTool().canvasDragEnd();
     }
 
