@@ -21,8 +21,8 @@ class Pen extends Tool{
     canvasDragEnd(){
        
         
-        let smoothed = this.svgPath.smoothify();
-        if(smoothed){  
+        //let smoothed = this.svgPath.smoothify();
+        if(true || smoothed){  
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: this.svgPath.id,

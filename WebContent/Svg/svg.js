@@ -364,7 +364,7 @@ class SVG{
         
         rightDrag.setAttribute("vector-effect","non-scaling-stroke");
         rightDrag.style.stroke = "red";
-        rightDrag.style.fill = "transparent";
+        rightDrag.style.fill = "red";
         
       
         

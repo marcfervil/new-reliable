@@ -14,7 +14,7 @@ class SVGPath extends SVG{
         
         this.svg.style.strokeLinejoin = "round";
         this.svg.style.strokeLinecap = "round";
-        this.svg.style.strokeMiterlimit = 10;
+        this.svg.style.strokeMiterlimit = 100;
         this.svg.style.strokeDasharray = "none";
         this.svg.setAttribute("vector-effect","non-scaling-stroke");
 
@@ -39,7 +39,9 @@ class SVGPath extends SVG{
 
     addPoint(pos){
         this.path.push(pos);
-        this.updatePath(pos.toString())
+        this.updatePath(pos.toString());
+        //DELETE ME 
+        return this;
     
     }
 
@@ -95,8 +97,8 @@ class SVGPath extends SVG{
 
     smootherfy(lineSegmentsOG){
         console.log("smoother");
-        let lineSegments = []
-      
+        let lineSegments = lineSegmentsOG
+      /*
         for(let [i, line] of lineSegmentsOG.entries()){
             if(i>0 && line.length<5){
                 
@@ -107,21 +109,21 @@ class SVGPath extends SVG{
             }
             
         }
-
+*/
         
         console.log("SEGMENTS");
         console.log(JSON.parse(JSON.stringify(lineSegments)));
         let svgData = "M ";
-        let start = lineSegments[0].splice(0, 1).toString()+"C ";
+        let start = lineSegments[0].splice(0, 1)[0];
         
         for(let [i, line] of lineSegments.entries()){
             
             let midpoint = Math.floor(line.length / 2);
 
            
-            let c1 = line[ Math.ceil(midpoint/2)].toString();
-            let c2 = line[(line.length-1)- Math.floor(midpoint/2)].toString();
-            let end = line[line.length - 1].toString();
+            let c1 = line[ Math.floor(midpoint/2)];
+            let c2 = line[(line.length-1)- Math.ceil(midpoint/2)];
+            let end = line[line.length - 1];
 
             /*
             console.log("\n---------------")
@@ -132,11 +134,23 @@ class SVGPath extends SVG{
             console.log(end);
             console.log("\n---------------")*/
 
-            svgData += `${start} ${c1} ${c2} ${end} `;
-            console.log(`${i}: ${start}, ${c1}, ${c2}, ${end}`);
-           
+            /*
+            debugRect2(start, 10, "green", "same");
+            debugRect2(c1, 10, "yellow", "same");
+            debugRect2(c2, 10, "yellow", "same");
+            debugRect2(end, 10, "red", "same");*/
 
-            if(i<lineSegments.length-1)start = lineSegments[i+1].splice(0, 1).toString()
+            if(i==0) start+="C "
+            svgData += `${start} ${c1} ${c2} ${end} `;
+            
+            console.log(`${i}: (${start}), ${c1}, ${c2}, ${end}`);
+            console.log("\n---------------")
+            console.log(start.x);
+            console.log(start);
+            console.log("---------------\n")
+            
+
+            if(i<lineSegments.length-1)start = lineSegments[i+1].splice(0, 1)[0];
 
         }
         console.log(svgData);

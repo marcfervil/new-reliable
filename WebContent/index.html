@@ -76,7 +76,8 @@
                 fill: #AAB2C0;
                 border:  none;
                 color: #AAB2C0;
-                
+                margin:0px;
+                padding:0px;
                 font-size: 40px;
             }
 
@@ -243,7 +244,7 @@
         $(canvas).empty();
     }
 
-    function debugRect(x, y, w, h, color){
+    function debugRect(x, y, w, h, color, fill="transparent"){
         let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         debug.setAttribute("class", "debug");
         debug.setAttribute("x", x);
@@ -251,15 +252,15 @@
         debug.setAttribute("width", w);
         debug.setAttribute("height", h);
         debug.style.stroke = color;
-        debug.style.fill = "transparent";
+        debug.style.fill = (fill!="same") ? fill : color;
         canvas.appendChild(debug);
         return debug;
     }
 
-    function debugRect2(pos, size, color="blue"){
+    function debugRect2(pos, size, color="red", fill="transparent" ){
         if(pos===undefined || size===undefined)return;
 
-        let x = debugRect(pos.x, pos.y, size, size, color);
+        let x = debugRect(pos.x, pos.y, size, size, color, fill);
         return x;
     }
 
@@ -297,6 +298,8 @@
     }
     
 
+    
+
     //break in case of canvas postion change
     
     
@@ -332,4 +335,41 @@
 
         return rect;
     };
+
+    
+    let start = pan.add(new Vector2(500, 500));
+    let c1 = start.add(new Vector2(200, 300));
+    let end = start.add(new Vector2(100, 500));
+    
+ 
+    let path2 = new SVGPath(canvas, start, "id").addPoint(start).addPoint(c1).addPoint(end);
+    path2.smoothify();
+    path2.svg.style.opacity = 0.3;
+    
+    debugRect2(start, 10, "green", "same");
+    debugRect2(end, 10, "red", "same");
+
+    new SVGPath(canvas, start, "fewfeewf").addPoint(c1).svg.style.opacity = 0.3;
+    debugRect2(c1, 10, "yellow", "same");
+
+    let c2 = rotate(c1, start, 20);
+    new SVGPath(canvas, start, "fewfeewf").addPoint(c2);
+    debugRect2(c2, 10, "blue", "same");
+    let path3 = new SVGPath(canvas, start, "id").addPoint(start).addPoint(c2).addPoint(end).smoothify();
+    
+
+
+    function rotate(point, pivot, angle) {
+        let cx = pivot.x;
+        let cy = pivot.y;
+        let x = point.x; 
+        let y = point.y;
+        let radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return new Vector2(nx, ny);
+}
+
 </script>
