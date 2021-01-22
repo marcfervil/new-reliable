@@ -337,6 +337,7 @@
     };
 
     
+    /*
     let start = pan.add(new Vector2(500, 500));
     let c1 = start.add(new Vector2(200, 300));
     let end = start.add(new Vector2(100, 500));
@@ -352,24 +353,13 @@
     new SVGPath(canvas, start, "fewfeewf").addPoint(c1).svg.style.opacity = 0.3;
     debugRect2(c1, 10, "yellow", "same");
 
-    let c2 = rotate(c1, start, 20);
+    let c2 = c1.rotateAround(start, 20);
     new SVGPath(canvas, start, "fewfeewf").addPoint(c2);
     debugRect2(c2, 10, "blue", "same");
     let path3 = new SVGPath(canvas, start, "id").addPoint(start).addPoint(c2).addPoint(end).smoothify();
-    
+    */
 
 
-    function rotate(point, pivot, angle) {
-        let cx = pivot.x;
-        let cy = pivot.y;
-        let x = point.x; 
-        let y = point.y;
-        let radians = (Math.PI / 180) * angle,
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-    return new Vector2(nx, ny);
-}
+   
 
 </script>

@@ -237,7 +237,8 @@ function smoothLerp(lerpList, last){
         let col = "green";
         let sample =[];
         let lineSegments = [];
-        let lineSegment = []
+        let lineSegment = [];
+        let angleSamples = [];
         for(let [i, lerp] of smoothLerp.entries()){
             if(i>0){
                 
@@ -259,8 +260,10 @@ function smoothLerp(lerpList, last){
                         lerp.key = true;
                         smoothLerp2[smoothLerp2.length -1 - sample.length].key = true;
                         //if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
+                        lineSegment.avg = avg;
                         lineSegments.push(lineSegment);
                         lineSegment=[];
+                        
                         sample=[];
                     }
                 }
@@ -309,14 +312,14 @@ function smoothLerp(lerpList, last){
         for(let lerp of smoothLerp2){
             if(lerp.key){
                 xx+=1;
-                debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
+               // debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
                 lastcol = lerp.col;
                 compressedLerp.push(lerp);
                 path.addPoint(lerp.pos.add(new Vector2(0,0)));
                 if(just==false)just = true;
                 else if(just) just = false;
             }else{
-                debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "red");
+           //     debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "red");
                
             }
         }

@@ -108,6 +108,20 @@ Vector2.prototype = {
 		return vector;
 	},
 
+
+	rotateAround: function(pivot, angle) {
+		let cx = pivot.x;
+        let cy = pivot.y;
+        let x = this.x; 
+        let y = this.y;
+        let radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+		ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+		return new Vector2(nx, ny);
+	},
+
 	toPrecision: function(precision) {
 		var vector = this.clone();
 		vector.x = vector.x.toFixed(precision);
