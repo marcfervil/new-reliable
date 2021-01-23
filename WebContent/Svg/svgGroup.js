@@ -4,9 +4,8 @@ class SVGGroup extends SVG{
         super("g", parent, pos, id);
         
         for(let child of children){
-            this.svg.appendChild(child.svg);
-          //  child.select();
-           // child.moveTo(child.transform.pos)
+            let svg = this.svg.appendChild(child.svg);
+            child.svg = svg;
             child.delete();
         }
 
@@ -28,7 +27,7 @@ class SVGGroup extends SVG{
 
 
       //  this.moveTo(pos);
-        this.select(app);
+       
     }
 
 

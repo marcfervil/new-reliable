@@ -137,7 +137,9 @@ class Select extends Action{
             SVG.forEachSVG(this.data.ids, (svg) => {
                children.push(svg);
             });
-            new SVGGroup(reliable.canvas, new Vector2(), Reliable.makeId(10), children);//
+            let id = Reliable.makeId(10);
+            new SVGGroup(reliable.canvas, new Vector2(), id, children).select(reliable, this.myAction);
+            app.toolbar[1].selected.push(id);
         }
     }
 
