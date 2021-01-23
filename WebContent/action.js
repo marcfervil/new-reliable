@@ -36,6 +36,7 @@ class Action {
 
   
         if(action.unDoable){
+          
             reliable.actions.push(action);
             if(action.myAction) {
                 if(action.data.fromRedo===undefined)reliable.redoActions = [];

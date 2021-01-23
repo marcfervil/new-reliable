@@ -98,7 +98,8 @@ class Selection extends Tool{
             let id = hit.parentNode.id;
          
 
-            if(id != "canvas" && !hit.parentNode.reliableSvg.isSelected){
+            if(id != "canvas" && !hit.parentNode.reliableSvg.isSelected &&id.length>0){
+                console.log(id);
                 this.selected.push(id);
             }
         }
@@ -125,10 +126,18 @@ class Select extends Action{
 
     execute(reliable){
         super.execute(reliable);
-
-        for(let id of this.data.ids){
-            $(`#${id}`)[0].reliableSvg.select(reliable, this.myAction);
+        if(this.data.ids.length < 2){
+            for(let id of this.data.ids){
+                $(`#${id}`)[0].reliableSvg.select(reliable, this.myAction);
+                
+            }
+        }else{
             
+            let children = [];
+            SVG.forEachSVG(this.data.ids, (svg) => {
+               children.push(svg);
+            });
+            new SVGGroup(reliable.canvas, new Vector2(), Reliable.makeId(10), children);//
         }
     }
 
