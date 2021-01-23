@@ -166,7 +166,7 @@ canvas.addEventListener("mousemove", (e) => {
             //}
        }
     }
-
+/*
     if(one==true){
         if(mouseTime!=null)clearTimeout(mouseTime);
         let ogPos = getMousePos();
@@ -180,7 +180,7 @@ canvas.addEventListener("mousemove", (e) => {
             }
             mouseTime = null;
         },100);
-    }
+    }*/
 });
 /*
 https://blog.demofox.org/2015/07/05/the-de-casteljeau-algorithm-for-evaluating-bezier-curves/
@@ -192,7 +192,15 @@ setInterval(()=>{
 },1000);*/
 
 
-function smoothLerp(lerpList, last){
+function smoothLerp(lerpListOG, last){
+
+
+    let lerpList=[];
+
+    for(let l of lerpListOG){
+        lerpList.push({pos: l});
+    }
+
     let ogLerp = [];
     one=2;
     //if(totalDist > 400 && x){
@@ -215,7 +223,7 @@ function smoothLerp(lerpList, last){
                 let dist = lastPoint.pos.distance(lerp.pos);
                 distList.push(dist);
                 slopeList.push([new Vector2(xSlope, ySlope),slope]);
-                let slopSense = 25;
+                let slopSense = 5;
                 let distToLast = cur.distance(lerpList[lerpList.length-1].pos);
                 let slopeCond = (Math.abs(xSlope) >slopSense || Math.abs(ySlope) >slopSense) /*&& distToLast>200*/ ;
                 if( slopeCond ){
@@ -259,7 +267,7 @@ function smoothLerp(lerpList, last){
 
                         lerp.key = true;
                         smoothLerp2[smoothLerp2.length -1 - sample.length].key = true;
-                        //if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
+                        if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
                         lineSegment.avg = avg;
                         lineSegments.push(lineSegment);
                         lineSegment=[];
@@ -301,9 +309,8 @@ function smoothLerp(lerpList, last){
         console.log(JSON.parse(JSON.stringify(lineSegments)));
 
         setTimeout(()=>{
-            path.smootherfy(lineSegments);
-        }   
-        ,100)
+          path.smootherfy(lineSegments);
+        })
        
 
 
@@ -312,7 +319,7 @@ function smoothLerp(lerpList, last){
         for(let lerp of smoothLerp2){
             if(lerp.key){
                 xx+=1;
-               // debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
+             //   debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
                 lastcol = lerp.col;
                 compressedLerp.push(lerp);
                 path.addPoint(lerp.pos.add(new Vector2(0,0)));
@@ -330,7 +337,7 @@ function smoothLerp(lerpList, last){
         totalDist = 0;
         lerpList = [];
         mouse.moveToPath(compressedLerp,last);
-       // mouse2.moveToPath(smoothLerp2,firstPos);
+       // mouse2.moveToPath(smoothLerp2,firstPos);*/
  //   }
 }
 

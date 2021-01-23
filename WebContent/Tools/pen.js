@@ -19,9 +19,12 @@ class Pen extends Tool{
     }
 
     canvasDragEnd(){
-       
-        
+        //this.svgPath.delete();
+        //this.svgPath = smoothLerp(this.svgPath.path);
+        this.svgPath2 = new SVGPath(this.reliable.canvas, this.svgPath.pos, Math.random());
+        this.svgPath2.svgPath = smoothLerp(this.svgPath.path);
         //let smoothed = this.svgPath.smoothify();
+        /*
         if(true || smoothed){  
             Action.commit(this.reliable, {
                 action: "Draw",
@@ -33,8 +36,8 @@ class Pen extends Tool{
                     y: this.svgPath.pos.y,
                 }
             });   
-        }
-        this.svgPath.delete();
+        }*/
+       // this.svgPath.delete();
     }
 }
 

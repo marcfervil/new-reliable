@@ -110,6 +110,7 @@ Vector2.prototype = {
 
 
 	rotateAround: function(pivot, angle) {
+		if(pivot==null) return new Vector2(this.x, this.y);
 		let cx = pivot.x;
         let cy = pivot.y;
         let x = this.x; 
