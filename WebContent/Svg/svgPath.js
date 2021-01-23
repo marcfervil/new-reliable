@@ -100,6 +100,8 @@ class SVGPath extends SVG{
         let lineSegments = [];
         this.path = [];
         
+        console.log(lineSegmentsOG[lineSegmentsOG.length-1])
+
         for(let [i, line] of lineSegmentsOG.entries()){
         
             if(i>0 && (line.length<6 || lineSegments[lineSegments.length-1].length <6)){
@@ -111,6 +113,10 @@ class SVGPath extends SVG{
             }
             
         }
+        console.log("last");
+        console.log(lineSegments[lineSegments.length-1])
+        
+
         let clock = 0;
         for(let line of lineSegments){
        
@@ -171,8 +177,8 @@ class SVGPath extends SVG{
                 end = line[line.length-1];
 
            // }
-        
-                if(controlList.length<2)continue;
+                console.log("ctr: "+controlList.length);
+          //      if(controlList.length<2)continue;
 
             let c1 = controlList[0];
             let c2 = controlList[1];

@@ -291,6 +291,9 @@ function smoothLerp(lerpListOG, debug){
             }
             
         }
+        if(lineSegment.length > 1){
+            lineSegments.push(lineSegment);
+        }
         smoothLerp2[smoothLerp2.length - 1].key = true;
         //console.log(ogLerp.length);
         //console.log(100 - ((7/ogLerp.length) * 100))
@@ -327,7 +330,7 @@ function smoothLerp(lerpListOG, debug){
         for(let lerp of smoothLerp2){
             if(lerp.key){
                 xx+=1;
-             //   debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
+             //  debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "yellow");
                 lastcol = lerp.col;
                 compressedLerp.push(lerp);
                 path.addPoint(lerp.pos.add(new Vector2(0,0)));
@@ -339,12 +342,8 @@ function smoothLerp(lerpListOG, debug){
             }
         }
        
-
-        console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
-        console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
-        totalDist = 0;
-        lerpList = [];
-        mouse.moveToPath(compressedLerp,last);
+       
+     
        // mouse2.moveToPath(smoothLerp2,firstPos);*/
  //   }
 }

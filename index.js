@@ -134,6 +134,8 @@ io.on('connection', (socket) => {
                 room.updateState(socket, msg.data);
             }else if(!ignoredActions.includes(msg.action)){
                 socket.to(roomSlug).emit("data", msg);
+            }else if(msg== "Refresh"){
+                //room.state = null;
             }
         });
 

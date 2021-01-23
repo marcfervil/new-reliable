@@ -23,7 +23,7 @@ class Pen extends Tool{
     }
 
     canvasDragEnd(){
-        
+        console.log(this.svgPath.path);
         let x = smoothLerp(this.svgPath.path, showSmooth);
         //x.svg.setAttribute("transform","translate(1000,0)")
         this.svgPath.delete();
