@@ -52,6 +52,7 @@ class Reliable {
         tool.imgDiv.removeClass("unselected");
     }
 
+  
     addTool(tool){
         
         this.toolbar.push(tool);
@@ -59,12 +60,26 @@ class Reliable {
 
         if(tool.getImage()!=""){
             let img = $("<img/>").attr("src", `${this.path}/images/icons/${tool.getImage()}`);
-            let imgDiv = $("<div/>").attr("class", "iconDiv unselected").append(img).on("click", () => this.swapTool(tool));
+            let imgDiv = $("<div/>").attr("class", "iconDiv unselected").on("click", () => this.swapTool(tool));
+            /*==
+            $.get(`${this.path}/images/icons/${tool.getImage()}`, (data)=>{
+                let svgStr = new XMLSerializer().serializeToString(data.documentElement);
+                let i = $($.parseHTML(svgStr));
+                i[0].setAttribute("width",70);
+                i[0].setAttribute("height",70);
+                imgDiv.append(i);
+              
+               //rimgDiv.append(data);
+            });*/
+            imgDiv.append(img);
+            //console.log(img[0].im)
+           
             tool.imgDiv = imgDiv;
             
             this.toolbarDiv.append(imgDiv);
         }
     }
+
 
     clear(){
         
