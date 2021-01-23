@@ -1,4 +1,7 @@
 //is mightier than the sword
+
+showSmooth = false;
+
 class Pen extends Tool{
 
     constructor(){
@@ -20,7 +23,7 @@ class Pen extends Tool{
 
     canvasDragEnd(){
         
-        let x = smoothLerp(this.svgPath.path, true);
+        let x = smoothLerp(this.svgPath.path, showSmooth);
         //x.svg.setAttribute("transform","translate(1000,0)")
         this.svgPath.delete();
         //this.svgPath = smoothLerp(this.svgPath.path);

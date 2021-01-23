@@ -98,7 +98,7 @@ class SVGPath extends SVG{
     smootherfy(lineSegmentsOG, debug){
        
         let lineSegments = [];
-      
+        this.path = [];
         
         for(let [i, line] of lineSegmentsOG.entries()){
         
@@ -136,6 +136,7 @@ class SVGPath extends SVG{
         let end = lineSegments[0][0];
         if(debug)debugRect2(end, 10, "green", "same");
         let svgData = "M "+end.toString()+" C ";
+        this.path.push(end);
         //pick points that are same distance apart for the controls
         for(let [i, line] of lineSegments.entries()){
             let controlRot = 5;
@@ -203,7 +204,9 @@ class SVGPath extends SVG{
             }
 
             svgData += `${c1} ${c2} ${end} `;
-
+            this.path.push(c1);
+            this.path.push(c2);
+            this.path.push(end);
 
             //let c1 = line[ Math.floor(midpoint/2)].rotateAround(start, -anchorRot);
         }

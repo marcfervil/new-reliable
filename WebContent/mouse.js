@@ -305,15 +305,19 @@ function smoothLerp(lerpListOG, debug){
         let just = false;
 
 
-        let path = new SVGPath(canvas, smoothLerp2[0].pos.add(new Vector2(0, 0)), "ifdjofj");
+        let path = new SVGPath(canvas, smoothLerp2[0].pos.add(new Vector2(0, 0)), Reliable.makeId(10));
         console.log(JSON.parse(JSON.stringify(lineSegments)));
 
         //setTimeout(()=>{
-            console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
-            console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
-            totalDist = 0;
-            lerpList = [];
-          return path.smootherfy(lineSegments, debug);
+          
+          let v = path.smootherfy(lineSegments, debug);
+
+         // console.log(100 - ((path.path.length/smoothLerp.length) * 100)+"% angle compression")
+          console.log(100 - ((path.path.length/ogLerp.length) * 100)+"% total compression");
+          totalDist = 0;
+          lerpList = [];
+
+          return v;
        // })
        
 
