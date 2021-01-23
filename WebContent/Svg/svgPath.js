@@ -95,7 +95,7 @@ class SVGPath extends SVG{
         
     }
 
-    smootherfy(lineSegmentsOG){
+    smootherfy(lineSegmentsOG, debug){
        
         let lineSegments = [];
       
@@ -111,21 +111,37 @@ class SVGPath extends SVG{
             }
             
         }
+        let clock = 0;
+        for(let line of lineSegments){
+       
+            
+            let  segStart = line[0];
 
+            let  segEnd = line[line.length-1];
+           
+           //  console.log(segEnd)
+            // let f = (segEnd.x - segStart.x ) * (segEnd.y + segStart.y);
+            clock += (segStart.x - segEnd.x ) * (segStart.y + segEnd.y);
+            
+        }
+        
+       
+         let clockwise = Math.sign(clock) * -1;
+        console.log("clock: "+clockwise);
 
 
         console.log("\nSEGMENTS");
         console.log(JSON.parse(JSON.stringify(lineSegments)));
        
         let end = lineSegments[0][0];
-        //debugRect2(end, 10, "green", "same");
+        if(debug)debugRect2(end, 10, "green", "same");
         let svgData = "M "+end.toString()+" C ";
         //pick points that are same distance apart for the controls
         for(let [i, line] of lineSegments.entries()){
-            let controlRot = 10;
+            let controlRot = 5;
 
-            //get the center point between the line
-            //offset both controls but 1/3 of the length of the line from the midpoint
+            //get the center point between the line [done]
+            //offset both controls but 1/3 of the length of the line from the midpoint [done]
             //rotate both controls around their point by the angle in between them & the curve apex
             
            
@@ -137,13 +153,13 @@ class SVGPath extends SVG{
             //if(nextStart == null )continue;
            
                 let distFourth = end.distance(line[line.length-1])/4;
-                console.log("stuff");
+           
           
                 let dist = 0;
                 for(let [j, point] of line.entries()){
                     if(j > 0){
                         dist += point.distance(line[j-1]);
-                        if(dist >= distFourth-1){
+                        if(dist >= distFourth){
                             controlList.push(point);
                             if(controlList.length==2)break;
                             dist = 0;
@@ -154,9 +170,7 @@ class SVGPath extends SVG{
                 end = line[line.length-1];
 
            // }
-           console.log(nextEnd);
-            console.log(controlList.length);
-
+        
                 if(controlList.length<2)continue;
 
             let c1 = controlList[0];
@@ -171,67 +185,34 @@ class SVGPath extends SVG{
             let c2 = line[(line.length-1) - Math.ceil(midpoint/2)]*/
 
             
-            
-           
-           
-            
-            /*
-            c1 = c1.rotateAround(lastEnd, -controlRot);
-            c2 = c2.rotateAround(end, controlRot);
+            console.log("\n");
+           // console.log((lastEnd.y - end.y) / (lastEnd.x - end.x));
 
-            new SVGPath(canvas, c1, "fewfeewf").addPoint(lastEnd).svg.style.opacity = 0.5;
-            new SVGPath(canvas, c2, "fewfeewf").addPoint(end).svg.style.opacity = 0.5;
+        
+           // console.log("\n");
+            
+            c1 = c1.rotateAround(lastEnd, -(controlRot * clockwise));
+            c2 = c2.rotateAround(end, (controlRot *clockwise));
+            if(debug){
+                new SVGPath(canvas, c1, "fewfeewf").addPoint(lastEnd).svg.style.opacity = 0.5;
+                new SVGPath(canvas, c2, "fewfeewf").addPoint(end).svg.style.opacity = 0.5;
 
-            debugRect2(c1, 10, "yellow", "same");
-            debugRect2(c2, 10, "yellow", "same");
-            debugRect2(end, 10, "red", "same");*/
+                debugRect2(c1, 10, "yellow", "same");
+                debugRect2(c2, 10, "yellow", "same");
+                debugRect2(end, 10, "red", "same");
+            }
 
             svgData += `${c1} ${c2} ${end} `;
 
 
             //let c1 = line[ Math.floor(midpoint/2)].rotateAround(start, -anchorRot);
         }
-        /*
-        for(let [i, line] of lineSegments.entries()){
-            
-            let midpoint = Math.ceil(line.length / 2);
+        
+        console.log(Math.sign(clock));
 
-           try{
-            console.log(start);
-            let anchorRot = 10;
-            let c1 = line[ Math.floor(midpoint/2)].rotateAround(start, -anchorRot);
-            
-            
-            let end = line[line.length - 1];
-            
-            let c2 = line[(line.length-1)- Math.ceil(midpoint/2)].rotateAround(end, anchorRot);
-         
-            start = start.rotateAround(c1, anchorRot);
-            end = end.rotateAround(c2, -anchorRot);
-        //    console.log(line.avg);
-
-          
-            
-            debugRect2(start, 10, "green", "same");
-            debugRect2(c1, 10, "yellow", "same");
-            debugRect2(c2, 10, "yellow", "same");
-            debugRect2(end, 10, "red", "same");
-
-            let newstart = (i==0) ?  start.toString()+"C " : start;
-
-            svgData += `${newstart} ${c1} ${c2} ${end} `;
-            
-          //  console.log(`${i}: (${start}), ${c1}, ${c2}, ${end}`);
-            
-
-            if(i<lineSegments.length-1)start = lineSegments[i+1].splice(0, 1)[0];
-        }catch(e){
-            console.error(e)
-            continue;
-        }
-        }*/
         console.log(svgData);
         this.replacePath(svgData);
+        return this;
        // this.svg.style.transform = "translate(500, 0)"
     }
 

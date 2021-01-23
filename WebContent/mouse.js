@@ -192,7 +192,7 @@ setInterval(()=>{
 },1000);*/
 
 
-function smoothLerp(lerpListOG, last){
+function smoothLerp(lerpListOG, debug){
 
 
     let lerpList=[];
@@ -308,13 +308,17 @@ function smoothLerp(lerpListOG, last){
         let path = new SVGPath(canvas, smoothLerp2[0].pos.add(new Vector2(0, 0)), "ifdjofj");
         console.log(JSON.parse(JSON.stringify(lineSegments)));
 
-        setTimeout(()=>{
-          path.smootherfy(lineSegments);
-        })
+        //setTimeout(()=>{
+            console.log(100 - ((xx/smoothLerp.length) * 100)+"% angle compression")
+            console.log(100 - ((xx/ogLerp.length) * 100)+"% total compression");
+            totalDist = 0;
+            lerpList = [];
+          return path.smootherfy(lineSegments, debug);
+       // })
        
 
 
-        path.svg.setAttribute('transform','translate(1000,0)')
+      //  path.svg.setAttribute('transform','translate(1000,0)')
       
         for(let lerp of smoothLerp2){
             if(lerp.key){

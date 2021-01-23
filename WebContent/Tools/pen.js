@@ -19,10 +19,13 @@ class Pen extends Tool{
     }
 
     canvasDragEnd(){
-        //this.svgPath.delete();
+        
+        let x = smoothLerp(this.svgPath.path, true);
+        x.svg.setAttribute("transform","translate(1000,0)")
+      //  this.svgPath.delete();
         //this.svgPath = smoothLerp(this.svgPath.path);
-        this.svgPath2 = new SVGPath(this.reliable.canvas, this.svgPath.pos, Math.random());
-        this.svgPath2.svgPath = smoothLerp(this.svgPath.path);
+        //this.svgPath2 = new SVGPath(this.reliable.canvas, this.svgPath.pos, Math.random());
+        
         //let smoothed = this.svgPath.smoothify();
         /*
         if(true || smoothed){  
