@@ -21,33 +21,40 @@ class Pan extends Tool{
         super("Pan");
         this.scolled = 0;
         this.panVal = new Vector2(0, 0);
-
-        window.onwheel = (e)=> {
+        window.addEventListener('gesturestart',   e => e.preventDefault());
+        window.addEventListener('gesturechange', e => e.preventDefault());
+        window.addEventListener('gestureend', e => e.preventDefault());
+        document.addEventListener("wheel",(e)=> {
             
-           
+           e.preventDefault();
 
             if(this.scolled ==0 )this.lastTool = this.reliable.getCurrentTool();
-            this.scolled += 1;
+         //   this.scolled += 1;
 
-            this.reliable.swapTool(this, false);
+            //this.reliable.swapTool(this, false);
             
             if(e.ctrlKey){
                 this.zoom((e.deltaY) * 0.01);
                 
             }else{
-                this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom));
-                //window.requestAnimationFrame(()=>{this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom))});
+                //this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom));
+                window.requestAnimationFrame(()=>{this.pan(new Vector2(-e.deltaX, -e.deltaY).multiply(zoom))});
             }
+
+                //stop safari from...doing what it does...
+          
             //somebody tell me if this is dumb
+
+            /*
             this.timer = setTimeout(() => {
                 this.scolled-=1;
                 if(this.scolled<=0){
                     this.reliable.swapTool(this.lastTool);
                     
                 }
-            }, 200);
+            }, 200);*/
            
-        };
+        }, {passive: false});
         
 
 

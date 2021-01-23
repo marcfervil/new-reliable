@@ -22,7 +22,7 @@ class Action {
     }
     
     broadcast(){
-        vscode.postMessage(this.data);
+        Platform.postMessage(this.data);
     }
 
     /**
@@ -47,7 +47,7 @@ class Action {
 
         if(broadcast)action.broadcast();
 
-        vscode.postMessage({
+        Platform.postMessage({
             action: "State",
             data: reliable.getState()
         });

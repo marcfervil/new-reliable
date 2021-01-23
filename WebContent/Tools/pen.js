@@ -18,6 +18,7 @@ class Pen extends Tool{
     }
 
     canvasDrag(pos){
+        
         this.svgPath.addPoint(new Vector2(pos.x, pos.y));
     }
 
