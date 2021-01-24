@@ -1,3 +1,5 @@
+bend = 5;
+
 class SVGPath extends SVG{
 
     constructor(parent, pos, id, pathData){
@@ -179,7 +181,7 @@ class SVGPath extends SVG{
         this.path.push(end);
         //pick points that are same distance apart for the controls
         for(let [i, line] of lineSegments.entries()){
-            let controlRot = 10;
+            let controlRot = bend;
 
             //get the center point between the line [done]
             //offset both controls but 1/3 of the length of the line from the midpoint [done]
