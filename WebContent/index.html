@@ -17,7 +17,16 @@
 
             }
 
+            .nohighlight{
+                -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 
+            }
 
             .toolbar{
                 position: absolute;
@@ -78,8 +87,14 @@
                 fill: #AAB2C0;
                 border:  none;
                 color: #AAB2C0;
-                
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
                 font-size: 40px;
+                white-space:pre;
+            }
+
+            .nothing{
+                margin: 0px;
+                padding: 0px;
             }
 
             .SVGInput:focus {
@@ -166,6 +181,7 @@
 
     document.addEventListener('keydown', (event) => {
         if(hotkeysEnabled){
+            event.key = event.key.toLocaleLowerCase();
             if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
                 undo();
             }

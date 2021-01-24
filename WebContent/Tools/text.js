@@ -2,10 +2,12 @@
 
 class TextTool extends Tool{
 
+    
     constructor(){
         super("Text");
         this.doubleClickCount = 0;
         this.typing = false;
+        this.lastTool = null;
         canvas.addEventListener("mousedown", (e) => this.doubleClick(e));
     }
 
@@ -19,11 +21,14 @@ class TextTool extends Tool{
             if(this.doubleClickCount==1){
                 this.doubleClickCount = 0;
                 clearTimeout(this.timeout);
-                if(!this.active)this.reliable.swapTool(this);
+                if(!this.active){
+                    this.lastTool = this.reliable.getCurrentTool();
+                    this.reliable.swapTool(this);
+                }
                 this.creatTextInput(this.reliable, getMousePos());
                 
             }
-        }, 200);
+        }, 300);
         
     }    
 
@@ -50,6 +55,9 @@ class TextTool extends Tool{
                     id: Reliable.makeId(10),
                 });
             }
+            if(this.lastTool != null){
+                this.reliable.swapTool(this.lastTool);
+            }
         });
     }
 
@@ -73,8 +81,8 @@ class TextInput{
         let objSVG = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
         objSVG.setAttribute("x", this.pos.x);
         objSVG.setAttribute("y", this.pos.y);
-        objSVG.setAttribute("width", "10000px");
-        objSVG.setAttribute("height", "50px");
+        objSVG.setAttribute("width", "5000");
+        objSVG.setAttribute("height", "50");
         objSVG.style.zIndex = "100";
         objSVG.style.overflow="hidden";
 
@@ -82,11 +90,26 @@ class TextInput{
         
         
 
-        this.textInput = $("<input/>").attr("type", "text").attr("class", "SVGInput");
-        $(objDiv).append(this.textInput);
+        this.textInput = $("<textarea/>").attr("class", "SVGInput");
+        $(objDiv).append(this.textInput).addClass("SVGInput").addClass("nothing");
         this.textInput.on("keypress", (e) => {
             e.stopPropagation();
-            if(e.key=="Enter")this.commit();
+      
+            
+            objSVG.setAttribute("height", 50 * this.textInput.val().split("\n").length);
+            this.textInput.height( 50 * this.textInput.val().split("\n").length);
+           // objSVG.setAttribute("width", 50 * this.textInput.val().length);
+            if(e.key=="Enter"){
+                if(!e.shiftKey){
+                    this.commit();
+                }else{
+                    console.log("herere?")
+                    let newHeight = this.textInput.height()+50 ;
+                    objSVG.setAttribute("height", newHeight);
+                    this.textInput.height(newHeight);
+                    objSVG.setAttribute("width", $(objDiv).outerWidth());
+                }
+            }
         });
        
         this.textInput.on("click", (e) => {

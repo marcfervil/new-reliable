@@ -4,7 +4,7 @@ class SVGText extends SVG{
         super("foreignObject", parent, pos, id);
         this.text = text;
         let textNode = document.createTextNode(this.text);
-        this.span = $("<span/>").attr("class", "SVGInput");
+        this.span = $("<span/>").attr("class", "SVGInput nohighlight");
         this.span.append(textNode);
  
        
