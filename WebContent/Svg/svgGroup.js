@@ -1,14 +1,22 @@
+
+
 class SVGGroup extends SVG{
 
     constructor(parent, pos, id, children){
         super("g", parent, pos, id);
         
         for(let child of children){
-            let svg = this.svg.appendChild(child.svg);
-            child.svg = svg;
-            child.delete();
+            this.svg.appendChild(child.group);
+
+            //child.select();
+            
+           // child.delete();
+           //  child.moveTo(child.transform.pos);
+            //console.log(child.group);
         }
 
+    
+        //this.initPos = rect
         //for some reason the selection can't pick up foreignObject...but it can pick up an invisible rectange
         let boundRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         let rect = this.svg.getBoundingClientRect();
@@ -22,20 +30,71 @@ class SVGGroup extends SVG{
        
         this.group.appendChild(boundRect)
 
+        this.children = children;
         
-        
+     
 
-
+        this.moveDelta = new Vector2(0, 0);
+        this.initPos = new Vector2(rect.x, rect.y);
+        this.scaleDelta = new Vector2(0, 0);
       //  this.moveTo(pos);
        
     }
+    
+    getSelectMargin(){
+        return 0;
+    }
 
+    moveTo(pos){
+        super.moveTo(pos);
+        this.moveDelta = this.pos.subtract(this.initPos);
+
+        //move delta x & y
+        this.svg.setAttribute("mdx", this.moveDelta.x);
+        this.svg.setAttribute("mdy", this.moveDelta.y);
+        
+       // console.log(this.pos);
+    }
+
+    scaleTo(scale, anchorX, anchorY){
+        super.scaleTo(scale, anchorX, anchorY);
+        this.scaleDelta = this.transform.scale.subtract(new Vector2(1, 1))
+        this.svg.setAttribute("mdsx", this.scaleDelta.x);
+        this.svg.setAttribute("mdsy", this.scaleDelta.y)
+        this.svg.setAttribute("mdsxa", anchorX);
+        this.svg.setAttribute("mdsya", anchorY);
+    }
 
     getSerializableProperties(){
         return [];
     }
 
-    
+    unselect(reliable){
+        super.unselect(reliable);
+        
+       // console.log(this.scaleDelta)
+        for(let child of this.children){
+            let childRect = child.group.getBoundingClientRect();
+            reliable.canvas.appendChild(child.group);
+           
+      
+ 
+             child.transform.pos = new Vector2(childRect.x, childRect.y);
+          
+            
+
+            child.matrix = child.matrix.multiply(this.matrix);
+            child.updateTransform();
+            child.transform.scale = this.transform.scale;
+          
+            child.moveTo(child.transform.pos);
+            console.log(child.transform.scale);
+        
+
+        }
+        this.delete();
+        console.log("\n");
+    }
     
 
 }
