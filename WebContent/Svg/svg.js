@@ -416,7 +416,7 @@ class SVG{
             Selection.locked = true;
             this.scaleAnchor = anchor;
 
-
+            
             let mouseStart = new Vector2(mouseDown.clientX, mouseDown.clientY).multiply(zoom);
            
           
@@ -496,10 +496,15 @@ class SVG{
     }
 
     static forEachSVG(ids, callback){
+      
         for(let id of ids){
-            callback($("#"+id)[0].reliableSvg);
+            try{
+                callback($("#"+id)[0].reliableSvg);
+            }catch(e){
+                console.error(`could not find ${id}`)
+            }
         }
-        
+      
     }
 
     

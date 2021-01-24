@@ -28,7 +28,10 @@ class Selection extends Tool{
     }
 
     canvasDragStart(pos){
-        if(Selection.locked)return;
+        if(Selection.locked){
+            $(this.drawRect).remove();
+            return;
+        }
         this.mouseStart = pos;
         this.drawRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
 
@@ -55,7 +58,10 @@ class Selection extends Tool{
 
 
     canvasDrag(pos){
-        if(Selection.locked)return;
+        if(Selection.locked){
+            $(this.drawRect).remove();
+            return;
+        }
         let dist = this.mouseStart.subtract(pos);
         let scaleFlip = dist.scale(-1);
         //dist = new Vector2(Math.abs(dist.x), Math.abs(dist.y));
@@ -64,7 +70,10 @@ class Selection extends Tool{
     }
 
     canvasDragEnd(){
-        if(Selection.locked)return;
+        if(Selection.locked){
+            $(this.drawRect).remove();
+            return;
+        }
         /*
         if(this.selected.length > 0) {
             
