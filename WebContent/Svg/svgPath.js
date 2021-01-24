@@ -98,7 +98,18 @@ class SVGPath extends SVG{
     }
 
     smootherfy(lineSegmentsOG, debug){
-       
+        //console.log(lineSegmentsOG[0][0].distance(lineSegmentsOG.last().last()));
+        if(lineSegmentsOG[0][0].distance(lineSegmentsOG.last().last()) < 50){
+            //console.log("correct");
+            let lastSeg = lineSegmentsOG[lineSegmentsOG.length - 1];
+
+            console.log(lineSegmentsOG[lineSegmentsOG.length - 1][lastSeg.length -1] );
+            lineSegmentsOG[lineSegmentsOG.length - 1][lastSeg.length -1] = lineSegmentsOG[0][0];
+
+           // lastPoint = 
+        }
+        
+
         let lineSegments = [];
         this.path = [];
         
@@ -213,7 +224,7 @@ class SVGPath extends SVG{
                 end = line[line.length-1];
 
            // }
-                console.log("ctr: "+controlList.length);
+               // console.log("ctr: "+controlList.length);
           //      if(controlList.length<2)continue;
 
             let c1 = controlList[0];
