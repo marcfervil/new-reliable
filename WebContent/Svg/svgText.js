@@ -44,6 +44,67 @@ class SVGText extends SVG{
     
     }
 
+    select(reliable, mySelection){
+        super.select(reliable, mySelection);
+        this.makeInput();
+    }
+
+    makeInput(){
+        /*
+        hotkeysEnabled = false;
+        let objSVG = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+        objSVG.setAttribute("x", this.pos.x);
+        objSVG.setAttribute("y", this.pos.y);
+        objSVG.setAttribute("width", "5000");
+        objSVG.setAttribute("height", "50");
+        objSVG.style.zIndex = "100";
+        objSVG.style.overflow="hidden";
+
+       
+        */
+        
+       let objDiv = document.createElement('div');
+        this.textInput = $("<textarea/>").attr("class", "SVGInput");
+        $(this.svg).append(this.textInput).addClass("SVGInput").addClass("nothing");
+        this.textInput.on("keypress", (e) => {
+            e.stopPropagation();
+      
+            
+            this.svg.setAttribute("height", 50 * this.textInput.val().split("\n").length);
+            this.textInput.height( 50 * this.textInput.val().split("\n").length);
+           // objSVG.setAttribute("width", 50 * this.textInput.val().length);
+            this.selectRect.rect.setAttribute("width",  50 * this.textInput.val().length);
+           // $(this.selectRect).remove();
+         //   this.selectRect = this.createSelectRect();
+            if(e.key=="Enter"){
+                if(!e.shiftKey){
+                    this.commit();
+                }else{
+                    console.log("herere?")
+                    let newHeight = this.textInput.height()+50 ;
+                    $(this.svg).setAttribute("height", newHeight);
+                    this.textInput.height(newHeight);
+                    $(this.svg).setAttribute("width",  $(this.svg).outerWidth());
+                }
+            }
+        });
+       
+        this.textInput.on("click", (e) => {
+            e.stopPropagation();
+            
+        });
+        setTimeout(()=>{
+            this.textInput.focus();
+            window.scrollTo(0, 0);
+        },0);
+
+        $(this.svg).append(objDiv);
+ 
+        //this.group.appendChild(objSVG);
+        //this.objSVG = objSVG;
+    }   
+
+
 
     getSerializableProperties(){
         return ["text"];

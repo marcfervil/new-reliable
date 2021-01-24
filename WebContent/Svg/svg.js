@@ -352,7 +352,7 @@ class SVG{
        
         this.group.appendChild(selectRectGroup);
         
-        
+        selectRectGroup.rect = selectRect;
         return selectRectGroup;
     }
 
