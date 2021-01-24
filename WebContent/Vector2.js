@@ -99,6 +99,13 @@ Vector2.prototype = {
 		return Math.atan2(vector.y - this.y, vector.x - this.x) * 180 / Math.PI;
 	},
 
+	angleVector: function(){
+		var angle = Math.atan2(this.y, this.x);   //radians
+		// you need to devide by PI, and MULTIPLY by 180:
+		var degrees = 180*angle/Math.PI;  //degrees
+		return (360+Math.round(degrees))%360; //round number, avoid decimal fragments
+	},
+
 	rotate: function(alpha) {
 		var cos = Math.cos(alpha);
 		var sin = Math.sin(alpha);

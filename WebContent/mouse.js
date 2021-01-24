@@ -211,6 +211,13 @@ function smoothLerp(lerpListOG, debug){
         let slopeList = [];
         let distList = [];
         let lastPoint = null;
+
+        /*
+        let yMin = Infinity;
+        let yMax = -Infinity;
+        let xMin = Infinity;
+        let xMax = -Infinity;*/
+    
         for(let [i, lerp] of lerpList.entries()){
             ogLerp.push(lerp);
             if(i > 0 && i<lerpList.length - 1){
@@ -228,11 +235,19 @@ function smoothLerp(lerpListOG, debug){
                 let slopeCond = (Math.abs(xSlope) >slopSense || Math.abs(ySlope) >slopSense) /*&& distToLast>200*/ ;
                 if( slopeCond ){
                     
-                    slopeList.push("-----------------------")
+                    let p = lerp.pos;
                    // //console.log(slope>5);
                     //if(slope>)//console.log()
+
+                    /*
+                    xMin = Math.min(xMin, cur.x);
+                    xMax = Math.max(xMax, cur.x);
+                    yMin = Math.min(yMin, cur.y);
+                    yMax = Math.max(yMax, cur.y);*/
+                  
                     smoothLerp.push(lerp);
                     lastPoint = lerp;
+                   
                 }
                 
             }else{
@@ -241,6 +256,13 @@ function smoothLerp(lerpListOG, debug){
                 lastPoint = lerp;
             }
         }
+/*
+        console.log("CENT");
+        console.log(xMin);
+        console.log(xMax);
+        let center = new Vector2((xMin+xMax)/2, (yMin + yMax)/2);*/
+       
+      
         let smoothLerp2 = []
         let col = "green";
         let sample =[];
@@ -270,8 +292,10 @@ function smoothLerp(lerpListOG, debug){
                         if(sample.length<=4)smoothLerp2[smoothLerp2.length -1 - Math.round((sample.length - 1) / 2)].center = true;
                         lineSegment.avg = avg;
                         lineSegments.push(lineSegment);
+                       
+                  
+
                         lineSegment=[];
-                        
                         sample=[];
                     }
                 }

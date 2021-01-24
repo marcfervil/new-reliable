@@ -114,26 +114,60 @@ class SVGPath extends SVG{
             
         }
         console.log("last");
-        console.log(lineSegments[lineSegments.length-1])
+        console.log(lineSegments[lineSegments.length-1]);
+
         
 
-        let clock = 0;
-        for(let line of lineSegments){
-       
-            
-            let  segStart = line[0];
 
-            let  segEnd = line[line.length-1];
-           
-           //  console.log(segEnd)
-            // let f = (segEnd.x - segStart.x ) * (segEnd.y + segStart.y);
-            clock += (segStart.x - segEnd.x ) * (segStart.y + segEnd.y);
+        //counter clock is 1, clockwise is -1, 0 means you realllllyyyyy messed up cuz how.
+        let getClock = (line) =>{
+            let segStart = line[0];
+            let segEnd = line.last();
+            let segAdj = line[3];
+
+            let baseAngle = segEnd.subtract(segStart).angleVector();
+            let adjAngle = segAdj.subtract(segStart).angleVector();
+
+
+            if(Math.abs(baseAngle-adjAngle) >180){
+                if(baseAngle-adjAngle<0){
+                    baseAngle+=360
+                }else{
+                    adjAngle+=360
+                }
+            }
+            if(baseAngle>adjAngle) return -1;
+            return 1;
             
+       
+        }
+
+        let clockTotal = 0;
+        for(let [i, line] of lineSegments.entries()){
+       
+           // if(i<lineSegments.length){
+                
+                let clock1 = getClock(line);
+               // let clock2 = getClock(lineSegments[i+1]);
+                
+               // console.log(clock1);
+               // console.log(clock2);
+               // console.log("====================");
+
+              
+               // clockTotal += ct;
+               // console.log(Math.sign(ct));
+                line.dir = Math.sign(clock1);
+               // console.log("clock dir "+Math.sign(clock));
+        //    }else{
+          //      line.dir = Math.sign(clockTotal);
+           // }
+            //line.dir = 1;
         }
         
        
-         let clockwise = Math.sign(clock) * -1;
-        console.log("clock: "+clockwise);
+     //   let clockwise = Math.sign(clock) * -1;
+      //  console.log("clock: "+clockwise);
 
 
         console.log("\nSEGMENTS");
@@ -145,7 +179,7 @@ class SVGPath extends SVG{
         this.path.push(end);
         //pick points that are same distance apart for the controls
         for(let [i, line] of lineSegments.entries()){
-            let controlRot = 5;
+            let controlRot = 10;
 
             //get the center point between the line [done]
             //offset both controls but 1/3 of the length of the line from the midpoint [done]
@@ -198,8 +232,8 @@ class SVGPath extends SVG{
         
            // console.log("\n");
             
-            c1 = c1.rotateAround(lastEnd, -(controlRot * clockwise));
-            c2 = c2.rotateAround(end, (controlRot *clockwise));
+            c1 = c1.rotateAround(lastEnd, -(controlRot * line.dir));
+            c2 = c2.rotateAround(end, (controlRot * line.dir));
             if(debug){
                 new SVGPath(canvas, c1, "fewfeewf").addPoint(lastEnd).svg.style.opacity = 0.5;
                 new SVGPath(canvas, c2, "fewfeewf").addPoint(end).svg.style.opacity = 0.5;
@@ -207,17 +241,18 @@ class SVGPath extends SVG{
                 debugRect2(c1, 10, "yellow", "same");
                 debugRect2(c2, 10, "yellow", "same");
                 debugRect2(end, 10, "red", "same");
+                new SVGText(canvas, end.add(new Vector2(10,10)), "fijew", line.dir)
             }
 
             svgData += `${c1} ${c2} ${end} `;
             this.path.push(c1);
             this.path.push(c2);
             this.path.push(end);
-
+           
             //let c1 = line[ Math.floor(midpoint/2)].rotateAround(start, -anchorRot);
         }
         
-        console.log(Math.sign(clock));
+        
 
         console.log(svgData);
         this.replacePath(svgData);

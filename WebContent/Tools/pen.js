@@ -31,19 +31,19 @@ class Pen extends Tool{
         //this.svgPath2 = new SVGPath(this.reliable.canvas, this.svgPath.pos, Math.random());
         
         //let smoothed = this.svgPath.smoothify();
-        /*
-        if(true || smoothed){  
+        
+     //   if(true || smoothed){  
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: this.svgPath.id,
-                path: this.svgPath.pathData,
+                path: x.pathData,
                 color: "#AAB2C0",
                 pos: {
                     x: this.svgPath.pos.x,
                     y: this.svgPath.pos.y,
                 }
             });   
-        }*/
+     //   }
        // this.svgPath.delete();
     }
 }
