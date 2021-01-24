@@ -91,7 +91,6 @@ class SVG{
         if(this.isSelected)pos = pos.subtract(selectMargin);
         let newPos = pos.subtract(this.transform.startPos);
        
-
         //manually set x and y (e and f in the transform matrix) to be our desired location and update the transformation matrix
         this.matrix.e = newPos.x;
         this.matrix.f = newPos.y;
@@ -130,7 +129,7 @@ class SVG{
         //returns position of svg relative to the anchor [top left, bottom right, etc]
         let getPos = () => {
             let bounds = this.selectRect.getBoundingClientRect();
-            return new Vector2(bounds[anchorX], bounds[anchorY]);
+            return new Vector2(isNaN(anchorX) ? bounds[anchorX] : anchorX, isNaN(anchorY) ? bounds[anchorY] : anchorY);
         }
 
         //get starting position relative to scale anchor
@@ -159,6 +158,8 @@ class SVG{
         //update the scale of our svg
         this.transform.scale = scale;
         if(!fakeSelect)this.unselect();
+
+        return pos;
     }
 
     rotateTo(){
@@ -332,17 +333,19 @@ class SVG{
         selectRectGroup.appendChild(selectRect);
       
         let anchorSize = 10;
+
+        if(this.groupPos===undefined){
         let topRightScaleAnchor = this.createDragRect(selectRect, "right", "top", new Vector2(1, -1), "left", "bottom" );
         let bottomRightScaleAnchor = this.createDragRect(selectRect, "right", "bottom", new Vector2(1, 1), "left", "top" );
         let bottomLeftScaleAnchor = this.createDragRect(selectRect, "left", "bottom", new Vector2(-1, 1), "right", "top" );
         let topLeftScaleAnchor = this.createDragRect(selectRect, "left", "top", new Vector2(-1, -1), "right", "bottom" );
-
+        
 
         this.anchors.push(bottomRightScaleAnchor);
         this.anchors.push(topRightScaleAnchor);
         this.anchors.push(bottomLeftScaleAnchor);
         this.anchors.push(topLeftScaleAnchor);
-
+        }
         for(let anchor of this.anchors){
             selectRectGroup.appendChild(anchor.svg);
         }

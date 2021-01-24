@@ -7,8 +7,7 @@ class SVGGroup extends SVG{
         
         for(let child of children){
             this.svg.appendChild(child.group);
-
-            //child.select();
+    
             
            // child.delete();
            //  child.moveTo(child.transform.pos);
@@ -57,7 +56,11 @@ class SVGGroup extends SVG{
     }
 
     scaleTo(scale, anchorX, anchorY){
+
+       
         super.scaleTo(scale, anchorX, anchorY);
+    
+        
         this.scaleDelta = this.transform.scale.subtract(new Vector2(1, 1))
         this.svg.setAttribute("mdsx", this.scaleDelta.x);
         this.svg.setAttribute("mdsy", this.scaleDelta.y)
@@ -75,22 +78,17 @@ class SVGGroup extends SVG{
        // console.log(this.scaleDelta)
         for(let child of this.children){
             let childRect = child.group.getBoundingClientRect();
+            let childpos = new Vector2(childRect.x, childRect.y);
+
+            let newMatrix = child.matrix.multiply(this.matrix)
+
             reliable.canvas.appendChild(child.group);
            
-      
+           
  
-             child.transform.pos = new Vector2(childRect.x, childRect.y);
-          
-            
-
-            child.matrix = child.matrix.multiply(this.matrix);
-            child.updateTransform();
-            child.transform.scale = this.transform.scale;
-          
-            child.moveTo(child.transform.pos);
-            console.log(child.transform.scale);
-        
-
+           
+            child.scaleTo(new Vector2(newMatrix.a, newMatrix.d), "left", "top");
+            child.moveTo(childpos);
         }
         this.delete();
         console.log("\n");
