@@ -1,4 +1,4 @@
-bend = 5;
+bend = 10;
 
 class SVGPath extends SVG{
 
@@ -98,6 +98,7 @@ class SVGPath extends SVG{
     }
 
     smootherfy(lineSegmentsOG, debug){
+        this.drags = [];
         //console.log(lineSegmentsOG[0][0].distance(lineSegmentsOG.last().last()));
         if(lineSegmentsOG[0][0].distance(lineSegmentsOG.last().last()) < 50){
             //console.log("correct");
@@ -187,7 +188,7 @@ class SVGPath extends SVG{
         console.log(JSON.parse(JSON.stringify(lineSegments)));
        
         let end = lineSegments[0][0];
-        if(debug)debugRect2(end, 10, "green", "same");
+        if(debug)this.dragify(debugRect2(end, 15, "green", "same"));
         let svgData = "M "+end.toString()+" C ";
         this.path.push(end);
         //pick points that are same distance apart for the controls
@@ -248,13 +249,24 @@ class SVGPath extends SVG{
             c1 = c1.rotateAround(lastEnd, -(controlRot * line.dir));
             c2 = c2.rotateAround(end, (controlRot * line.dir));
             if(debug){
-                new SVGPath(canvas, c1, "fewfeewf").addPoint(lastEnd).svg.style.opacity = 0.5;
-                new SVGPath(canvas, c2, "fewfeewf").addPoint(end).svg.style.opacity = 0.5;
+                
+                let _lastEnd = lastEnd.clone();
+                let _end = end.clone();
+                setTimeout(()=>{
+                    let p1 = new SVGPath(canvas, c1, "fewfeewf").addPoint(_lastEnd);
+                    let p2 = new SVGPath(canvas, c2, "fewfeewf").addPoint(_end);
+                    
+                    let d1 = this.dragify(debugRect2(c1, 15, "yellow", "same"), c1, p1);
+                    let d2 = this.dragify(debugRect2(c2, 15, "yellow", "same"), c2, p2);
+                    if(this.back2TheFuture!==undefined)this.back2TheFuture(d1);
+                    
+                    this.back2TheFuture = (future)=>{ this.dragify(debugRect2(_end, 15, "red", "same"), _end, undefined, future, d2)};
+                    
 
-                debugRect2(c1, 10, "yellow", "same");
-                debugRect2(c2, 10, "yellow", "same");
-                debugRect2(end, 10, "red", "same");
-                new SVGText(canvas, end.add(new Vector2(10,10)), "fijew", line.dir)
+                  //  new SVGText(canvas, _end.add(new Vector2(10,10)), "fijew", line.dir)
+                },0);
+                
+                
             }
 
             svgData += `${c1} ${c2} ${end} `;
@@ -294,6 +306,61 @@ class SVGPath extends SVG{
         
     }
 
+    dragify(el, pos , line, a1, a2){
+        el.style.opacity=0.5;
+        
+        let linePos = (line!==undefined) ? line.path[1] : null;
+
+        let updateLinePos = (newPos)=>{
+            linePos = newPos;
+            update(new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y"))));
+        };
+
+        let update = (newPos)=>{
+          
+            let cpos = new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y")));
+      
+            
+            this.pathData = this.pathData.replace(cpos.toString(), newPos.toString());
+            this.replacePath(this.pathData);
+           
+            el.setAttribute("x", newPos.x);
+            el.setAttribute("y", newPos.y)
+            
+            if(line!==undefined){
+                //console.log(line);
+                line.delete();
+                line = new SVGPath(app.canvas, linePos, "foekf");
+                line.addPoint(newPos);
+            }
+
+            if(a1 !==undefined)a1(cpos);
+                
+            if(a2 !==undefined)a2(cpos);
+            
+        };
+
+        $(el).on("mousedown",(e)=>{
+            let lastTool = app.currentTool;
+            app.currentTool = -69;
+            
+            console.log("LINE POS");
+            console.log(line);
+            console.log("END LINE POS");
+            if(line!==undefined) line.svg.style.opacity = 0.5;
+            $(document).on("mousemove.drag",(e)=>{
+                e.stopPropagation();
+                e.preventDefault();
+                update(getMousePos());
+            });
+            $(document).on("mouseup.up",(e)=>{
+                $(document).off("mousemove.drag");
+                $(document).off("mousemove.up");
+                app.currentTool = lastTool;
+            });
+        });
+        return updateLinePos;
+    }
     
     //funny
     /*

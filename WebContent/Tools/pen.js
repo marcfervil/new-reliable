@@ -1,6 +1,6 @@
 //is mightier than the sword
 
-showSmooth = false;
+showSmooth = true;
 
 class Pen extends Tool{
 
@@ -33,6 +33,7 @@ class Pen extends Tool{
         //let smoothed = this.svgPath.smoothify();
         
      //   if(true || smoothed){  
+         /*
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: this.svgPath.id,
@@ -42,7 +43,7 @@ class Pen extends Tool{
                     x: this.svgPath.pos.x,
                     y: this.svgPath.pos.y,
                 }
-            });   
+            });   */
      //   }
        // this.svgPath.delete();
     }

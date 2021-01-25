@@ -33,7 +33,12 @@ class Reliable {
     * @returns {Tool}
     */
     getCurrentTool(){
-        return this.toolbar[this.currentTool];
+        if(this.currentTool!=-69){
+            return this.toolbar[this.currentTool];
+        }else{
+            return new Tool();
+        }
+        
     }
 
     swapTool(tool, deactivate){
@@ -48,8 +53,10 @@ class Reliable {
         this.currentTool = this.toolbar.indexOf(tool);
         tool.activated();
         tool.active = true;
-        tool.imgDiv.addClass("selected");
-        tool.imgDiv.removeClass("unselected");
+        if(tool.imgDiv!==undefined){
+            tool.imgDiv.addClass("selected");
+            tool.imgDiv.removeClass("unselected");
+        }
     }
 
   
