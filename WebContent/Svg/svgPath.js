@@ -184,6 +184,31 @@ class SVGPath extends SVG{
       //  console.log("clock: "+clockwise);
 
 
+        let getControls = (line)=>{
+
+            let controlList = [];
+            //if(nextStart == null )continue;
+           
+                let distFourth = end.distance(line[line.length-1])/4;
+           
+          
+                let dist = 0;
+                for(let [j, point] of line.entries()){
+                    if(j > 0){
+                        dist += point.distance(line[j-1]);
+                        if(dist >= distFourth){
+                            controlList.push(point);
+                            if(controlList.length==2)break;
+                            dist = 0;
+                        }
+                    }
+                }
+               
+
+          
+            return controlList;
+        }
+
         console.log("\nSEGMENTS");
         console.log(JSON.parse(JSON.stringify(lineSegments)));
        
@@ -204,32 +229,6 @@ class SVGPath extends SVG{
             let nextEnd = (nextSegment!==undefined) ?  nextSegment[nextSegment.length-1] : null;
            // let nextStart = nextSegment[0][0];
             
-            let controlList = [];
-            //if(nextStart == null )continue;
-           
-                let distFourth = end.distance(line[line.length-1])/4;
-           
-          
-                let dist = 0;
-                for(let [j, point] of line.entries()){
-                    if(j > 0){
-                        dist += point.distance(line[j-1]);
-                        if(dist >= distFourth){
-                            controlList.push(point);
-                            if(controlList.length==2)break;
-                            dist = 0;
-                        }
-                    }
-                }
-                let lastEnd = end.clone();
-                end = line[line.length-1];
-
-           // }
-               // console.log("ctr: "+controlList.length);
-          //      if(controlList.length<2)continue;
-
-            let c1 = controlList[0];
-            let c2 = controlList[1];
 
             /*
             let midpoint = Math.ceil(line.length / 2);
@@ -242,12 +241,40 @@ class SVGPath extends SVG{
             
             console.log("\n");
            // console.log((lastEnd.y - end.y) / (lastEnd.x - end.x));
-
+          
         
            // console.log("\n");
+            let controlList = getControls(line);
+           let c1 = controlList[0];
+           let c2 = controlList[1];
+           let lastEnd = end.clone();
+           end = line[line.length-1];
+
+           c1 = c1.rotateAround(lastEnd, -(controlRot * line.dir));
+           if(nextSegment!==undefined){
+               let nextc1 = getControls(nextSegment)[0].rotateAround(nextEnd, (controlRot * nextSegment.dir));
+               //setTimeout(()=>{new SVGPath(canvas, c2, "fewfeewf").addPoint(nextc1).svg.style.stroke="black"},20);
+               
+                //Vector3 newSpot = oldSpotVector3 + (directionVector3.normalized * distanceFloat);
+                let dist = c2.distance(end);
+                let dir = end.subtract(nextc1).normalize();
+                c2 = end.add(dir.scale(dist));
+                setTimeout(()=>{
+                    debugRect2(nextc1,)
+                },10);
+           }else{
+                c2 = c2.rotateAround(end, (controlRot * line.dir ));
+           }
+
+          
+          
+          
+
             
-            c1 = c1.rotateAround(lastEnd, -(controlRot * line.dir));
-            c2 = c2.rotateAround(end, (controlRot * line.dir));
+         
+
+            this.lastc2 = c2;
+            this.lastc1 = c1;
             if(debug){
                 
                 let _lastEnd = lastEnd.clone();
@@ -257,7 +284,7 @@ class SVGPath extends SVG{
                     let p2 = new SVGPath(canvas, c2, "fewfeewf").addPoint(_end);
                     
                     let d1 = this.dragify(debugRect2(c1, 15, "yellow", "same"), c1, p1);
-                    let d2 = this.dragify(debugRect2(c2, 15, "yellow", "same"), c2, p2);
+                    let d2 = this.dragify(debugRect2(c2, 15, "blue", "same"), c2, p2);
                     if(this.back2TheFuture!==undefined)this.back2TheFuture(d1);
                     
                     this.back2TheFuture = (future)=>{ this.dragify(debugRect2(_end, 15, "red", "same"), _end, undefined, future, d2)};

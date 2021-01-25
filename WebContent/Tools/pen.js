@@ -1,6 +1,6 @@
 //is mightier than the sword
 
-showSmooth = true;
+showSmooth = false;
 
 class Pen extends Tool{
 
