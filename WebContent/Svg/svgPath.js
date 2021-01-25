@@ -1,4 +1,4 @@
-bend = 10;
+bend = 5;
 
 class SVGPath extends SVG{
 
@@ -251,17 +251,18 @@ class SVGPath extends SVG{
            end = line[line.length-1];
 
            c1 = c1.rotateAround(lastEnd, -(controlRot * line.dir));
-           if(nextSegment!==undefined){
+           if(false && nextSegment!==undefined){
                let nextc1 = getControls(nextSegment)[0].rotateAround(nextEnd, (controlRot * nextSegment.dir));
                //setTimeout(()=>{new SVGPath(canvas, c2, "fewfeewf").addPoint(nextc1).svg.style.stroke="black"},20);
                
                 //Vector3 newSpot = oldSpotVector3 + (directionVector3.normalized * distanceFloat);
+               // c2 = c2.rotateAround(end, (controlRot * line.dir ));
+           
                 let dist = c2.distance(end);
                 let dir = end.subtract(nextc1).normalize();
-                c2 = end.add(dir.scale(dist));
-                setTimeout(()=>{
-                    debugRect2(nextc1,)
-                },10);
+               c2 = end.add(dir.scale(dist));
+                //c2 = c2.rotateAround(end, (controlRot * line.dir ));
+               
            }else{
                 c2 = c2.rotateAround(end, (controlRot * line.dir ));
            }
@@ -334,10 +335,11 @@ class SVGPath extends SVG{
     }
 
     dragify(el, pos , line, a1, a2){
-        el.style.opacity=0.5;
+        el.style.opacity=0.3;
+        //this.group.append(el);
         
         let linePos = (line!==undefined) ? line.path[1] : null;
-
+        if(line!==undefined)line.svg.style.opacity = 0.3;
         let updateLinePos = (newPos)=>{
             linePos = newPos;
             update(new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y"))));
@@ -384,6 +386,8 @@ class SVGPath extends SVG{
                 $(document).off("mousemove.drag");
                 $(document).off("mousemove.up");
                 app.currentTool = lastTool;
+                if(line!==undefined)line.svg.style.opacity = 0.3;
+                canvas.appendChild(el);
             });
         });
         return updateLinePos;
