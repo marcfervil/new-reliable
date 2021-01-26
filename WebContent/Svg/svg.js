@@ -16,6 +16,7 @@ class SVG{
         this.group.reliableSvg = this;
         this.svg.reliableSvg = this;
        
+        this.svgLock = false;
 
         this.svg = this.group.appendChild(this.svg);
         this.group = this.parent.appendChild(this.group);
@@ -82,6 +83,16 @@ class SVG{
 
     getSelectMargin(){
         return 10;
+    }
+
+    unlock(){
+        this.svgLock = false
+    }
+    lock(){
+        this.svgLock = true
+    }
+    isLocked(){
+        return this.svgLock
     }
     
     moveTo(pos){

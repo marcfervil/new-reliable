@@ -53,8 +53,8 @@ class Eraser extends Tool{
 
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
         let realHits = [];
-        for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas"){// && !hit.reliableSvg.isLocked()
-            //hit.reliableSvg.lock();
+        for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas" && !hit.reliableSvg.isLocked()){
+            hit.reliableSvg.lock();
             realHits.push(hit.reliableSvg);
         }
         return realHits;
@@ -103,7 +103,48 @@ class Eraser extends Tool{
     }
 
 
+    isCollidingLineSegment(path){
 
+
+        //path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
+        let erased = false;
+        let removeIndex = [];
+        for(let i = 0; i<path.length; i+=2){
+            let j = i+1;
+
+            let x = path[i];
+            let y = path[j];
+            if(this.insideCursor(x,y)){
+                removeIndex.push(i)
+                erased = true;
+            }
+        }
+        let minIndex = Math.min(...removeIndex)
+        let maxIndex = Math.max(...removeIndex)
+        //path.splice(minIndex, (maxIndex-minIndex)+2);
+        let temp = path.splice(minIndex, path.length)
+        temp.splice(0,Math.min((maxIndex-minIndex)+2, temp.length));
+        let paths = []
+        
+        if(erased){
+            if(path.length>1){
+            let newPoint = this.eraserConnection(path[path.length-2],path[path.length-1]);
+            path.push(newPoint.x);
+            path.push(newPoint.y);
+            paths.push(path)
+            }
+            
+            if(temp.length>1){
+                let newPoint = this.eraserConnection(temp[0],temp[1]);
+                temp.unshift(newPoint.y);
+                temp.unshift(newPoint.x);
+                paths.push(temp)
+            }
+        }else{
+            paths.push(path)
+        }
+        return paths
+    }
     
     
     //temporary helper function to use svg.path instead of svg.pathdata
@@ -117,54 +158,73 @@ class Eraser extends Tool{
         //console.log(ret)
         return ret;
     }
-    mix(a, b, t)
-    {
-        // degree 1
-        return a * (1 - t) + b*t;
-    }
-    BezierQuadratic(A,B,C,t)
-    {
-        // degree 2
-        let AB = this.mix(A, B, t);
-        let BC = this.mix(B, C, t);
-        return this.mix(AB, BC, t);
-    }
-    BezierCubic(A,B,C,D,t)
-    {
-        // degree 3
-        let ABC = this.BezierQuadratic(A, B, C, t);
-        let BCD = this.BezierQuadratic(B, C, D, t);
-        return this.mix(ABC, BCD, t);
-    }
-
-
-    isCollidingLineSegment(controlPoints){
-        const c_numPoints = 10;
-        for( let i = 0; i < c_numPoints; ++i){
-            let time = (i / (c_numPoints - 1));
-            let p = new Vector2(0,0);
-            p.x = this.BezierCubic(controlPoints[0].x, controlPoints[1].x, controlPoints[2].x, controlPoints[3].x, time);
-            p.y = this.BezierCubic(controlPoints[0].y, controlPoints[1].y, controlPoints[2].y, controlPoints[3].y, time);
-            this.debugRect(p.x, p.y, 10, 10, "purple");
-            console.log("point at time "+time+" = ("+p.x+", "+p.y+")");
-        }
-    }
 
     lineSegmentColisions(svgs){
-        /*
+        let eraseables = []
         for(let svg of svgs){
-            let paths = this.isCollidingLineSegment(svg.path);
-        }*/
+            console.log(svgs)
+            let edited = this.pathToDTranslator(svg.path);
 
-        let tempSvg = new SVGPath(this.reliable.canvas,new Vector2(0,0));
-        tempSvg.replacePath("M 3151.8 2858.6 C 3117.9 2864.8 3052.1 2919.0 3049.5 2940.5 3045.8 2975.9 3066.8 3018.7 3079.6 3025.0 3160.5 3073.7 3280.9 3192.3 3293.5 3233.6 3306.3 3286.3 3287.7 3373.6 3275.8 3391.3 3230.2 3449.7 3083.4 3509.8 3052.1 3493.5 2952.8 3434.0 2895.4 3342.3 2863.2 3170.9")
-        console.log("refreshed")
-        //console.log(tempSvg.path)
-        this.isCollidingLineSegment(tempSvg.path)
+            //let paths = this.isCollidingLineSegment(edited.splice(1,edited.length)); //gets rid of the M
+            let paths = this.isCollidingLineSegment(edited);
+            let firstPass = true;
+            //console.log(paths.length)
+            //console.log(paths)
+            for(let temp of paths){
+                //temp.length-2 has to be divisable by 6
+                if(!(temp.length<8)){
+                    while((temp.length-2)%6 !=0){
+                        temp.push(temp[temp.length-2])
+                        temp.push(temp[temp.length-2])
+                    }
+                    temp[1] = temp[1]+"C"
+                    temp = "M "+temp.join(" ")
+                    eraseables.push(temp)
+                    if(firstPass){
+                        Action.commit(this.reliable,{
+                            action: "Replace",
+                            SVGID: svg.id,
+                            newPath: temp
+                        })
+                        //svg.replacePath(temp);
+                        firstPass = false;
+                    }
+                    else{
+                        let tempPos = new Vector2(0,0);
+                        Action.commit(this.reliable, {
+                            action: "Draw",
+                            id: Reliable.makeId(10) ,
+                            path: temp,
+                            color: "#AAB2C0",
+                            pos: tempPos.toJSON()
+                        })
+                        
+                        
+                    }
+                }else{
+                    
+                    if(firstPass){
+                        //svg.replacePath(temp)
+                        Action.commit(this.reliable,{
+                            action: "DeleteSVGPath",
+                            id: svg.id
+                        })
+                    }
+                    
+                }
+                firstPass = false;
+            }
+        }
+        return eraseables;
     }
 
+    //translates array of vector2 into array
+    glorifiedMiddleMan(){
+
+    }
 
     erase(){
+
         this.lineSegmentColisions(this.svgCollisions());
     }
 }

@@ -31,8 +31,7 @@ class SVGPath extends SVG{
         this.canvasRect = this.group.getBoundingClientRect();
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-
-        
+ 
     }
 
     moveTo(pos){
@@ -47,7 +46,33 @@ class SVGPath extends SVG{
         this.path = newPath;
     }
 
+
+    addPoint(pos){
+        this.path.push(pos);
+        this.updatePath(pos.toString())
     
+    }
+    //replaces path
+    replacePath(updateSvg){
+        this.unlock()
+        let ogPath = this.pathData;
+        this.pathData = updateSvg;
+        //console.log(updateSvg);
+        this.svg.setAttribute("d", updateSvg);
+        this.makePath()
+        return ogPath;
+    }
+    //adds things to the path
+    updatePath(svgData){
+        if(svgData ==""){
+            this.delete()
+            console.log("deleted svg cuz too small");
+        }
+        this.pathData += "L"+svgData;
+        this.svg.setAttribute("d", this.pathData);
+        
+    }
+        
     makePath(){
         this.path = [];
         let pair = [];
@@ -68,21 +93,9 @@ class SVGPath extends SVG{
         //if(pair.length>0)console.log("")
     }
 
-
-    setContent(){
-        
-    }
-
-    addPoint(pos){
-        this.path.push(pos);
-        this.updatePath(pos.toString())
-    
-    }
-
     getSerializableProperties(){
         return ["pathData"]
     }
-
 
     smoothify(){
 
@@ -123,24 +136,7 @@ class SVGPath extends SVG{
             uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
         
     }
-    //replaces path
-    replacePath(updateSvg){
-        let ogPath = this.pathData;
-        this.pathData = updateSvg;
-        //console.log(updateSvg);
-        this.svg.setAttribute("d", updateSvg);
-        return ogPath;
-    }
-    //adds things to the path
-    updatePath(svgData){
-        if(svgData ==""){
-            this.delete()
-            console.log("deleted svg cuz too small");
-        }
-        this.pathData += "L"+svgData;
-        this.svg.setAttribute("d", this.pathData);
-        
-    }
+
 
     
     //funny
