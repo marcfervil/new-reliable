@@ -201,18 +201,30 @@
             }
         }
     }
+
+
+    function makeEaseIn(timing) {
+        return function(timeFraction) {
+          
+            return timing(2 * timeFraction) / 2;
+            
+        }
+    }
+
+    function makeEaseOut(timing) {
+        return function(timeFraction) {
+          
+            return (2 - timing(2 * (1 - timeFraction))) / 2;
+            
+        }
+    }
     
     function quad(timeFraction) {
         return Math.pow(timeFraction, 2);
     }
 
-    function makeEaseOut(timing) {
-  return function(timeFraction) {
-    return 1 - timing(1 - timeFraction);
-  }
-}
 
-    function animate({duration, draw, timing, completed}) {
+    function animate({duration, draw, timing, completed}, animationFunction) {
 
         let start = performance.now();
         this.canComplete = true;
@@ -225,22 +237,21 @@
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
         //   console.log(self.name);
-            //let progress = makeEaseInOut(timing)(timeFraction);
-            let progress = timing(timeFraction);
-
+           // let progress = makeEaseInOut(timing)(timeFraction);
+         //  console.log(animationFunction)
+            let progress = (animationFunction==undefined) ? timing(timeFraction) : animationFunction(timing)(timeFraction);
+            if(progress>1)progress =1;
             draw(progress);
             
-            console.log("animating "+this.id+" "+this.canComplete);
+          //  console.log("animating "+this.id+" "+this.canComplete);
             if (timeFraction < 1) {
                 
                 if(this.canComplete)this.anim = requestAnimationFrame(this.frame);
+            }else{
+                if(this.canComplete)completed();
             }
             
-            if(progress==1){
-              
-                if(this.canComplete)completed();
-                // /console.log("compled "+this.id+" "+this.canComplete);
-            }
+           
 
         };
        
@@ -249,7 +260,7 @@
             cancelAnimationFrame(this.anim);
             this.canComplete=false;
             
-            console.log("Stopping animation with ID "+this.id)
+           // console.log("Stopping animation with ID "+this.id)
            // this.id +=" bad bad";
         }
 
