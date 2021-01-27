@@ -219,25 +219,36 @@
        
         this.timing = timing;
         self = this;
-        this.anim = requestAnimationFrame(function animate(time) {
+        self.name="bongos";
+        this.frame = requestAnimationFrame(function animate(time) {
+          //r  console.log(self.canComplete)
+            console.log("animating "+self.id+" "+this.canComplete);
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
-         //   console.log(self.timing);
-            let progress = makeEaseInOut(timing)(timeFraction);
+        //   console.log(self.name);
+            //let progress = makeEaseInOut(timing)(timeFraction);
+            let progress = timing(timeFraction);
 
             draw(progress);
-           // console.log(this.canComplete);
+            
             if (timeFraction < 1) {
-                if(this.canComplete)requestAnimationFrame(animate);
-            }else if(completed!=undefined){
-                if(this.canComplete)completed();
+                if(self.canComplete)self.anim = requestAnimationFrame(animate);
+            }else if(completed!==undefined){
+                if(self.canComplete)completed();
             }
 
         });
         this.stop=()=>{
      
-          //  cancelAnimationFrame(this.anim);
+            cancelAnimationFrame(this.anim);
             this.canComplete=false;
+            
+            console.log("Stopping animation with ID "+this.id)
+            this.id +=" bad bad";
+        }
+
+        this.resetTime = ()=> {
+            start = performance.now();
         }
 
         return this;
