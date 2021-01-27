@@ -181,16 +181,39 @@
 
     });
 
+  
+    function makeEaseInOut(timing) {
+        return function(timeFraction) {
+            if (timeFraction < .5){
+                return timing(2 * timeFraction) / 2;
+            }else{
+                return (2 - timing(2 * (1 - timeFraction))) / 2;
+            }
+        }
+    }
+    
+    function quad(timeFraction) {
+        return Math.pow(timeFraction, 2);
+    }
+
+    function makeEaseOut(timing) {
+  return function(timeFraction) {
+    return 1 - timing(1 - timeFraction);
+  }
+}
+
     function animate({duration, draw, timing, completed}) {
 
         let start = performance.now();
         this.canComplete = true;
+       
+        this.timing = timing;
         self = this;
-        this.anim =requestAnimationFrame(function animate(time) {
+        this.anim = requestAnimationFrame(function animate(time) {
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
-
-            let progress = timing(timeFraction)
+         //   console.log(self.timing);
+            let progress = makeEaseInOut(timing)(timeFraction);
 
             draw(progress);
            // console.log(this.canComplete);
@@ -200,7 +223,7 @@
                 if(this.canComplete)completed();
             }
 
-        }.bind(this));
+        });
         this.stop=()=>{
      
           //  cancelAnimationFrame(this.anim);

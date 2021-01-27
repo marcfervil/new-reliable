@@ -21,6 +21,7 @@ class Mouse{
     }
 
     /*
+    https://javascript.info/js-animation
     lerpTo(lerp){
 
         if(this.animating){
@@ -58,17 +59,19 @@ class Mouse{
         //if(start!==undefined)this.moveTo(start);
         //path = [this.pos].concat(path);
         //console.log(path.length);
+        let pos = path.splice(0, 1)[0]
         if(this.animating){
             //check if animation has been cancelled
+            if(pos.distance(this.animationDestination) < 10)return;
             this.animation.stop();
+            
         }
+        this.animationDestination = pos; 
         this.animating = true;
        // console.log(path.length);
         let self = this;
         let startPos = this.pos
-        let lerp = path.splice(0, 1)[0]
-        let pos = lerp.pos;
-       
+   
         //console.log(pos);
         let dur = this.pos.distance(pos)/0.7;
        // console.log("last: "+last)
@@ -76,7 +79,8 @@ class Mouse{
         this.animation = animate({
             duration: dur  ,
             timing: function(timeFraction){
-                return (last==true)? Math.pow(timeFraction, 2) : timeFraction;
+                return  Math.pow(timeFraction, 2)
+                
             },
             draw(progress) {
                 let dest = startPos.moveTowards(pos, progress);
@@ -111,15 +115,34 @@ function makeEaseOut(timing) {
 canvas.addEventListener("mousedown", (e) => {
     x=true;
 });
+let mouse = null;
+
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
     mousePos.y = e.clientY;
     
-    let currentPos = getMousePos();
+    currentPos = getMousePos();
+
+    if(mouse==null){
+        mouse = new Mouse(getMousePos());
+        console.log("here?")
+        setInterval(()=>{
+            mouse.moveToPath([getMousePos()],true);
+        }, 1000);
+        
+    }
+
     
 });
 
+document.addEventListener("keydown", (e) => {
+    console.log(e.key);
+    if(e.key==" "){
+        console.log(mouse.animation);
+        mouse.animation.stop();
+    }
+});
 
 
 function randColor(){
