@@ -1,3 +1,5 @@
+
+
 class Mouse{
 
     constructor(pos){
@@ -53,50 +55,72 @@ class Mouse{
         });
     }*/
 
+    getAnimation(){
+        return this.animation;
+    }
     
-    
-    moveToPath(path, last){
+    moveToPath(path, start=true, id=Reliable.makeId(5)){
         //if(start!==undefined)this.moveTo(start);
         //path = [this.pos].concat(path);
         //console.log(path.length);
         let pos = path.splice(0, 1)[0]
+        if(pos===undefined)return;
         if(this.animating){
             //check if animation has been cancelled
-            if(pos.distance(this.animationDestination) < 10)return;
-            this.animation.stop();
             
+            if( pos.distance(this.animationDestination) > 10){
+                //this.animationDestination = pos; 
+                //this.startPos = this.pos;
+             
+                //this.animation.resetTime();
+                this.getAnimation().stop();
+                
+            }else{
+                return;
+            }
+            //this.animation.stop();
+           
         }
+        
         this.animationDestination = pos; 
         this.animating = true;
        // console.log(path.length);
         let self = this;
-        let startPos = this.pos
+        this.startPos = this.pos;
    
         //console.log(pos);
-        let dur = this.pos.distance(pos)/0.7;
+        let dur = this.pos.distance(pos)/0.8;
+       
        // console.log("last: "+last)
         if(dur==0)dur = 1;
+        if(start)console.log("gonna animate");
+        
         this.animation = animate({
             duration: dur  ,
             timing: function(timeFraction){
-                return  Math.pow(timeFraction, 2)
+                return  timeFraction;
                 
             },
             draw(progress) {
-                let dest = startPos.moveTowards(pos, progress);
-                self.moveTo(dest);
+                
+                let newPos = self.startPos.moveTowards(self.animationDestination, progress);
+                self.moveTo(newPos);
             
             },
             completed(){
 
                 if(path.length>0){
                     //console.log("here");
-                    self.moveToPath(path);
+                    self.animating = false;
+                    self.moveToPath(path, false, id);
+                    
                 }else{
                     self.animating = false;
+                    console.log("done")
                 }
             }
         });
+        this.animation.id = id;
     }
 
 
@@ -116,7 +140,7 @@ canvas.addEventListener("mousedown", (e) => {
     x=true;
 });
 let mouse = null;
-
+mousePathList = [];
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
@@ -126,21 +150,51 @@ canvas.addEventListener("mousemove", (e) => {
 
     if(mouse==null){
         mouse = new Mouse(getMousePos());
-        console.log("here?")
+        console.log("here?");
+        startPos = getMousePos();
+       
+       // setInterval(()=>{
+          //  mouse.moveToPath([getMousePos()],true);
+        //}, 1000);
         setInterval(()=>{
-            mouse.moveToPath([getMousePos()],true);
-        }, 1000);
+           
+            if(mousePathList.length > 5){
+               
+                mouse.moveToPath(mousePathList);
+                mousePathList = [];
+            }
+        },100);
         
+    }else{
+        if(startPos.distance(currentPos) > 50){
+            startPos = currentPos
+            mousePathList.push(getMousePos());
+         //   mousePathList.push()
+        }
     }
 
     
 });
 
+
+
 document.addEventListener("keydown", (e) => {
     console.log(e.key);
     if(e.key==" "){
-        console.log(mouse.animation);
-        mouse.animation.stop();
+        //mouse.animation.stop();
+        //mouse.moveToPath([mousePathList[mousePathList.length-1]], true);
+        //mousePathList = [];
+        mouse.getAnimation().stop();
+        console.log(mouse.this);
+    }
+
+    if(e.key=="f"){
+        //mouse.animation.stop();
+        //mouse.moveToPath([mousePathList[mousePathList.length-1]], true);
+        //mousePathList = [];
+       // mouse.animation.stop();
+        mouse.moveToPath(mousePathList);
+        mousePathList = [];
     }
 });
 
