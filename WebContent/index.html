@@ -208,11 +208,10 @@
         this.canComplete = true;
        
         this.timing = timing;
-        self = this;
-        self.name="bongos";
-        this.frame = requestAnimationFrame(function animate(time) {
-          //r  console.log(self.canComplete)
-            console.log("animating "+self.id+" "+this.canComplete);
+        this.test = "bad";
+        this.frame =(time)=> {
+      
+           
             let timeFraction = (time - start) / duration;
             if (timeFraction > 1) timeFraction = 1;
         //   console.log(self.name);
@@ -221,26 +220,35 @@
 
             draw(progress);
             
+            console.log("animating "+this.id+" "+this.canComplete);
             if (timeFraction < 1) {
-                if(self.canComplete)self.anim = requestAnimationFrame(animate);
-            }else if(completed!==undefined){
-                if(self.canComplete)completed();
+                
+                if(this.canComplete)this.anim = requestAnimationFrame(this.frame);
+            }
+            
+            if(progress==1){
+              
+                if(this.canComplete)completed();
+                // /console.log("compled "+this.id+" "+this.canComplete);
             }
 
-        });
+        };
+       
         this.stop=()=>{
      
             cancelAnimationFrame(this.anim);
             this.canComplete=false;
             
             console.log("Stopping animation with ID "+this.id)
-            this.id +=" bad bad";
+           // this.id +=" bad bad";
         }
 
         this.resetTime = ()=> {
             start = performance.now();
         }
-
+        this.anim = requestAnimationFrame(this.frame);
+        this.test="good"
+     
         return this;
     }
 

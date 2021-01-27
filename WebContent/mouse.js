@@ -93,7 +93,7 @@ class Mouse{
        
        // console.log("last: "+last)
         if(dur==0)dur = 1;
-        if(start)console.log("gonna animate");
+        if(start)console.log("staring animation "+id);
         
         this.animation = animate({
             duration: dur  ,
@@ -108,15 +108,12 @@ class Mouse{
             
             },
             completed(){
-
+                self.animating = false;
                 if(path.length>0){
                     //console.log("here");
-                    self.animating = false;
+                    
                     self.moveToPath(path, false, id);
                     
-                }else{
-                    self.animating = false;
-                    console.log("done")
                 }
             }
         });
@@ -158,15 +155,16 @@ canvas.addEventListener("mousemove", (e) => {
         //}, 1000);
         setInterval(()=>{
            
-            if(mousePathList.length > 5){
+            if(mousePathList.length > 0){
                
+               // mouse.moveToPath(mousePathList);
                 mouse.moveToPath(mousePathList);
                 mousePathList = [];
             }
-        },100);
+        },500);
         
     }else{
-        if(startPos.distance(currentPos) > 50){
+        if(startPos.distance(currentPos) > 20){
             startPos = currentPos
             mousePathList.push(getMousePos());
          //   mousePathList.push()
