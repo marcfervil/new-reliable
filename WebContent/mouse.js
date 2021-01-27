@@ -73,6 +73,7 @@ class Mouse{
                 //this.startPos = this.pos;
              
                 //this.animation.resetTime();
+               start =false;
                 this.getAnimation().stop();
                 
             }else{
@@ -89,23 +90,26 @@ class Mouse{
         this.startPos = this.pos;
    
         //console.log(pos);
-        let dur = this.pos.distance(pos)/0.8;
+        let dur = this.pos.distance(pos);
        
        // console.log("last: "+last)
         if(dur==0)dur = 1;
-        if(start)console.log("staring animation "+id);
+       // if(start)console.log("staring animation "+id);
         
+        let aniFunc = undefined;
+        if(start)aniFunc = makeEaseIn;
+        if(start)console.log("start")
         this.animation = animate({
-            duration: dur  ,
+            duration: dur ,
             timing: function(timeFraction){
-                return  timeFraction;
+                return Math.pow(timeFraction,2);
                 
             },
             draw(progress) {
                 
                 let newPos = self.startPos.moveTowards(self.animationDestination, progress);
                 self.moveTo(newPos);
-            
+             //   console.log(progress);
             },
             completed(){
                 self.animating = false;
@@ -116,7 +120,7 @@ class Mouse{
                     
                 }
             }
-        });
+        }, aniFunc);
         this.animation.id = id;
     }
 
@@ -155,16 +159,16 @@ canvas.addEventListener("mousemove", (e) => {
         //}, 1000);
         setInterval(()=>{
            
-            if(mousePathList.length > 0){
+            if(mousePathList.length > 5){
                
                // mouse.moveToPath(mousePathList);
                 mouse.moveToPath(mousePathList);
                 mousePathList = [];
             }
-        },500);
+        },100);
         
     }else{
-        if(startPos.distance(currentPos) > 20){
+        if(startPos.distance(currentPos) > 100){
             startPos = currentPos
             mousePathList.push(getMousePos());
          //   mousePathList.push()
