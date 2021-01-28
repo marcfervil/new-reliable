@@ -90,6 +90,7 @@ async function activate(context) {
 			//vscode.window.showInformationMessage("Session Chage");
 			if (liveshare.session.role === vsls.Role.Host) {
 				service = await liveshare.shareService(serviceName);
+				
 				vscode.window.showInformationMessage("Starting as host");
 				service.onRequest("state", () => {
 					return new Promise(resolve => {
@@ -102,6 +103,15 @@ async function activate(context) {
 				});
 			}else if (liveshare.session.role === vsls.Role.Guest) {
 				service = await liveshare.getSharedService(serviceName);
+				for(let i=0; i<10; i++)console.log("HERE!")
+				console.log("service")
+				console.log(service);
+				console.log("vsls")
+				console.log(vsls);
+				console.log("share")
+				console.log(liveshare);
+				
+				
 				vscode.window.showInformationMessage("Starting as guest");
 				let data = await service.request("state", []);
 				console.log(data);
@@ -149,8 +159,9 @@ async function activate(context) {
 
 		function getWebviewContent() {
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
-			//
-			return handlebars.compile(file)({path: "vscode-resource://"+contentPath}) ;
+			//console.log("name");
+			//console.log(liveshare.session.user.displayName);
+			return handlebars.compile(file)({displayName:liveshare.session.user.displayName, path: "vscode-resource://"+contentPath}) ;
 		}
 
 

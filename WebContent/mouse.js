@@ -1,3 +1,5 @@
+
+
 function randInt(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -212,7 +214,7 @@ function flushMouseInputs(){
     app.commit({
         action: "MouseInput",
         pos: mousePathList[0].toJSON(),
-        displayName: "Marc",
+        displayName: settings.displayName,
         broadcastSelf: false
     })
     mousePathList = [];
@@ -273,27 +275,6 @@ canvas.addEventListener("mousemove", (e) => {
     
 });
 
-
-
-document.addEventListener("keydown", (e) => {
-    console.log(e.key);
-    if(e.key==" "){
-        //mouse.animation.stop();
-        //mouse.moveToPath([mousePathList[mousePathList.length-1]], true);
-        //mousePathList = [];
-        mouse.getAnimation().stop();
-        console.log(mouse.this);
-    }
-
-    if(e.key=="f"){
-        //mouse.animation.stop();
-        //mouse.moveToPath([mousePathList[mousePathList.length-1]], true);
-        //mousePathList = [];
-       // mouse.animation.stop();
-        mouse.moveToPath(mousePathList);
-        mousePathList = [];
-    }
-});
 
 
 function randColor(){

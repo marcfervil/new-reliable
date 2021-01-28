@@ -1,3 +1,4 @@
+
 class Platform{
 
     static postMessage(message){
@@ -22,9 +23,11 @@ class Platform{
           
                 app.commit(message, false);
             });
+            settings.displayName = Math.random();
         }else{
 
             //recieve message from VSCode
+            if(settings.displayName.includes(" ")) settings.displayName = settings.split(" ")[0];
             window.addEventListener('message', (message) => {
                 app.commit(message.data, false);
             });
