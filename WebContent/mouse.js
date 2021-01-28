@@ -218,7 +218,7 @@ canvas.addEventListener("mousemove", (e) => {
     let flushTime = 0;
     let restingFlushTime = 0;
     if(mouse==null){
-        //mouse = new Mouse(currentPos, "Marc");
+        mouse = new Mouse(currentPos, "Marc");
        
     
         lastPos = currentPos;
