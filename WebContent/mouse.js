@@ -1,17 +1,64 @@
+function randInt(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
+function randomColor (){
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+      }
+    let r = randInt(90, 255);
+    let g = randInt(90, 255);
+    let b = randInt(90, 255);
+   // console.log(`rgb(${r}, ${g}, ${b})`)
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
 
 class Mouse{
 
-    constructor(pos){
+    constructor(pos, name, color = randomColor()){
+        
         this.pos = pos;
-        let svg = document.createElementNS("http://www.w3.org/2000/svg", 'image');
-        svg.setAttribute("x", this.pos.x);
-        svg.setAttribute("y", this.pos.y);
-        svg.setAttribute("width", "40");
-        svg.setAttribute("height", "40");
-        svg.setAttribute("href", path+"/images/icons/point2.svg");
-        canvas.appendChild(svg);
-        this.svg = svg;
+        this.name = name;
+        this.color = color;
+        
+        let boundRect = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+        this.span = $("<span/>").css("white-space", "nowrap");
+       
+        $.get(`${path}/images/icons/point2.svg`, (data)=>{
+            let svgStr = new XMLSerializer().serializeToString(data.documentElement);
+            let img = $($.parseHTML(svgStr))[0];
+            img.setAttribute("width", 50);
+            img.setAttribute("height", 60);
+            this.img = this.span.append(img);
+
+
+            img.style.stroke = "black";
+
+
+            this.span.append($("<span/>").css({"font-size":30, "user-select": "none" , "margin-top":60, "color": this.color}).text(name));
+            
+            
+            
+         
+            canvas.appendChild(boundRect);
+            boundRect.appendChild(this.span[0]);
+            boundRect.setAttribute("width", this.span.innerWidth());
+            this.span.find("path")[0].style.stroke=this.color;
+           // console.log( this.span.find("path")[0]);
+
+        });
+       
+        
+        boundRect.setAttribute("width", 50);
+        boundRect.setAttribute("height", 60);
+        boundRect.setAttribute("x", pos.x);
+        boundRect.setAttribute("y", pos.y);
+        boundRect.setAttribute("fill", "red");
+
+      
+
+        this.svg = boundRect;
         this.animating = false;
         this.queue=[];
     }
@@ -20,40 +67,10 @@ class Mouse{
         this.pos = pos;
         this.svg.setAttribute("x", this.pos.x);
         this.svg.setAttribute("y", this.pos.y);
+        
     }
 
-    /*
-    https://javascript.info/js-animation
-    lerpTo(lerp){
-
-        if(this.animating){
-            this.queue.push(lerp);
-            return;
-        }
-        
-        let self = this;
-        let startPos = this.pos;
-        this.animating = true;
-        animate({
-            duration: lerp.dur/4,
-            timing(timeFraction) {
-                return timeFraction
-            },
-            draw(progress) {
-                let dest = startPos.moveTowards(lerp.pos, progress);
-                self.moveTo(dest);
-            
-            },
-            completed(){
-               
-                self.animating = false;
-                if(self.queue.length>0){
-                    self.lerpTo(self.queue.splice(0,1)[0]);
-              
-                }
-            }
-        });
-    }*/
+    
 
     getAnimation(){
         return this.animation;
@@ -66,7 +83,7 @@ class Mouse{
        //if(start)console.log(path.length);
        let pos = path.splice(0, 1)[0]
        if(pos===undefined)return;
-       
+    //if(start)canvas.appendChild(this.svg);
 
         let an = () =>{
             let self = this;
@@ -77,17 +94,14 @@ class Mouse{
             
             this.startPos = this.pos;
     
-            let dur = this.pos.distance(pos);
+            let dist = this.pos.distance(pos);
     
-            if(dur==0)dur = 1;
+          
     
             start = false;
             let aniFunc = undefined;
             if(start)aniFunc = makeEaseIn;
         
-            //if(speed!==undefined) dur = 
-          //  console.log("moving to "+pos);
-            //console.log(this.pos.distance(pos))
             this.animation = animate({
                 //duration: dur/1.2 ,
                 duration: 300,
@@ -119,9 +133,9 @@ class Mouse{
          
         if(this.animating){
         //check if animation has been cancelled
-        
+            
             if( pos.distance(this.animationDestination) > 10){
- 
+                /*
                 start = false;
                 self = this;
                 this.getAnimation().stop();
@@ -140,9 +154,10 @@ class Mouse{
                     //   console.log(progress);
                     },
                     completed(){
-                        animate();
+                        an();
                     }
-                }, undefined);
+                }, undefined);*/
+                //animate();
             }else{
                 return;
             }
@@ -187,7 +202,7 @@ canvas.addEventListener("mousemove", (e) => {
     let flushTime = 0;
     let restingFlushTime = 0;
     if(mouse==null){
-        mouse = new Mouse(currentPos);
+        mouse = new Mouse(currentPos, "Marc");
        
     
         lastPos = currentPos;
