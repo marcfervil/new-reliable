@@ -10,6 +10,16 @@ class Platform{
         }
     }
 
+    static makeId(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     static init(){
         
         if(!isVsCode){
@@ -23,7 +33,7 @@ class Platform{
           
                 app.commit(message, false);
             });
-            settings.displayName = Math.random();
+            settings.displayName = "User-"+Platform.makeId(5);
         }else{
 
             //recieve message from VSCode
