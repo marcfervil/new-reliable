@@ -18,7 +18,7 @@ class SVG{
        
 
         this.svg = this.group.appendChild(this.svg);
-        this.group = this.parent.appendChild(this.group);
+        this.group = this.parent.insertBefore(this.group, divider);
 
         this.group.setAttribute("id", this.id);
 

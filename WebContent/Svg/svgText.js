@@ -8,7 +8,7 @@ class SVGText extends SVG{
         this.span.append(textNode);
  
        //professor: Some of you clearly waited unitl the last minute to do this assignment 
-        
+        //me: 
         $(this.svg).append(this.span);
       
         this.svg.setAttribute("width", this.span.innerWidth());
