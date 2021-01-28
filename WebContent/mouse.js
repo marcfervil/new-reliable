@@ -63,9 +63,10 @@ class Mouse{
      //   console.log(path.size)
 
        // console.log(pathDist);
+       //if(start)console.log(path.length);
        let pos = path.splice(0, 1)[0]
        if(pos===undefined)return;
-      
+       
 
         let an = () =>{
             let self = this;
@@ -85,11 +86,11 @@ class Mouse{
             if(start)aniFunc = makeEaseIn;
         
             //if(speed!==undefined) dur = 
-            console.log("moving to "+pos);
+          //  console.log("moving to "+pos);
             //console.log(this.pos.distance(pos))
             this.animation = animate({
                 //duration: dur/1.2 ,
-                duration: 400,
+                duration: 300,
                 timing: function(timeFraction){
                     return Math.pow(timeFraction,2)
                     //return timeFraction;
@@ -108,7 +109,7 @@ class Mouse{
                         self.moveToPath(path, false, id);
                         
                     }else{
-                        console.log("done going to "+pos)
+                     //   console.log("done going to "+pos)
                     }
                 }
             }, makeEaseInOut);
@@ -169,43 +170,64 @@ canvas.addEventListener("mousedown", (e) => {
 });
 let mouse = null;
 let mousePathList = [];
-let flushMouseInputs = -1;
+
 let lastPos = null;
+
+function flushMouseInputs(){
+    mouse.moveToPath(mousePathList);
+    mousePathList = [];
+}
+
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
     mousePos.y = e.clientY;
     
     let currentPos = getMousePos();
-   
+    let flushTime = 0;
+    let restingFlushTime = 0;
     if(mouse==null){
         mouse = new Mouse(currentPos);
-        console.log("here?");
+       
     
         lastPos = currentPos;
        // setInterval(()=>{
           //  mouse.moveToPath([getMousePos()],true);
         //}, 1000);
         //mousePathList = [currentPos];
+        let lastFlushPos  = new Vector2(0,0);
         
-        
-        
+        let resting =false; 
         setInterval(()=>{
            /*
             if(mousePathList.length>0 && mousePathList.last().distance(getMousePos())>50){
                 console.log("added");
                 console.log(mousePathList.last().distance(currentPos));
-                mousePathList.push(getMousePos());
+               
             }*/
-            console.log(lastPos.distance(getMousePos()));
-            if(lastPos.distance(getMousePos())>10){
-                mousePathList.push(getMousePos());
-                console.log(mousePathList.last())
-                mouse.moveToPath(mousePathList);
-                lastPos = getMousePos();
-                mousePathList = [];
+            flushTime++;
+            restingFlushTime++;
+            if((flushTime>=30 && resting) || flushTime == 100){
+                if(lastPos.distance(getMousePos())>10){
+                    mousePathList.push(getMousePos())
+                    flushMouseInputs();
+                    lastPos = getMousePos();
+                    lastFlushPos = lastPos;
+
+                    restingFlushTime = 0;
+                    flushTime = 0;
+                    resting =false;
+                }
+                
             }
+            if(restingFlushTime>10 && !resting){
+                
+                resting = true;
+              //  console.log("REST!")
+            }
+           
         /*    
+
             //console.log(mousePathList.length+"  ,  "+flushMouseInputs+"   ,   "+mousePathList.last().distance(currentPos)+"    ,    "+Math.abs(flushMouseInputs-performance.now()));
             if(mousePathList.length > 10){
                
@@ -223,13 +245,13 @@ canvas.addEventListener("mousemove", (e) => {
                 flushMouseInputs = -1;
                 }
             }*/
-        },300);
+        },10);
 
         
         
     }else{
-      //  console.log(currentPos);
-      
+        //console.log(restingFlushTime);
+        restingFlushTime = 0;
       /*
         if(lastPos.distance(currentPos)>200){
             mousePathList.push(getMousePos());
