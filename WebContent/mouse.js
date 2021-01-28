@@ -181,8 +181,14 @@ class MouseInput extends Action{
     }
 
     execute(reliable){
-
-      
+        let mouse = mice[this.data.displayName];
+        let pos = new Vector2(this.data.pos);
+        
+        if(mouse===undefined){
+            mice[this.data.displayName] = new Mouse(pos, this.data.displayName);
+        }else{
+            mouse.moveToPath([pos]);
+        }
     }
 
 }
@@ -194,21 +200,26 @@ function basic(timeFraction) {
     return timeFraction;
 }
 
-canvas.addEventListener("mousedown", (e) => {
-    x=true;
-});
+
 let mouse = null;
 let mousePathList = [];
 
 let lastPos = null;
 
 function flushMouseInputs(){
-    mouse.moveToPath(mousePathList);
+    //mouse.moveToPath(mousePathList);
+  
+    app.commit({
+        action: "MouseInput",
+        pos: mousePathList[0].toJSON(),
+        displayName: "Marc",
+        broadcastSelf: false
+    })
     mousePathList = [];
 }
 
 let mice = {};
-
+let firstMouseInput = true;
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
@@ -217,14 +228,14 @@ canvas.addEventListener("mousemove", (e) => {
     let currentPos = getMousePos();
     let flushTime = 0;
     let restingFlushTime = 0;
-    if(mouse==null){
-        mouse = new Mouse(currentPos, "Marc");
+    if(firstMouseInput){
+    //  mouse = new Mouse(currentPos, "Marc");
         //mouse = new Mouse(currentPos, "Marc");
        
     
         lastPos = currentPos;
       
-        let lastFlushPos  = new Vector2(0,0);
+        firstMouseInput = false;
         
         let resting =false; 
         setInterval(()=>{

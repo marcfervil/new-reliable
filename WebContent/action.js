@@ -31,7 +31,7 @@ class Action {
     static commit(reliable, actionData, broadcast){
         if(broadcast==undefined)broadcast = true; 
 
-        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo, State, Text};
+        let actionList = {Draw, Undo, Select, UnSelect, Drag, Delete, Scale, Replace, DeleteSVGPath, Image, Redo, State, Text, MouseInput};
         let action = new actionList[actionData.action](actionData);
 
   
@@ -42,9 +42,14 @@ class Action {
                 reliable.myActionIds.push(action.data.actionId);
             }
         }
-
-        action.execute(reliable);
-
+        
+        if(actionData["broadcastSelf"]===false){
+            delete actionData["broadcastSelf"];
+        }else{
+            action.execute(reliable);
+        }
+        
+      // action.execute(reliable);
         if(broadcast)action.broadcast();
 
         Platform.postMessage({
