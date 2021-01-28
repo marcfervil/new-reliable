@@ -156,6 +156,9 @@
 
     let path = "{{path}}";
 
+    Array.prototype.last = function() {
+    return this[this.length - 1];
+}
     document.addEventListener('keydown', (event) => {
         if(hotkeysEnabled){
             if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
@@ -215,7 +218,7 @@
 
 
     function animate({duration, draw, timing, completed}, animationFunction) {
-
+  
         let start = performance.now();
         this.canComplete = true;
        

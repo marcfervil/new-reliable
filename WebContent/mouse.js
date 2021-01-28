@@ -59,120 +59,191 @@ class Mouse{
         return this.animation;
     }
     
-    moveToPath(path, start=true, id=Reliable.makeId(5)){
-        //if(start!==undefined)this.moveTo(start);
-        //path = [this.pos].concat(path);
-        //console.log(path.length);
-        let pos = path.splice(0, 1)[0]
-        if(pos===undefined)return;
-        if(this.animating){
-            //check if animation has been cancelled
+    moveToPath(path, start=true, id=Reliable.makeId(5) ){
+     //   console.log(path.size)
+
+       // console.log(pathDist);
+       let pos = path.splice(0, 1)[0]
+       if(pos===undefined)return;
+      
+
+        let an = () =>{
+            let self = this;
+
+            this.animationDestination = pos; 
+            this.animating = true;
+
             
+            this.startPos = this.pos;
+    
+            let dur = this.pos.distance(pos);
+    
+            if(dur==0)dur = 1;
+    
+            start = false;
+            let aniFunc = undefined;
+            if(start)aniFunc = makeEaseIn;
+        
+            //if(speed!==undefined) dur = 
+            console.log("moving to "+pos);
+            //console.log(this.pos.distance(pos))
+            this.animation = animate({
+                //duration: dur/1.2 ,
+                duration: 400,
+                timing: function(timeFraction){
+                    return Math.pow(timeFraction,2)
+                    //return timeFraction;
+                },
+                draw(progress) {
+                    
+                    let newPos = self.startPos.moveTowards(self.animationDestination, progress);
+                    self.moveTo(newPos);
+                //   console.log(progress);
+                },
+                completed(){
+                    self.animating = false;
+                    if(path.length>0){
+                        //console.log("here");
+                        
+                        self.moveToPath(path, false, id);
+                        
+                    }else{
+                        console.log("done going to "+pos)
+                    }
+                }
+            }, makeEaseInOut);
+
+        }
+       // this.animation.id = id;
+         
+        if(this.animating){
+        //check if animation has been cancelled
+        
             if( pos.distance(this.animationDestination) > 10){
-                //this.animationDestination = pos; 
-                //this.startPos = this.pos;
-             
-                //this.animation.resetTime();
-               start =false;
+ 
+                start = false;
+                self = this;
                 this.getAnimation().stop();
-                
+                this.animationDestination = pos; 
+                self.startPos = pos;
+                animate({
+                    duration: 100 ,
+                    timing: function(timeFraction){
+                        //return Math.pow(timeFraction,2)
+                        return timeFraction;
+                    },
+                    draw(progress) {
+                        
+                        let newPos = self.startPos.moveTowards(pos, progress);
+                        self.moveTo(newPos);
+                    //   console.log(progress);
+                    },
+                    completed(){
+                        animate();
+                    }
+                }, undefined);
             }else{
                 return;
             }
-            //this.animation.stop();
-           
+        
         }
-        
-        this.animationDestination = pos; 
-        this.animating = true;
-       // console.log(path.length);
-        let self = this;
-        this.startPos = this.pos;
-   
-        //console.log(pos);
-        let dur = this.pos.distance(pos);
-       
-       // console.log("last: "+last)
-        if(dur==0)dur = 1;
-       // if(start)console.log("staring animation "+id);
-        
-        let aniFunc = undefined;
-        if(start)aniFunc = makeEaseIn;
-        if(start)console.log("start")
-        this.animation = animate({
-            duration: dur ,
-            timing: function(timeFraction){
-                return Math.pow(timeFraction,2);
-                
-            },
-            draw(progress) {
-                
-                let newPos = self.startPos.moveTowards(self.animationDestination, progress);
-                self.moveTo(newPos);
-             //   console.log(progress);
-            },
-            completed(){
-                self.animating = false;
-                if(path.length>0){
-                    //console.log("here");
-                    
-                    self.moveToPath(path, false, id);
-                    
-                }
-            }
-        }, aniFunc);
-        this.animation.id = id;
+      
+        an();
     }
+        
+        
+    }
+    
+
+   
 
 
-}
 
 
 function basic(timeFraction) {
     return timeFraction;
 }
-function makeEaseOut(timing) {
-    return function(timeFraction) {
-      return 1 - timing(1 - timeFraction);
-    }
-  }
 
 canvas.addEventListener("mousedown", (e) => {
     x=true;
 });
 let mouse = null;
-mousePathList = [];
+let mousePathList = [];
+let flushMouseInputs = -1;
+let lastPos = null;
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
     mousePos.y = e.clientY;
     
-    currentPos = getMousePos();
-
+    let currentPos = getMousePos();
+   
     if(mouse==null){
-        mouse = new Mouse(getMousePos());
+        mouse = new Mouse(currentPos);
         console.log("here?");
-        startPos = getMousePos();
-       
+    
+        lastPos = currentPos;
        // setInterval(()=>{
           //  mouse.moveToPath([getMousePos()],true);
         //}, 1000);
+        //mousePathList = [currentPos];
+        
+        
+        
         setInterval(()=>{
-           
-            if(mousePathList.length > 5){
+           /*
+            if(mousePathList.length>0 && mousePathList.last().distance(getMousePos())>50){
+                console.log("added");
+                console.log(mousePathList.last().distance(currentPos));
+                mousePathList.push(getMousePos());
+            }*/
+            console.log(lastPos.distance(getMousePos()));
+            if(lastPos.distance(getMousePos())>10){
+                mousePathList.push(getMousePos());
+                console.log(mousePathList.last())
+                mouse.moveToPath(mousePathList);
+                lastPos = getMousePos();
+                mousePathList = [];
+            }
+        /*    
+            //console.log(mousePathList.length+"  ,  "+flushMouseInputs+"   ,   "+mousePathList.last().distance(currentPos)+"    ,    "+Math.abs(flushMouseInputs-performance.now()));
+            if(mousePathList.length > 10){
                
                // mouse.moveToPath(mousePathList);
                 mouse.moveToPath(mousePathList);
+                mousePathList = [getMousePos()];
+                
+            }else if(flushMouseInputs==-1){
+                flushMouseInputs = performance.now();
+            }else if(mousePathList.length> 0 && Math.abs(flushMouseInputs-performance.now())> 100){ 
+                if(mousePathList.length>1){
+               mousePathList.push(currentPos)
+                mouse.moveToPath(mousePathList);
                 mousePathList = [];
-            }
-        },100);
+                flushMouseInputs = -1;
+                }
+            }*/
+        },300);
+
+        
         
     }else{
-        if(startPos.distance(currentPos) > 100){
+      //  console.log(currentPos);
+      
+      /*
+        if(lastPos.distance(currentPos)>200){
+            mousePathList.push(getMousePos());
+            console.log(mousePathList.last())
+            mouse.moveToPath(mousePathList);
+            lastPos = currentPos;
+            mousePathList = [];
+        }*/
+        /*
+        if(startPos.distance(currentPos) > 400){
             startPos = currentPos
             mousePathList.push(getMousePos());
          //   mousePathList.push()
-        }
+        }*/
     }
 
     
