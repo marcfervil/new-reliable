@@ -171,7 +171,21 @@ class Mouse{
     }
     
 
-   
+ 
+
+class MouseInput extends Action{
+    
+    constructor(data){
+        super(data);
+        this.unDoable = false;
+    }
+
+    execute(reliable){
+
+      
+    }
+
+}
 
 
 
@@ -193,6 +207,8 @@ function flushMouseInputs(){
     mousePathList = [];
 }
 
+let mice = {};
+
 canvas.addEventListener("mousemove", (e) => {
 
     mousePos.x = e.clientX;
@@ -202,24 +218,16 @@ canvas.addEventListener("mousemove", (e) => {
     let flushTime = 0;
     let restingFlushTime = 0;
     if(mouse==null){
-        mouse = new Mouse(currentPos, "Marc");
+        //mouse = new Mouse(currentPos, "Marc");
        
     
         lastPos = currentPos;
-       // setInterval(()=>{
-          //  mouse.moveToPath([getMousePos()],true);
-        //}, 1000);
-        //mousePathList = [currentPos];
+      
         let lastFlushPos  = new Vector2(0,0);
         
         let resting =false; 
         setInterval(()=>{
-           /*
-            if(mousePathList.length>0 && mousePathList.last().distance(getMousePos())>50){
-                console.log("added");
-                console.log(mousePathList.last().distance(currentPos));
-               
-            }*/
+
             flushTime++;
             restingFlushTime++;
             if((flushTime>=30 && resting) || flushTime == 100){
@@ -227,7 +235,6 @@ canvas.addEventListener("mousemove", (e) => {
                     mousePathList.push(getMousePos())
                     flushMouseInputs();
                     lastPos = getMousePos();
-                    lastFlushPos = lastPos;
 
                     restingFlushTime = 0;
                     flushTime = 0;
@@ -240,47 +247,15 @@ canvas.addEventListener("mousemove", (e) => {
                 resting = true;
               //  console.log("REST!")
             }
-           
-        /*    
-
-            //console.log(mousePathList.length+"  ,  "+flushMouseInputs+"   ,   "+mousePathList.last().distance(currentPos)+"    ,    "+Math.abs(flushMouseInputs-performance.now()));
-            if(mousePathList.length > 10){
-               
-               // mouse.moveToPath(mousePathList);
-                mouse.moveToPath(mousePathList);
-                mousePathList = [getMousePos()];
-                
-            }else if(flushMouseInputs==-1){
-                flushMouseInputs = performance.now();
-            }else if(mousePathList.length> 0 && Math.abs(flushMouseInputs-performance.now())> 100){ 
-                if(mousePathList.length>1){
-               mousePathList.push(currentPos)
-                mouse.moveToPath(mousePathList);
-                mousePathList = [];
-                flushMouseInputs = -1;
-                }
-            }*/
+    
         },10);
 
         
         
     }else{
-        //console.log(restingFlushTime);
+   
         restingFlushTime = 0;
-      /*
-        if(lastPos.distance(currentPos)>200){
-            mousePathList.push(getMousePos());
-            console.log(mousePathList.last())
-            mouse.moveToPath(mousePathList);
-            lastPos = currentPos;
-            mousePathList = [];
-        }*/
-        /*
-        if(startPos.distance(currentPos) > 400){
-            startPos = currentPos
-            mousePathList.push(getMousePos());
-         //   mousePathList.push()
-        }*/
+
     }
 
     
