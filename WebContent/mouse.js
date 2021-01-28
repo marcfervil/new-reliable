@@ -31,14 +31,14 @@ class Mouse{
             let svgStr = new XMLSerializer().serializeToString(data.documentElement);
             let img = $($.parseHTML(svgStr))[0];
             img.setAttribute("width", 50);
-            img.setAttribute("height", 60);
+            img.setAttribute("height", 80);
             this.img = this.span.append(img);
 
 
             img.style.stroke = "black";
 
 
-            this.span.append($("<span/>").css({"font-size":30, "user-select": "none" , "margin-top":60, "color": this.color}).text(name));
+            this.span.append($("<span/>").css({"font-size":30, "user-select": "none" , "margin-top":60, height:"100px","color": this.color}).text(name));
             
             
             
@@ -53,7 +53,7 @@ class Mouse{
        
         
         boundRect.setAttribute("width", 50);
-        boundRect.setAttribute("height", 60);
+        boundRect.setAttribute("height", 120);
         boundRect.setAttribute("x", pos.x);
         boundRect.setAttribute("y", pos.y);
         boundRect.setAttribute("fill", "red");
