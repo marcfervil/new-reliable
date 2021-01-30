@@ -17,7 +17,16 @@
 
             }
 
+            .nohighlight{
+                -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 
+            }
 
             .toolbar{
                 position: absolute;
@@ -79,9 +88,14 @@
                 fill: #AAB2C0;
                 border:  none;
                 color: #AAB2C0;
-                margin:0px;
-                padding:0px;
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
                 font-size: 40px;
+                white-space:pre;
+            }
+
+            .nothing{
+                margin: 0px;
+                padding: 0px;
             }
 
             .SVGInput:focus {
@@ -106,11 +120,10 @@
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
      
         
-        <svg width="5000px" height="5000px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
-            
-            
-            <foreignobject class="node"  x="0" y="0" xml:space="preserve" width="5000px" height="5000px">
-                <div id="backdrop" class="backdrop"></div>
+        <svg width="100%" height="100%" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
+
+            <foreignobject style="position:relative;z-index:0; overflow:hidden" class="node" x="0" y="0" width="5000px" height="5000px">
+                <div  id="backdrop" class="backdrop">ijds</div>
             </foreignobject>
         </svg>
         
@@ -137,6 +150,7 @@
 <script src="{{path}}/Vector2.js" type="text/javascript"></script>
 <script src="{{path}}/action.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svg.js" type="text/javascript"></script>
+<script src="{{path}}/Svg/svgGroup.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgPath.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgText.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgImage.js" type="text/javascript"></script>
@@ -169,6 +183,7 @@
 
     document.addEventListener('keydown', (event) => {
         if(hotkeysEnabled){
+            event.key = event.key.toLocaleLowerCase();
             if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
                 undo();
             }
@@ -328,23 +343,26 @@
     }
 
     function getMousePos(){
-        return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y);
+       
+        return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y).subtract(new Vector2(canvasPos.x, canvasPos.y));
     }
     
 
+   
     
-
-    //break in case of canvas postion change
-    
-    
+   
     Element.prototype.getBoundingClientRectOld = Element.prototype.getBoundingClientRect;
+    let canvasPos = canvas.getBoundingClientRectOld();
     Element.prototype.getBoundingClientRect = function() {
         let rect = this.getBoundingClientRectOld();
 
-        //let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
-        //let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
-  
-
+        //break in case of canvas postion change
+        /*
+        rect.left -= canvasPos.x;
+        rect.x -= canvasPos.x;
+        rect.top -= canvasPos.y;
+        rect.y -= canvasPos.y;
+*/  
 
         let deltaX = pan.x;
         let deltaY = pan.y;

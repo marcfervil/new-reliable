@@ -28,7 +28,10 @@ class Selection extends Tool{
     }
 
     canvasDragStart(pos){
-        if(Selection.locked)return;
+        if(Selection.locked){
+            $(this.drawRect).remove();
+            return;
+        }
         this.mouseStart = pos;
         this.drawRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
 
@@ -55,7 +58,10 @@ class Selection extends Tool{
 
 
     canvasDrag(pos){
-        if(Selection.locked)return;
+        if(Selection.locked){
+            $(this.drawRect).remove();
+            return;
+        }
         let dist = this.mouseStart.subtract(pos);
         let scaleFlip = dist.scale(-1);
         //dist = new Vector2(Math.abs(dist.x), Math.abs(dist.y));
@@ -64,7 +70,10 @@ class Selection extends Tool{
     }
 
     canvasDragEnd(){
-        if(Selection.locked)return;
+        if(Selection.locked){
+            $(this.drawRect).remove();
+            return;
+        }
         /*
         if(this.selected.length > 0) {
             
@@ -98,7 +107,8 @@ class Selection extends Tool{
             let id = hit.parentNode.id;
          
 
-            if(id != "canvas" && !hit.parentNode.reliableSvg.isSelected){
+            if(id != "canvas" && !hit.parentNode.reliableSvg.isSelected &&id.length>0){
+                console.log(id);
                 this.selected.push(id);
             }
         }
@@ -125,10 +135,20 @@ class Select extends Action{
 
     execute(reliable){
         super.execute(reliable);
-
-        for(let id of this.data.ids){
-            $(`#${id}`)[0].reliableSvg.select(reliable, this.myAction);
+        if(this.data.ids.length < 2){
+            for(let id of this.data.ids){
+                $(`#${id}`)[0].reliableSvg.select(reliable, this.myAction);
+                
+            }
+        }else{
             
+            let children = [];
+            SVG.forEachSVG(this.data.ids, (svg) => {
+               children.push(svg);
+            });
+            let id = Reliable.makeId(10);
+            new SVGGroup(reliable.canvas, new Vector2(), id, children).select(reliable, this.myAction);
+            app.toolbar[1].selected.push(id);
         }
     }
 

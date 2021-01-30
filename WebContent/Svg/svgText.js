@@ -1,10 +1,13 @@
 class SVGText extends SVG{
 
     constructor(parent, pos, id, text){
-        super("foreignObject", parent, pos, id);
-        this.text = text;
+        //super("foreignObject", parent, pos, id);
+       // this.text = text;
+
+
+        /*
         let textNode = document.createTextNode(this.text);
-        this.span = $("<span/>").attr("class", "SVGInput").css("white-space", "nowrap");
+        this.span = $("<span/>").attr("class", "SVGInput nohighlight");
         this.span.append(textNode);
  
        //professor: Some of you clearly waited unitl the last minute to do this assignment 
@@ -23,13 +26,13 @@ class SVGText extends SVG{
         boundRect.setAttribute("x", pos.x);
         boundRect.setAttribute("y", pos.y);
         boundRect.setAttribute("fill", "transparent");
-        this.group.appendChild(boundRect)
+        this.group.appendChild(boundRect)*/
 
-
-        /*
-
-        DO NOT DELETE - WILL USE WHEN TURNING foreignObject INTO IMAGE
-        I don't use the the "text" SVG element because the scaling is weird and it introduces lag??
+        
+        
+        
+   //     DO NOT DELETE - WILL USE WHEN TURNING foreignObject INTO IMAGE
+     //   I don't use the the "text" SVG element because the scaling is weird and it introduces lag??
 
         super("text", parent, pos, id)
         this.text = text;
@@ -37,7 +40,7 @@ class SVGText extends SVG{
         this.svg.setAttribute("text-anchor", "middle");
         this.svg.setAttribute("class", "SVGInput");
         this.svg.appendChild(textNode);
-        */
+        
 
 
         this.moveTo(pos);
