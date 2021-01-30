@@ -8,7 +8,7 @@ class TextTool extends Tool{
         this.doubleClickCount = 0;
         this.typing = false;
         this.lastTool = null;
-        canvas.addEventListener("mousedown", (e) => this.doubleClick(e));
+        document.addEventListener("mousedown", (e) => this.doubleClick(e));
     }
 
     doubleClick(e){
