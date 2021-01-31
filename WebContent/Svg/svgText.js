@@ -1,11 +1,12 @@
 class SVGText extends SVG{
 
     constructor(parent, pos, id, text){
-        //super("foreignObject", parent, pos, id);
-       // this.text = text;
-
-
         /*
+        super("foreignObject", parent, pos, id);
+        this.text = text;
+
+
+        
         let textNode = document.createTextNode(this.text);
         this.span = $("<span/>").attr("class", "SVGInput nohighlight");
         this.span.append(textNode);
@@ -39,6 +40,7 @@ class SVGText extends SVG{
         let textNode = document.createTextNode(this.text);
         this.svg.setAttribute("text-anchor", "middle");
         this.svg.setAttribute("class", "SVGInput");
+        //this.svg.style.pointerEvents = "none";
         this.svg.appendChild(textNode);
         
 
