@@ -73,7 +73,9 @@ class Eraser extends Tool{
         return (x > x1 && x < x2) && (y > y1 && y < y2)
     }
 
-    eraserConnection(x, y){
+    eraserConnection(point){
+        let x = point.x
+        let y = point.y
         console.log(x+" first "+ y)
         x = x - this.svgRect.pos.x
         y = y - this.svgRect.pos.y
@@ -85,7 +87,7 @@ class Eraser extends Tool{
         return new Vector2(x,y);
 
     }
-
+    //pretty sure this is the real one and the top is fake but idk
     eraserConnection(x, y){
         //console.log(x+" first "+ y)
         let r = parseInt(this.svgRect.size)/2 + 5
@@ -104,7 +106,6 @@ class Eraser extends Tool{
 
 
     isCollidingLineSegment(path){
-
 
         //path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
         let erased = false;
@@ -127,8 +128,8 @@ class Eraser extends Tool{
         let paths = []
         
         if(erased){
-            if(path.length>1){
-            let newPoint = this.eraserConnection(path[path.length-2],path[path.length-1]);
+            if(path.length>3){
+            let newPoint = this.eraserConnection(path[path.length-1]);
             path.push(newPoint.x);
             path.push(newPoint.y);
             paths.push(path)

@@ -17,6 +17,23 @@ class Reliable {
         for(let tool of tools)this.addTool(tool);
         //console.log(path);
         this.swapTool(tools[0]);
+        //remove later
+        
+        console.log("svg added")
+        let tempSvg = new SVGPath(this.canvas,new Vector2(0,0));
+        tempSvg.replacePath("M 3151.8 2858.6 C 3117.9 2864.8 3052.1 2919.0 3049.5 2940.5 3045.8 2975.9 3066.8 3018.7 3079.6 3025.0 3160.5 3073.7 3280.9 3192.3 3293.5 3233.6 3306.3 3286.3 3287.7 3373.6 3275.8 3391.3 3230.2 3449.7 3083.4 3509.8 3052.1 3493.5 2952.8 3434.0 2895.4 3342.3 2863.2 3170.9")
+        Action.commit(this, {
+            action: "Draw",
+            id: tempSvg.id,
+            path: tempSvg.pathData,
+            color: "#AAB2C0",
+            pos: {
+                x: 3151.8,
+                y: 2858.6,
+            }
+        })
+        tempSvg.delete()
+        
         
     }
     

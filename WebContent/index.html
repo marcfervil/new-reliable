@@ -294,4 +294,31 @@
 
         return rect;
     };
+
+
+
+    function debugRect(x, y, w, h, color, fill="transparent"){
+        let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+        debug.setAttribute("class", "debug");
+        debug.setAttribute("x", x);
+        debug.setAttribute("y", y);
+        debug.setAttribute("width", w);
+        debug.setAttribute("height", h);
+        debug.style.stroke = color;
+        debug.style.fill = (fill!="same") ? fill : color;
+        canvas.appendChild(debug);
+        return debug;
+    }
+
+    function debugRect2(pos, size, color="red", fill="transparent" ){
+        if(pos===undefined || size===undefined)return;
+
+        let x = debugRect(pos.x, pos.y, size, size, color, fill);
+        return x;
+    }
+    
+    function log(value){
+        console.log(JSON.parse(JSON.stringify({value})))
+    }
+    
 </script>

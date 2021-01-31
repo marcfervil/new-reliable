@@ -76,8 +76,6 @@ class SVGPath extends SVG{
     makePath(){
         this.path = [];
         let pair = [];
-        //console.log(this.pathData)
-        
         let points = this.pathData.replace("C","").split(" ");
         
         for (let point of points){
@@ -93,9 +91,26 @@ class SVGPath extends SVG{
         //if(pair.length>0)console.log("")
     }
 
+
+    static makeSVGPath(vpath){
+        let pathd = ""
+        pathd += "M "+vpath[0].x+" "+vpath[0].y +" C"
+        //debugRect(vpath[0].vpoint.x, vpath[0].vpoint.y, 5,5, "red")
+        vpath.shift()
+        for(let i of vpath){
+            pathd+=" "+i.x + " " + i.y
+            //debugRect(i.vpoint.x, i.vpoint.y, 5,5, "red")
+        }
+       
+        return pathd
+    }
+
     getSerializableProperties(){
         return ["pathData"]
     }
+
+
+
 
     smoothify(){
 
@@ -155,3 +170,4 @@ class SVGPath extends SVG{
 
 
 }
+
