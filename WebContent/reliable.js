@@ -104,7 +104,7 @@ class Reliable {
         let state = [];
         //first element in the state array is for the boys (board metadata)
      //   state.push({selected:this.tools[1].selected})
-        console.log(this.svgs);
+       // console.log(this.svgs);
         for(let svg of this.svgs){
            
             state.push(svg.serialize())
@@ -114,7 +114,7 @@ class Reliable {
 
    
 
-    setState(state, parent=this.canvas, addSVG=false){
+    setState(state, parent=this.canvas, addSVG=true){
         //let metadata = state.pop();
         let svgs = {SVGPath, SVGImage, SVGText, SVGGroup};
         for(let svgData of state){
@@ -135,6 +135,10 @@ class Reliable {
             svg.updateTransform();
 
             if(addSVG)this.svgs.push(svg);
+            if(svgData.selected){
+                svg.select(this, false);
+                this.toolbar[1].selected.push(svgData.id);
+            }
            // svg.moveTo(new Vector2(svgData.pos.x, svgData.pos.y));
         }
 

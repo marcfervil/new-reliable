@@ -104,8 +104,10 @@ class SVGGroup extends SVG{
            
             child.scaleTo(new Vector2(newMatrix.a, newMatrix.d), "left", "top");
             child.moveTo(childpos);
+            reliable.svgs.push(child);
         }
         this.delete();
+        reliable.removeSVG(this);
         console.log("\n");
     }
     

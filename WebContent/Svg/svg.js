@@ -187,7 +187,7 @@ class SVG{
 
     selectedMouseMove(e){
         Selection.locked = true;
-        console.log("MOVE BAD")
+    
         if(this.isDragging){
             //used to layerX, layerY...look into this..
             let clickPos = new Vector2(e.clientX, e.clientY).multiply(zoom);
@@ -203,8 +203,7 @@ class SVG{
     
     selectedMouseDown(e){
         e.stopPropagation();
-        console.log("DOWN BAD");
-       
+   
         var rect = e.currentTarget.getBoundingClientRect();
        
         this.startDrag = this.transform.pos;
@@ -259,6 +258,7 @@ class SVG{
             "scale": this.transform.scale,
             "pos": this.pos,
             "id": this.id,
+            "selected": this.isSelected,
             "args": {}
         }
         for(let prop of this.getSerializableProperties()){
