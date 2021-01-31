@@ -117,6 +117,7 @@ class Selection extends Tool{
         Action.commit(this.reliable, {
             action: "Select",
             ids: this.selected,
+            groupId: Reliable.makeId(10)
         });   
 
 
@@ -146,9 +147,9 @@ class Select extends Action{
             SVG.forEachSVG(this.data.ids, (svg) => {
                children.push(svg);
             });
-            let id = Reliable.makeId(10);
-            new SVGGroup(reliable.canvas, new Vector2(), id, children).select(reliable, this.myAction);
-            app.toolbar[1].selected.push(id);
+            
+            new SVGGroup(reliable.canvas, new Vector2(), this.data.groupId, children).select(reliable, this.myAction);
+            app.toolbar[1].selected.push(this.data.groupId);
         }
     }
 

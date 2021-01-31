@@ -323,7 +323,7 @@ class SVG{
         selectRect.setAttribute('height', bounds.height);
 
         selectRect.setAttribute("vector-effect","non-scaling-stroke");
-        selectRect.style.stroke = "green";
+        selectRect.style.stroke = "#65c8d0";
         selectRect.style.fill = "transparent";
 
         
