@@ -187,6 +187,7 @@ class SVG{
 
     selectedMouseMove(e){
         Selection.locked = true;
+        console.log("MOVE BAD")
         if(this.isDragging){
             //used to layerX, layerY...look into this..
             let clickPos = new Vector2(e.clientX, e.clientY).multiply(zoom);
@@ -202,7 +203,7 @@ class SVG{
     
     selectedMouseDown(e){
         e.stopPropagation();
-
+        console.log("DOWN BAD");
        
         var rect = e.currentTarget.getBoundingClientRect();
        
@@ -220,8 +221,8 @@ class SVG{
         this.mouseUpRef = (e) => this.selectedMouseUp(e);
 
        
-        this.parent.addEventListener('pointermove', this.mouseMoveRef);
-        this.parent.addEventListener('pointerup', this.mouseUpRef);
+        canvas.addEventListener('pointermove', this.mouseMoveRef);
+        canvas.addEventListener('pointerup', this.mouseUpRef);
 
         this.isDragging = true; 
 
@@ -233,8 +234,8 @@ class SVG{
     selectedMouseUp(e){
         Selection.locked = false;
       
-        this.parent.removeEventListener('pointermove', this.mouseMoveRef);
-        this.parent.removeEventListener('pointerup', this.mouseUpRef);
+        canvas.removeEventListener('pointermove', this.mouseMoveRef);
+        canvas.removeEventListener('pointerup', this.mouseUpRef);
 
         this.isDragging = false; 
     
@@ -492,7 +493,8 @@ class SVG{
    
 
     static getFromId(id){
-        return $("#"+id)[0].reliableSvg;
+        let element =  $("#"+id)[0]
+        return (element!=null)? element.reliableSvg : undefined;
     }
 
     static forEachSVG(ids, callback){

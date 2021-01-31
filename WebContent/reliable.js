@@ -102,7 +102,11 @@ class Reliable {
 
     getState(){
         let state = [];
+        //first element in the state array is for the boys (board metadata)
+     //   state.push({selected:this.tools[1].selected})
+        console.log(this.svgs);
         for(let svg of this.svgs){
+           
             state.push(svg.serialize())
         }
         return state;
@@ -110,10 +114,11 @@ class Reliable {
 
    
 
-    setState(state){
-        let svgs = {SVGPath, SVGImage, SVGText};
+    setState(state, parent=this.canvas, addSVG=false){
+        //let metadata = state.pop();
+        let svgs = {SVGPath, SVGImage, SVGText, SVGGroup};
         for(let svgData of state){
-            let args = [this.canvas, new Vector2(svgData.pos.x, svgData.pos.y), svgData.id];
+            let args = [parent, new Vector2(svgData.pos.x, svgData.pos.y), svgData.id];
             for (var key of Object.keys(svgData.args)) {
                 args.push(svgData.args[key]);
             }
@@ -129,8 +134,10 @@ class Reliable {
 
             svg.updateTransform();
 
-            this.svgs.push(svg);
+            if(addSVG)this.svgs.push(svg);
+           // svg.moveTo(new Vector2(svgData.pos.x, svgData.pos.y));
         }
+
     }
     
     commit(action, broadcast){

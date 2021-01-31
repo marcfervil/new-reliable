@@ -2,13 +2,27 @@
 
 class SVGGroup extends SVG{
 
-    constructor(parent, pos, id, children){
+    constructor(parent, pos, id, childrenData){
         super("g", parent, pos, id);
         
-        for(let child of children){
-            this.svg.appendChild(child.group);
+
+        this.children = [];
+     
+        this.childrenData = childrenData;
+        for(let childData of childrenData){
     
-            
+            //TODO pass in actual reliabe ref 
+           
+            //delete og child and create new children based on serialized data
+            let oldSVG = SVG.getFromId(childData.id)
+            if(oldSVG!==undefined){
+                app.removeSVG(oldSVG);
+                oldSVG.delete();
+            }
+            app.setState([childData], this.svg, false);
+
+            this.children.push(SVG.getFromId(childData.id));
+            //this.svg.appendChild(child.group);
            // child.delete();
            //  child.moveTo(child.transform.pos);
             //console.log(child.group);
@@ -24,12 +38,12 @@ class SVGGroup extends SVG{
         boundRect.setAttribute("x",rect.x);
         boundRect.setAttribute("y",rect.y);
         boundRect.setAttribute("fill", "transparent");
-
+        
         boundRect.setAttribute("id", this.id+"-bounds");
        
         this.group.appendChild(boundRect)
 
-        this.children = children;
+        //this.children = children;
         
      
 
@@ -69,7 +83,8 @@ class SVGGroup extends SVG{
     }
 
     getSerializableProperties(){
-        return [];
+       
+        return ["childrenData"];
     }
 
     unselect(reliable){

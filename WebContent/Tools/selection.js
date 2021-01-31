@@ -102,7 +102,7 @@ class Selection extends Tool{
         this.selected = [];
         
         for(let hit of hits){
-   
+            console.log(hit);
             if(hit.parentNode== null || hit.parentNode.reliableSvg===undefined)continue;
             let id = hit.parentNode.id;
          
@@ -145,10 +145,13 @@ class Select extends Action{
             
             let children = [];
             SVG.forEachSVG(this.data.ids, (svg) => {
-               children.push(svg);
+               children.push(svg.serialize());
             });
             
-            new SVGGroup(reliable.canvas, new Vector2(), this.data.groupId, children).select(reliable, this.myAction);
+            let selectionGroup = new SVGGroup(reliable.canvas, new Vector2(), this.data.groupId, children)
+            selectionGroup.select(reliable, this.myAction);
+          
+            reliable.svgs.push(selectionGroup);
             app.toolbar[1].selected.push(this.data.groupId);
         }
     }
