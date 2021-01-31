@@ -137,6 +137,8 @@ class Pan extends Tool{
     }
 
     updateView(){
+        //canvas.setAttribute("viewBox", `${Math.round(pan.x)} ${Math.round(pan.y)} ${Math.round(canvas.clientWidth*zoom.x)} ${Math.round(canvas.clientHeight*zoom.y)}`);
+      //  canvas.setAttribute("viewBox", `${Math.round(pan.x)} ${Math.round(pan.y)} ${Math.round(canvas.clientWidth*zoom.x)} ${Math.round(canvas.clientHeight*zoom.y)}`);
         canvas.setAttribute("viewBox", `${pan.x} ${pan.y} ${canvas.clientWidth*zoom.x} ${canvas.clientHeight*zoom.y}`);
     }
 
@@ -152,13 +154,16 @@ class Pan extends Tool{
        // if(pan.y + document.documentElement.clientWidtht > 5000)delta.y =0;
         pan = pan.subtract(delta);
      
-        if(delta.x> 0 && pan.x<0)pan.x = 0;
-        if(delta.y> 0 && pan.y<0)pan.y = 0;
+      //  if(delta.x> 0 && pan.x<0)pan.x = 0;
+        //if(delta.y> 0 && pan.y<0)pan.y = 0;
         
         //infinite scroll lol
         //if(delta.y< 0 && pan.y + document.documentElement.clientWidth > 5000) pan.y = pan.y - document.documentElement.clientWidth;
-        if(delta.y< 0 && pan.y + document.documentElement.clientHeight > 5000) pan.y = 5000 - document.documentElement.clientHeight;
-        if(delta.x < 0 && pan.x + document.documentElement.clientWidth > 5000) pan.x = 5000 - document.documentElement.clientWidth;
+       
+       
+       
+        // if(delta.y< 0 && pan.y + document.documentElement.clientHeight > 5000) pan.y = 5000 - document.documentElement.clientHeight;
+      //  if(delta.x < 0 && pan.x + document.documentElement.clientWidth > 5000) pan.x = 5000 - document.documentElement.clientWidth;
 
 
         this.updateView();

@@ -119,10 +119,10 @@
           <!-- <path d="M 50 50 c 25 50, 75 -50, 100 0" fill="transparent" stroke="black"/>-->
      
         
-        <svg width="5000px" height="5000px" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
-            
-            <foreignobject class="node" x="0" y="0" width="5000px" height="5000px">
-                <div id="backdrop" class="backdrop"></div>
+        <svg width="100%" height="100%" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" id="canvas"> 
+
+            <foreignobject style="position:relative;z-index:0; overflow:hidden" class="node" x="0" y="0" width="5000px" height="5000px">
+                <div  id="backdrop" class="backdrop">ijds</div>
             </foreignobject>
           
         </svg>
@@ -293,21 +293,26 @@
     }
 
     function getMousePos(){
-        return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y);
+       
+        return new Vector2((mousePos.x*zoom.x) + pan.x, (mousePos.y*zoom.y) + pan.y).subtract(new Vector2(canvasPos.x, canvasPos.y));
     }
     
 
-    //break in case of canvas postion change
+   
     
-    
+   
     Element.prototype.getBoundingClientRectOld = Element.prototype.getBoundingClientRect;
+    let canvasPos = canvas.getBoundingClientRectOld();
     Element.prototype.getBoundingClientRect = function() {
         let rect = this.getBoundingClientRectOld();
 
-        //let deltaX = -parseInt(canvas.style.left.substr(0, canvas.style.left.length-2)) ;
-        //let deltaY = -parseInt(canvas.style.top.substr(0, canvas.style.top.length-2)) ;
-  
-
+        //break in case of canvas postion change
+        /*
+        rect.left -= canvasPos.x;
+        rect.x -= canvasPos.x;
+        rect.top -= canvasPos.y;
+        rect.y -= canvasPos.y;
+*/  
 
         let deltaX = pan.x;
         let deltaY = pan.y;
