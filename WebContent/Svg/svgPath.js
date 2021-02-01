@@ -68,7 +68,7 @@ class SVGPath extends SVG{
             if(lastPos!=undefined && curve[2].distance(lastPos) < 20){
                 skip +=1;
                 lastPos = curve[2];
-               continue;
+            //   continue;
             }
             lastPos = curve[2];
             svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
