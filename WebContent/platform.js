@@ -37,7 +37,7 @@ class Platform{
         }else{
 
             //recieve message from VSCode
-            if(settings.displayName.includes(" ")) settings.displayName = settings.split(" ")[0];
+           // if(settings.displayName.includes(" ")) settings.displayName = settings.split(" ")[0];
             window.addEventListener('message', (message) => {
                 app.commit(message.data, false);
             });
