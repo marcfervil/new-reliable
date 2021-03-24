@@ -1,5 +1,6 @@
 
 
+
 class Reliable {
 
     constructor(canvas, path, tools){
@@ -18,7 +19,7 @@ class Reliable {
         }else{
             $(this.canvas).on("touchstart", (e) => this.mouseDownCanvas(e))
         }
-       
+
 
 
         this.toolbarDiv = $("#toolbar");

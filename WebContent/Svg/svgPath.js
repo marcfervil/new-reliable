@@ -5,7 +5,9 @@ class SVGPath extends SVG{
         
         this.pathData = (pathData===undefined) ? "M "+pos.toString() : pathData;
         
-        this.path = [pos];
+        this.path = [new MoveCommand(pos)];
+        this.path.stringify = this.stringifyPath;
+
         this.svg.setAttribute("d", this.pathData); 
         this.svg.style.stroke = "#AAB2C0"; 
         this.svg.style.fill = "transparent";
@@ -28,11 +30,27 @@ class SVGPath extends SVG{
         this.canvasRect = this.group.getBoundingClientRect();
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-     
+        
+
     }
 
-    
+    stringifyPath(){
+        let result = ""
+        for(let svgElement of this)result += svgElement.stringify()
+        return result;
+    }
 
+    addPoint(pos){
+        this.path.push(new LineCommand(pos));
+        this.updatePath()
+    }
+
+    updatePath(){
+        this.svg.setAttribute("d", this.path.stringify());
+    }   
+
+    
+    /*
     setContent(){
         
     }
@@ -85,11 +103,11 @@ class SVGPath extends SVG{
         console.log(100 - ((x/this.path.length) * 100)+"% og smoothify compression")
 
         return true;
-            /*
-            let uncompressedSVG = new SVG(this.parentId, this.pos);
+            
+            //let uncompressedSVG = new SVG(this.parentId, this.pos);
 
-            uncompressedSVG.replaceSvg(ogPath);
-            uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
+           // uncompressedSVG.replaceSvg(ogPath);
+            //uncompressedSVG.svg.setAttribute('transform','translate(400,0)');
         
     }
     //replaces path
@@ -109,7 +127,7 @@ class SVGPath extends SVG{
         this.pathData += "L"+svgData;
         this.svg.setAttribute("d", this.pathData);
         
-    }
+    }*/
 
     
     //funny

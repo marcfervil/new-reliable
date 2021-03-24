@@ -14,7 +14,7 @@ class Eraser extends Tool{
         this.svgRect = new SVGPointer(this.reliable.canvas, pos)
     }
 
-    canvasDrag(pos){
+    canvasDrag(pos){ 
         this.erase();
         this.svgRect.updateLocation(new Vector2(pos.x, pos.y));
     }
@@ -172,7 +172,6 @@ class DeleteSVGPath extends Action{
             id: tempSvg.id,
             path: tempSvg.pathData,
             color: tempSvg.color
-
         }
         let index = this.reliable.svgs.indexOf(tempSvg)
         if (index > -1) {
