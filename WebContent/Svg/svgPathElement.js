@@ -39,12 +39,38 @@ class SVGPathElement{
     stringify(){
        // console.log("stringiyyyyyh")
         let result = this.prefix+ " ";
-        for (var key in this.points) {
-            if (this.points.hasOwnProperty(key)) {
-                result += this.points[key] + " ";
-            }
+        for (let point of this.toArray()) {
+            //if (this.points.hasOwnProperty(key)) {
+                result += point + " ";
+           // }
         }
         return result
+    }
+
+    toArray(){
+        let points = []
+        for (var key in this.points) {
+            if (this.points.hasOwnProperty(key)) {
+                points.push(this.points[key])
+            }
+        }
+        return points
+    }
+    
+    //pointElements = moveto linecommand, linecommand
+
+    //
+    //input: 
+    static toArray(pointElements){
+ 
+
+        let points = []
+        for (let pointElement of pointElements) {
+            
+            points = points.concat(pointElement.toArray())
+            
+        }
+        return points
     }
 
 }
@@ -65,7 +91,7 @@ class LineCommand extends SVGPathElement{
 
 }
 
-class CurveToCommand extends SVGPathElement{
+class CurveCommand extends SVGPathElement{
 
     constructor(handle1, handle2, end){
         super("C", {handle1, handle2, end})

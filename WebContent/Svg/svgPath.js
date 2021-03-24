@@ -6,7 +6,7 @@ class SVGPath extends SVG{
         this.pathData = (pathData===undefined) ? "M "+pos.toString() : pathData;
         
         this.path = [new MoveCommand(pos)];
-        this.path.stringify = this.stringifyPath;
+        
 
         this.svg.setAttribute("d", this.pathData); 
         this.svg.style.stroke = "#AAB2C0"; 
@@ -34,9 +34,13 @@ class SVGPath extends SVG{
 
     }
 
-    stringifyPath(){
+    stringifyPath(svgElementPath){
         let result = ""
-        for(let svgElement of this)result += svgElement.stringify()
+        for(let svgElement of svgElementPath){
+           // console.log("neato",svgElement)
+         //   console.log("WOWOWOOWOWO ",svgElement.stringify())
+            result += svgElement.stringify()
+        }
         return result;
     }
 
@@ -46,9 +50,26 @@ class SVGPath extends SVG{
     }
 
     updatePath(){
-        this.svg.setAttribute("d", this.path.stringify());
+        let Newpath = this.stringifyPath(this.path)
+        //console.log("newpath\n", Newpath);
+        this.svg.setAttribute("d", Newpath);
     }   
 
+
+    smoothify(){
+        
+        let pathList = [this.path.splice(0,1)[0]]
+        while(this.path.length>3){
+            //grabbing first 3 elements to create a curve. Appending curve to path.
+            pathList.push(new CurveCommand( ...SVGPathElement.toArray(this.path.splice(0,3)) ))
+        }
+        //console.log("path list\n", pathList)
+     
+        this.path = pathList
+        //console.log("SMOOTHED ", this.stringifyPath(pathList))
+        this.updatePath()
+    }
+    
     
     /*
     setContent(){

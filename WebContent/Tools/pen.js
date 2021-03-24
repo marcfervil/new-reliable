@@ -34,7 +34,8 @@ class Pen extends Tool{
                 }
             });   
         }
-        this.svgPath.delete();
+        //TODO: Delete double path
+        //this.svgPath.delete();
     }
 }
 
