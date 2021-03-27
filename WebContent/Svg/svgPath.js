@@ -1,8 +1,13 @@
+/**
+ * SvgPath manages SVGPaths otherwise more simply known as the lines you see and draw on the whiteboard. 
+ * 
+ * SVGPaths are represented by arrays of SVGPathElements that can translated into a string to be displayed with the updatePath function
+ */
+
 class SVGPath extends SVG{
 
     constructor(parent, pos, id, pathData){
         super("path", parent, pos, id)
-        
         this.pathData = (pathData===undefined) ? "M "+pos.toString() : pathData;
         
         this.path = [new MoveCommand(pos)];
@@ -34,11 +39,13 @@ class SVGPath extends SVG{
 
     }
 
+    getSerializableProperties(){
+        return ["pathData"]
+    }
+
     stringifyPath(svgElementPath){
         let result = ""
         for(let svgElement of svgElementPath){
-           // console.log("neato",svgElement)
-         //   console.log("WOWOWOOWOWO ",svgElement.stringify())
             result += svgElement.stringify()
         }
         return result;
@@ -49,10 +56,11 @@ class SVGPath extends SVG{
         this.updatePath()
     }
 
-    updatePath(){
-        let Newpath = this.stringifyPath(this.path)
+    updatePath(){   
+        let newPath = this.stringifyPath(this.path)
         //console.log("newpath\n", Newpath);
-        this.svg.setAttribute("d", Newpath);
+        this.pathData = newPath
+        this.svg.setAttribute("d", newPath);
     }   
 
 
@@ -67,7 +75,8 @@ class SVGPath extends SVG{
      
         this.path = pathList
         //console.log("SMOOTHED ", this.stringifyPath(pathList))
-        this.updatePath()
+        this.updatePath();
+        return true;
     }
     
     

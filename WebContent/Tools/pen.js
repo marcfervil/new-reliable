@@ -1,3 +1,4 @@
+//Self documenting:
 //is mightier than the sword
 class Pen extends Tool{
 
@@ -19,6 +20,7 @@ class Pen extends Tool{
         this.svgPath.addPoint(new Vector2(pos.x, pos.y));
     }
 
+    //
     canvasDragEnd(){
        
         let smoothed = this.svgPath.smoothify();
@@ -35,7 +37,7 @@ class Pen extends Tool{
             });   
         }
         //TODO: Delete double path
-        //this.svgPath.delete();
+        this.svgPath.delete();
     }
 }
 
@@ -47,6 +49,9 @@ class Draw extends Action{
         this.pos = new Vector2(this.data.pos.x, this.data.pos.y);
     }
 
+
+    
+    /**@override */
     execute(reliable){
         super.execute(reliable);
         //this.svgPath = new SVGPath(reliable.canvas, new Vector2(),this.data.id);
@@ -54,9 +59,11 @@ class Draw extends Action{
 
        // this.svgPath.replacePath(this.data.path);
         this.svgPath.svg.style.stroke = this.data.color;
+        //console.log(this.svgPath);
         reliable.addSVG(this.svgPath);
     }
 
+    
     undo(){
         this.reliable.removeSVG(this.svgPath);
         this.svgPath.delete();

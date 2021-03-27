@@ -1,4 +1,7 @@
-
+/**
+ * Parent Svg class that is the bases of all svg that will be displayed on the canvas. 
+ * 
+ */
 
 
 class SVG{
@@ -413,9 +416,12 @@ class SVG{
             document.addEventListener('pointermove', moveRef);
             document.addEventListener('pointerup', upRef);
 
-            
+            console.log(this.transform)
             let startScale = this.transform.scale.clone();
-     
+            
+
+            
+
             this.scaleStart = this.transform.scale;
 
             let moveEvent = (mouseMove) => {
