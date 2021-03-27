@@ -1,11 +1,18 @@
+/**
+ * SvgPath manages SVGPaths otherwise more simply known as the lines you see and draw on the whiteboard. 
+ * 
+ * SVGPaths are represented by arrays of SVGPathElements that can translated into a string to be displayed with the updatePath function
+ */
+
 class SVGPath extends SVG{
 
     constructor(parent, pos, id, pathData){
         super("path", parent, pos, id)
-        
         this.pathData = (pathData===undefined) ? "M "+pos.toString() : pathData;
         
-        this.path = [pos];
+        this.path = [new MoveCommand(pos)];
+        
+
         this.svg.setAttribute("d", this.pathData); 
         this.svg.style.stroke = "#AAB2C0"; 
         this.svg.style.fill = "transparent";
@@ -28,11 +35,52 @@ class SVGPath extends SVG{
         this.canvasRect = this.group.getBoundingClientRect();
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-     
+        
+
     }
 
-    
+    getSerializableProperties(){
+        return ["pathData"]
+    }
 
+    stringifyPath(svgElementPath){
+        let result = ""
+        for(let svgElement of svgElementPath){
+            result += svgElement.stringify()
+        }
+        return result;
+    }
+
+    addPoint(pos){
+        this.path.push(new LineCommand(pos));
+        this.updatePath()
+    }
+
+    updatePath(){   
+        let newPath = this.stringifyPath(this.path)
+        //console.log("newpath\n", Newpath);
+        this.pathData = newPath
+        this.svg.setAttribute("d", newPath);
+    }   
+
+
+    smoothify(){
+        
+        let pathList = [this.path.splice(0,1)[0]]
+        while(this.path.length>3){
+            //grabbing first 3 elements to create a curve. Appending curve to path.
+            pathList.push(new CurveCommand( ...SVGPathElement.toArray(this.path.splice(0,3)) ))
+        }
+        //console.log("path list\n", pathList)
+     
+        this.path = pathList
+        //console.log("SMOOTHED ", this.stringifyPath(pathList))
+        this.updatePath();
+        return true;
+    }
+    
+    
+    /*
     setContent(){
         
     }
@@ -85,11 +133,11 @@ class SVGPath extends SVG{
         console.log(100 - ((x/this.path.length) * 100)+"% og smoothify compression")
 
         return true;
-            /*
-            let uncompressedSVG = new SVG(this.parentId, this.pos);
+            
+            //let uncompressedSVG = new SVG(this.parentId, this.pos);
 
-            uncompressedSVG.replaceSvg(ogPath);
-            uncompressedSVG.svg.setAttribute('transform','translate(400,0)');*/
+           // uncompressedSVG.replaceSvg(ogPath);
+            //uncompressedSVG.svg.setAttribute('transform','translate(400,0)');
         
     }
     //replaces path
@@ -109,7 +157,7 @@ class SVGPath extends SVG{
         this.pathData += "L"+svgData;
         this.svg.setAttribute("d", this.pathData);
         
-    }
+    }*/
 
     
     //funny

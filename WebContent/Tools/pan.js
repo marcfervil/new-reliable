@@ -1,8 +1,8 @@
-
+/**
+ * Tool for panning around. 
+ */
 
 class Pan extends Tool{
-
-
 
     debugRect(x, y, w, h, color){
         let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
