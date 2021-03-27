@@ -6,6 +6,10 @@ class Pen extends Tool{
         super("Pen");
     }
 
+    rectTest(){
+    
+    }
+
     getImage(){
         return "draw2.svg";
     }

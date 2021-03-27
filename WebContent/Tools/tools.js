@@ -1,5 +1,6 @@
 
 
+
 //The tool class represents any tool in the toolbar.  EX: Pen tool, pan tool, etc.
 class Tool {
 
@@ -37,11 +38,13 @@ class Tool {
         return "";
     }
 
-    //?????
+    //gets called whenever you select the tool
     activated(){
+       
         
     }
 
+    //activated whenever you switch away from the tool
     dectivated(){
         
     }

@@ -5,7 +5,10 @@ class Platform{
         if(isVsCode){
             vscode.postMessage(message);
         }else{
-           
+            if(message.action == "Refresh"){
+                window.location = "/";
+                return; 
+            }
             Platform.socket.emit('data', message);
         }
     }

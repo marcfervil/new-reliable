@@ -6,6 +6,10 @@ class Eraser extends Tool{
         super("Eraser", "images/eraser.svg");
     }
 
+    activated(){
+        
+    }
+
     getImage(){
         return "erase2.svg";
     }
