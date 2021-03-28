@@ -55,9 +55,7 @@ class SVGPathElement{
         }
     }
     
-    last(){
-        return this.points[ Object.keys(this.points).sort().pop() ];
-    }
+    
 
     toArray(){
         let points = []
@@ -93,6 +91,10 @@ class MoveCommand extends SVGPathElement{
         super("M", {point});
     }
 
+    last(){
+        return this.points.point
+    }
+
 }
 
 class LineCommand extends SVGPathElement{
@@ -101,12 +103,20 @@ class LineCommand extends SVGPathElement{
         super("L", {point});
     }
 
+    last(){
+        return this.points.point
+    }
+
 }
 
 class CurveCommand extends SVGPathElement{
 
     constructor(handle1, handle2, end){
         super("C", {handle1, handle2, end})
+    }
+
+    last(){
+        return this.points.end
     }
 
 }

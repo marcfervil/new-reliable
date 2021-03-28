@@ -130,21 +130,28 @@ class BezierPointHelper{
     
 
     getCurvePoints(path){
-        let c_numPoints = 10;
+        let densitiy = 10;
+
         for(let i = 1; i <path.length; i++){
             let point = path[i].points
-            for(let j = 0; j<c_numPoints;j++){
-                let time = (i / (c_numPoints - 1));
-                let lastPoint = path[i-1].last();
+
+            let lastPoint = path[i-1].last();
+            console.log("lastPoint ",lastPoint, " handle1 ", point.handle1, " handle2 ", point.handle2, " end ", point.end)
+            for(let j = 0; j<densitiy;j++){
+                let time = (j / (densitiy - 1));
 
                 let p = new Vector2(0,0);
                 p.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
                 p.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
-                debugRect(p.x, p.y, 5, 5, "purple");
+                debugRect(p.x, p.y, 10, 10, "purple");
+
+            
+
             }
-            debugRect2(controlPoints[dex+3], 5,5, "red")
-            debugRect2(controlPoints[dex+1], 5,5, "yellow")
-            debugRect2(controlPoints[dex+2], 5,5, "yellow")
+            debugRect2(point.handle1, 10,10, "green")
+            debugRect2(point.handle2, 10,10, "green")
+            debugRect2(point.end, 10,10, "red")
+         
             
         }
 
