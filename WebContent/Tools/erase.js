@@ -1,13 +1,18 @@
 //eraser tool for erasing.
+//^^^^ a very important comment
+
+
 
 class Eraser extends Tool{
 
     constructor(){
         super("Eraser", "images/eraser.svg");
+        this.size = 40
+        this.sizeOffset = new Vector2(this.size/2, this.size/2);
     }
 
     activated(){
-        
+        console.log("OOOH WEE HE TRYNA ERASE")
     }
 
     getImage(){
@@ -15,33 +20,87 @@ class Eraser extends Tool{
     }
 
     canvasDragStart(pos){
-        this.svgRect = new SVGPointer(this.reliable.canvas, pos)
+        this.svgRect = new SVGPointer(this.reliable.canvas, this.size, pos.subtract(this.sizeOffset))
+        this.erase();
     }
 
     canvasDrag(pos){ 
+
+        this.svgRect.updateLocation(new Vector2(pos.x, pos.y).subtract(this.sizeOffset));
         this.erase();
-        this.svgRect.updateLocation(new Vector2(pos.x, pos.y));
     }
 
     canvasDragEnd(){
         this.svgRect.delete();
     }
 
+    //returns a list of svgs colliding with the eraser.
     svgCollisions(){
+        let rect = this.svgRect.svg.getBoundingClientRectOld();
         let svgRect = this.reliable.canvas.createSVGRect();
 
-        svgRect.x = this.svgRect.pos.x;
-        svgRect.y = this.svgRect.pos.y;
-        svgRect.width = this.svgRect.size;
-        svgRect.height = this.svgRect.size;
-        
+        svgRect.x = rect.x;
+        svgRect.y = rect.y;
+        svgRect.width = this.size;
+        svgRect.height = this.size;
+
         let hits = this.reliable.canvas.getIntersectionList(svgRect, null);
-        let realHits = [];
-        for(let hit of hits)if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas")realHits.push(hit.reliableSvg);
-        return realHits;
+        let lineHits = [];
+        
+        for(let hit of hits){
+            //filters out the eraser and canvas
+            if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas"){
+                lineHits.push(hit.reliableSvg);
+            }
+        }
+    
+        return lineHits;
     }
 
-    insideCursor(x, y){
+    
+    //returns up to (2) new paths that are the result of eraseing [non refundable]
+    splitLine(svg){
+        let bezierHelper = new BezierPointHelper()//this.reliable.canvas, this.svgRect, svg.path);
+        bezierHelper.getCurvePoints(svg.path);
+    }
+    
+    //takes array of pathData and draws it
+    createNewPaths(newPaths){
+        for(let path of newPaths){
+            svg.delete()
+            let tempPath = SVGPath.makeSVGPath(path)
+            
+            Action.commit(this.reliable, {
+                action: "Draw",
+                id: Reliable.makeId(10) ,
+                path: tempPath,
+                color: "#AAB2C0",
+                pos: path[0].toJSON(),
+            }, false)
+        }
+    }
+
+
+    erase(){
+        let collidedSVG = this.svgCollisions();
+
+        for(let svg of collidedSVG){
+            this.splitLine(svg);
+        }
+    }
+
+}
+
+
+
+
+class BezierPointHelper{
+
+   
+
+    insideCursor(point){
+        let x = point.x
+        let y = point.y
         let x1 = parseInt(this.svgRect.pos.x);
         let y1 = parseInt(this.svgRect.pos.y);
         let x2 = parseInt(x1)+parseInt(this.svgRect.size);
@@ -49,95 +108,93 @@ class Eraser extends Tool{
         //console.log(x1+" "+y1+" "+x2+" "+y2+" "+x+" "+y)
         x = parseInt(x)
         y = parseInt(y);
-        return (x > x1 && x < x2) && (y > y1 && y < y2)
+        return (x > x1 && x < x2) && (y > y1 && y < y2);
     }
 
+    //returns the point the eraser made contact
+    getEraserConnection(vec){
+        let x = vec.x
+        let y = vec.y
+        let r = parseInt(this.svgRect.size)/2
+        let rectCenterX = this.svgRect.pos.x + parseInt(this.svgRect.size)/2;
+        let rectCenterY = this.svgRect.pos.y + parseInt(this.svgRect.size)/2;
+        x = x - rectCenterX
+        y = y - rectCenterY
+        let theta = Math.atan2(y,x)
+        x = rectCenterX + (r* Math.cos(theta))
+        y = rectCenterY + (r* Math.sin(theta)) 
+        //console.log("r: "+r+" theta: "+theta+" rectx: "+rectCenterX+" recty: "+rectCenterY+" x: "+ x+ " y: "+ y)
+        return new Vector2(x, y);
 
-
-    isCollidingLineSegment(path){
-        path[1] = path[1].slice(0,path[1].length-1); //removes the 1 c
-
-        let removeIndex = [];
-        for(let i = 0; i<path.length; i+=2){
-            let j = i+1;
-
-            let x = path[i];
-            let y = path[j];
-            if(this.insideCursor(x,y)){
-                removeIndex.push(i) 
-            }
-        }
-        let minIndex = Math.min(...removeIndex)
-        let maxIndex = Math.max(...removeIndex)
-        //path.splice(minIndex, (maxIndex-minIndex)+2);
-        let temp = path.splice(minIndex, path.length)
-        temp.splice(0,Math.min((maxIndex-minIndex)+2, temp.length));
-        let paths = []
-        paths.push(path)
-        
-        if(temp.length>0){
-            paths.push(temp)
-        }
-        return paths
     }
     
-    lineSegmentColisions(svgs){
-        let eraseables = []
-        for(let svg of svgs){
-            let edited = svg.pathData.split(" ")
-           
-            let paths = this.isCollidingLineSegment(edited.splice(1,edited.length)); //gets rid of the M
-            let firstPass = true;
-            for(let temp of paths){
-                //temp.length-2 has to be divisable by 6
-                if(!(temp.length<8)){
-                    while((temp.length-2)%6 !=0){
-                        temp.push(temp[temp.length-2])
-                        temp.push(temp[temp.length-2])
-                    }
-                    temp[1] = temp[1]+"C"
-                    temp = "M "+temp.join(" ")
-                    eraseables.push(temp)
-                    if(firstPass){
-                        Action.commit(this.reliable,{
-                            action: "Replace",
-                            SVGID: svg.id,
-                            newPath: temp
-                        })
-                        svg.replacePath(temp);
-                        firstPass = false;
-                    }
-                    else{
-                        let tempPos = new Vector2(0,0);
-                        Action.commit(this.reliable, {
-                            action: "Draw",
-                            id: Reliable.makeId(10) ,
-                            path: temp,
-                            color: "#AAB2C0",
-                            pos: tempPos.toJSON()
-                        })
-                    }
-                }else{
-                    if(firstPass){
-                        //svg.replacePath(temp)
-                        Action.commit(this.reliable,{
-                            action: "DeleteSVGPath",
-                            id: svg.id
-                        })
 
-                        //svg.delete();
-                    }
-                }
-                firstPass = false;
+    getCurvePoints(path){
+        let c_numPoints = 10;
+        for(let i = 1; i <path.length; i++){
+            let point = path[i].points
+            for(let j = 0; j<c_numPoints;j++){
+                let time = (i / (c_numPoints - 1));
+                let lastPoint = path[i-1].last();
+
+                let p = new Vector2(0,0);
+                p.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
+                p.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
+                debugRect(p.x, p.y, 5, 5, "purple");
             }
+            debugRect2(controlPoints[dex+3], 5,5, "red")
+            debugRect2(controlPoints[dex+1], 5,5, "yellow")
+            debugRect2(controlPoints[dex+2], 5,5, "yellow")
+            
         }
-        return eraseables;
+
+/*
+       for (let i = 0; i < c_numPoints; ++i))
+        {
+            let t = (i) / (float(c_numPoints - 1));
+       
+
+            let p = new Vector2(0,0);
+            p.x = this.BezierCubic(controlPoints[dex].x, controlPoints[dex+1].x, controlPoints[dex+2].x, controlPoints[dex+3].x, time);
+            p.y = this.BezierCubic(controlPoints[dex].y, controlPoints[dex+1].y, controlPoints[dex+2].y, controlPoints[dex+3].y, time);
+
+            //p.x = BezierCubic(point., t);
+            p.y = BezierCubic(controlPoints[0].y, controlPoints[1].y, controlPoints[2].y, controlPoints[3].y, controlPoints[4].y, controlPoints[5].y, controlPoints[6].y, t);
+            console.log("point at time %0.2f = (%0.2f, %0.2f)n", t, p.x, p.y);
+        }*/
+
+        
     }
 
-    erase(){
-        this.lineSegmentColisions(this.svgCollisions());
+    mix(a, b, t)
+    {
+        // degree 1
+        return a * (1 - t) + b*t;
     }
+
+    BezierQuadratic(A, B, C, t)
+    {
+        // degree 2
+        let AB = this.mix(A, B, t);
+        let BC = this.mix(B, C, t);
+        return this.mix(AB, BC, t);
+    }
+
+    BezierCubic(A, B, C, D, t)
+    {
+        // degree 3
+        let ABC = this.BezierQuadratic(A, B, C, t);
+        let BCD = this.BezierQuadratic(B, C, D, t);
+        return this.mix(ABC, BCD, t);
+    }
+
+
 }
+
+
+
+
+    
 
 class Replace extends Action{
 

@@ -3,17 +3,15 @@
  * 
  * SVGPaths are represented by arrays of SVGPathElements that can translated into a string to be displayed with the updatePath function
  */
-
-
-
 class SVGPath extends SVG{
 
     constructor(parent, pos, id, pathData){
         super("path", parent, pos, id);
 
         this.pathData = (pathData===undefined) ? "M " + pos.toString() : pathData;
+        this.pathData.trim()
         
-        this.path = [new MoveCommand(pos)];
+        this.path = this.generatePath();
         
 
         this.svg.setAttribute("d", this.pathData); 
@@ -38,13 +36,11 @@ class SVGPath extends SVG{
         this.canvasRect = this.group.getBoundingClientRect();
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-   
-        //this.gg = new Vector2("good", "game");
+
       
 
         this.targetProxy = new Proxy(this, {
             set: function (target, key, value) {
-                //console.log("set", key);
                 target[key] = value;
                 
                 if(key == "pathData")target.path = target.generatePath();
@@ -88,7 +84,7 @@ class SVGPath extends SVG{
         //turns a list of points into a list of vector2
         let vectorize = (list) => {
             let newVectors = [];
-            while(list.length > 0) newVectors.push(new Vector2(...list.splice(0,2).map(value => parseFloat(value))));
+            while(list.length > 0) newVectors.push(new Vector2(...list.splice(0, 2).map(value => parseFloat(value))));
             return newVectors;
         }
 
@@ -100,7 +96,6 @@ class SVGPath extends SVG{
             //grabs the first letter
             let commandLetter = pathData.splice(0,1)
             let command = svgCommands[commandLetter];
-            
             //grabs the apropriates ammount of numbers to turn into vectors to then turn into svg elements
             svgElementList.push(command(...vectorize(pathData.splice(0, command.length * 2))));
         }
@@ -136,99 +131,7 @@ class SVGPath extends SVG{
     }
     
     
-    /*
-    setContent(){
-        
-    }
-
-    addPoint(pos){
-        this.path.push(pos);
-        this.updatePath(pos.toString())
     
-    }
-
-    getSerializableProperties(){
-        return ["pathData"]
-    }
-
-
-    smoothify(){
-
-
-        let tempPath = this.path.slice();
-        let svgData = "";
-        let start = tempPath.splice(0, 1);
-        let lastPos = undefined;
-
-        let skip = 0;
-        let total = 0;
-        let smoothed = false;
-        let x = 0;
-        while(tempPath.length >= 3) { 
-            total+=1;
-            let curve = tempPath.splice(0, 3);
-            //if(lastPos!=undefined)console.log( curve[2].distance(lastPos));
-            //20;
-            if(lastPos!=undefined && curve[2].distance(lastPos) < 20){
-                skip +=1;
-                lastPos = curve[2];
-            //   continue;
-            }
-            lastPos = curve[2];
-            svgData += ` ${curve[0]} ${curve[1]} ${curve[2]}`;
-            x+=3;
-            smoothed = true;
-        }
-
-        if(!smoothed) return false;
-
-        svgData = "M "+start.toString() + "C"+ svgData;
-        let ogPath = this.replacePath(svgData);
-        
-
-        console.log(100 - ((x/this.path.length) * 100)+"% og smoothify compression")
-
-        return true;
-            
-            //let uncompressedSVG = new SVG(this.parentId, this.pos);
-
-           // uncompressedSVG.replaceSvg(ogPath);
-            //uncompressedSVG.svg.setAttribute('transform','translate(400,0)');
-        
-    }
-    //replaces path
-    replacePath(updateSvg){
-        let ogPath = this.pathData;
-        this.pathData = updateSvg;
-        //console.log(updateSvg);
-        this.svg.setAttribute("d", updateSvg);
-        return ogPath;
-    }
-    //adds things to the path
-    updatePath(svgData){
-        if(svgData ==""){
-            this.delete()
-            console.log("deleted svg cuz too small");
-        }
-        this.pathData += "L"+svgData;
-        this.svg.setAttribute("d", this.pathData);
-        
-    }*/
-
-    
-    //funny
-    /*
-    smoothify(){
-        let tempPath = this.path.slice();
-        let svgData = "";
-        while(tempPath.length >= 3) { 
-            let curve = tempPath.splice(0, 3);
-            svgData += `${curve[0]}, ${curve[1]}, ${curve[2]}`;
-        }
-        svgData = "M "+this.path[2].toString() + "C "+ svgData;
-        this.replaceSvg(svgData);
-        
-    }*/
 
 
 }

@@ -47,6 +47,18 @@ class SVGPathElement{
         return result
     }
 
+    *[Symbol.iterator](){
+        for (var key in this.points) {
+            if (this.points.hasOwnProperty(key)) {
+                yield this.points[key];
+            }
+        }
+    }
+    
+    last(){
+        return this.points[ Object.keys(this.points).sort().pop() ];
+    }
+
     toArray(){
         let points = []
         for (var key in this.points) {
