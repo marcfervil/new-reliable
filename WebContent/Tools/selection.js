@@ -127,6 +127,7 @@ class Select extends Action{
         super.execute(reliable);
 
         for(let id of this.data.ids){
+        
             $(`#${id}`)[0].reliableSvg.select(reliable, this.myAction);
             
         }
@@ -218,7 +219,7 @@ class Delete extends Action{
 
     execute(reliable){
         this.reliable = reliable;
-        SVG.forEachSVG(this.data.ids, (svg) => {
+        SVG.forEachSVG(this.data.ids, (svg) => {d
             this.saves.push(svg.serialize());
             reliable.removeSVG(svg);
             svg.delete();

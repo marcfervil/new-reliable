@@ -28,6 +28,7 @@ class Pen extends Tool{
     canvasDragEnd(){
        
         let smoothed = this.svgPath.smoothify();
+        //smootify may return false if the path was too small...we don't want tiny invisible paths 
         if(smoothed){  
             Action.commit(this.reliable, {
                 action: "Draw",

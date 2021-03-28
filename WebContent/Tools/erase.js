@@ -23,10 +23,7 @@ class Eraser extends Tool{
         this.svgRect.updateLocation(new Vector2(pos.x, pos.y));
     }
 
-
     canvasDragEnd(){
-    
-        //this.erase();
         this.svgRect.delete();
     }
 
@@ -163,6 +160,8 @@ class Replace extends Action{
         tempSVG.replacePath(this.undoData.path)
     }
 }
+
+
 
 class DeleteSVGPath extends Action{
     constructor(data){

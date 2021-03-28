@@ -328,8 +328,7 @@ class SVG{
         let bottomRightScaleAnchor = this.createDragRect(selectRect, "right", "bottom", new Vector2(1, 1), "left", "top" );
         let bottomLeftScaleAnchor = this.createDragRect(selectRect, "left", "bottom", new Vector2(-1, 1), "right", "top" );
         let topLeftScaleAnchor = this.createDragRect(selectRect, "left", "top", new Vector2(-1, -1), "right", "bottom" );
-
-
+ 
         this.anchors.push(bottomRightScaleAnchor);
         this.anchors.push(topRightScaleAnchor);
         this.anchors.push(bottomLeftScaleAnchor);
@@ -351,6 +350,7 @@ class SVG{
         }
     }
 
+ 
 
     createDragRect(selectRect, x, y, anchor, anchorX, anchorY){
 
@@ -416,7 +416,6 @@ class SVG{
             document.addEventListener('pointermove', moveRef);
             document.addEventListener('pointerup', upRef);
 
-            console.log(this.transform)
             let startScale = this.transform.scale.clone();
             
 
@@ -463,7 +462,7 @@ class SVG{
     
     select(reliable, mySelection){
         this.reliable = reliable;
-        if(this.isSelected) return;
+        if(this.isSelected) return false;
         this.isSelected = true;
         this.selectRect = this.createSelectRect();
         
