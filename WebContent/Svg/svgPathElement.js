@@ -97,6 +97,19 @@ class MoveCommand extends SVGPathElement{
 
 }
 
+class TemporaryCurveCommand extends SVGPathElement{
+
+    constructor(point){
+        super("T", {point});
+    }
+
+    last(){
+        return this.points.point
+    }
+
+
+}
+
 class LineCommand extends SVGPathElement{
 
     constructor(point){

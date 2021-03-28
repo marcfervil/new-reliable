@@ -3,12 +3,15 @@
 
 
 
+
+hasDrawn = false;
 class Eraser extends Tool{
 
     constructor(){
         super("Eraser", "images/eraser.svg");
         this.size = 40
         this.sizeOffset = new Vector2(this.size/2, this.size/2);
+        
     }
 
     activated(){
@@ -49,67 +52,25 @@ class Eraser extends Tool{
         
         for(let hit of hits){
             //filters out the eraser and canvas
-            if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas"){
+            if(hit.parentNode.id != this.svgRect.id && hit.parentNode.id != "canvas" && hit.reliableSvg instanceof SVGPath ){
                 lineHits.push(hit.reliableSvg);
             }
         }
     
         return lineHits;
     }
-
-    
-    //returns up to (2) new paths that are the result of eraseing [non refundable]
-    splitLine(svg){
-        let bezierHelper = new BezierPointHelper()//this.reliable.canvas, this.svgRect, svg.path);
-        bezierHelper.getCurvePoints(svg.path);
-    }
-    
-    //takes array of pathData and draws it
-    createNewPaths(newPaths){
-        for(let path of newPaths){
-            svg.delete()
-            let tempPath = SVGPath.makeSVGPath(path)
-            
-            Action.commit(this.reliable, {
-                action: "Draw",
-                id: Reliable.makeId(10) ,
-                path: tempPath,
-                color: "#AAB2C0",
-                pos: path[0].toJSON(),
-            }, false)
-        }
-    }
-
-
-    erase(){
-        let collidedSVG = this.svgCollisions();
-
-        for(let svg of collidedSVG){
-            this.splitLine(svg);
-        }
-    }
-
-}
-
-
-
-
-class BezierPointHelper{
-
-   
-
     insideCursor(point){
         let x = point.x
         let y = point.y
-        let x1 = parseInt(this.svgRect.pos.x);
-        let y1 = parseInt(this.svgRect.pos.y);
-        let x2 = parseInt(x1)+parseInt(this.svgRect.size);
-        let y2 = parseInt(y1)+parseInt(this.svgRect.size);
-        //console.log(x1+" "+y1+" "+x2+" "+y2+" "+x+" "+y)
-        x = parseInt(x)
-        y = parseInt(y);
+        let x1 = this.svgRect.pos.x;
+        let y1 = this.svgRect.pos.y;
+        let x2 = x1 + this.svgRect.size;
+        let y2 = y1 + this.svgRect.size;
+     
         return (x > x1 && x < x2) && (y > y1 && y < y2);
     }
+
+    //[ 1 2 3 4 5 6]
 
     //returns the point the eraser made contact
     getEraserConnection(vec){
@@ -127,50 +88,116 @@ class BezierPointHelper{
         return new Vector2(x, y);
 
     }
+
+    insertMoveCuve(curvePoints, location){
+
+    }
     
 
+    splitLine(curvePoints){
+        for(let i = 0 ; i < curvePoints.length; i++){
+            let endIndex = 0
+            while(i+endIndex<curvePoints.length && this.insideCursor(curvePoints[i+endIndex].last()))endIndex++;
+            if(endIndex > 0 ){
+                //curvePoints.splice(startIndex, endIndex)
+                
+                let lst = curvePoints.slice(i, i+endIndex)
+                for(let i of lst){
+                    
+                    if(i.rect !== undefined){
+                        i.rect.remove();
+                    }
+                }
+
+                //curvePoints = this.insertMoveCuve(curvePoints, i)
+
+            }
+        }
+    }
+
+    
+    //returns up to (2) new paths that are the result of eraseing [non refundable]
+    createNewPaths(svg){
+        let bezierHelper = new BezierPointHelper()//this.reliable.canvas, this.svgRect, svg.path);
+        if(!hasDrawn){
+            this.curvePoints = bezierHelper.getCurvePoints(svg.path);
+        }
+        //console.log("split line")
+        let newPaths = this.splitLine(this.curvePoints)
+
+        /*
+        for(let path of newPaths){
+            svg.delete()
+            let tempPath = SVGPath.makeSVGPath(path)
+            
+            Action.commit(this.reliable, {
+                action: "Draw",
+                id: Reliable.makeId(10) ,
+                path: tempPath,
+                color: "#AAB2C0",
+                pos: path[0].toJSON(),
+            }, false)
+        }*/
+    }
+
+
+    erase(){
+        let collidedSVG = this.svgCollisions();
+
+        for(let svg of collidedSVG){
+            this.createNewPaths(svg);
+        }
+    }
+
+}
+
+
+
+
+class BezierPointHelper{
+
+ 
     getCurvePoints(path){
         let densitiy = 10;
-
+        let curvePoints = []
+        let c = 0;
         for(let i = 1; i <path.length; i++){
             let point = path[i].points
 
             let lastPoint = path[i-1].last();
-            console.log("lastPoint ",lastPoint, " handle1 ", point.handle1, " handle2 ", point.handle2, " end ", point.end)
+            curvePoints.push(path[i-1]);
             for(let j = 0; j<densitiy;j++){
                 let time = (j / (densitiy - 1));
 
-                let p = new Vector2(0,0);
-                p.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
-                p.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
-                debugRect(p.x, p.y, 10, 10, "purple");
+                let curvePoint = new Vector2(0,0);
+                curvePoint.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
+                curvePoint.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
+                
+                
 
-            
+               new SVGText(app.canvas, curvePoint, Reliable.makeId(10)+"Text", c+"");
+                c++;
+
+                let curvePointCommand = new TemporaryCurveCommand(curvePoint);
+
+                if(!hasDrawn){
+                
+                    curvePointCommand.rect = debugRect(curvePoint.x, curvePoint.y, 10, 10, "purple");
+                }
+         
+                curvePoints.push(curvePointCommand)
 
             }
-            debugRect2(point.handle1, 10,10, "green")
-            debugRect2(point.handle2, 10,10, "green")
-            debugRect2(point.end, 10,10, "red")
-         
-            
+            curvePoints.push(path[i]);
+            if(!hasDrawn){
+                debugRect2(point.handle1, 10,10, "green")
+                debugRect2(point.handle2, 10,10, "green")
+                debugRect2(point.end, 10,10, "red")
+            }
         }
+        hasDrawn = true;
+        return curvePoints
 
-/*
-       for (let i = 0; i < c_numPoints; ++i))
-        {
-            let t = (i) / (float(c_numPoints - 1));
-       
-
-            let p = new Vector2(0,0);
-            p.x = this.BezierCubic(controlPoints[dex].x, controlPoints[dex+1].x, controlPoints[dex+2].x, controlPoints[dex+3].x, time);
-            p.y = this.BezierCubic(controlPoints[dex].y, controlPoints[dex+1].y, controlPoints[dex+2].y, controlPoints[dex+3].y, time);
-
-            //p.x = BezierCubic(point., t);
-            p.y = BezierCubic(controlPoints[0].y, controlPoints[1].y, controlPoints[2].y, controlPoints[3].y, controlPoints[4].y, controlPoints[5].y, controlPoints[6].y, t);
-            console.log("point at time %0.2f = (%0.2f, %0.2f)n", t, p.x, p.y);
-        }*/
-
-        
     }
 
     mix(a, b, t)

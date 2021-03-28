@@ -37,7 +37,7 @@ class SVGPath extends SVG{
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
 
-      
+        
 
         this.targetProxy = new Proxy(this, {
             set: function (target, key, value) {
@@ -96,6 +96,10 @@ class SVGPath extends SVG{
             //grabs the first letter
             let commandLetter = pathData.splice(0,1)
             let command = svgCommands[commandLetter];
+            //TODO: why is the below line needed? find a way to remove it!!! >:(
+            if(commandLetter[0]=="") continue;
+    
+            //console.log(commandLetter);
             //grabs the apropriates ammount of numbers to turn into vectors to then turn into svg elements
             svgElementList.push(command(...vectorize(pathData.splice(0, command.length * 2))));
         }
