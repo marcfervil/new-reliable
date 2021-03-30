@@ -319,7 +319,7 @@
         $(canvas).empty();
     }
 
-    function debugRect(x, y, w, h, color){
+    function debugRect(x, y, w, h, color, fill="transparent"){
         
         let debug = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         debug.setAttribute("class", "debug");
@@ -329,14 +329,14 @@
         debug.setAttribute("height", h);
   
         debug.style.stroke = color;
-        debug.style.fill = "transparent";
+        debug.style.fill = fill;
         canvas.appendChild(debug);
 
         return debug;
     }
 
-    function debugRect2(vectorPos, w, h, color){
-        return debugRect(vectorPos.x, vectorPos.y , w, h, color);
+    function debugRect2(vectorPos, w, h, color, fill="transparent"){
+        return debugRect(vectorPos.x, vectorPos.y , w, h, color, fill);
     }
 
 

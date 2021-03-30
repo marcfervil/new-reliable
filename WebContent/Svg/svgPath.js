@@ -63,7 +63,7 @@ class SVGPath extends SVG{
         return ["pathData"]
     }
 
-    stringifyPath(svgElementPath){
+    static stringifyPath(svgElementPath){
         let result = ""
         for(let svgElement of svgElementPath){
             result += svgElement.stringify()
@@ -109,7 +109,7 @@ class SVGPath extends SVG{
     }
 
     updatePath(){   
-        let newPath = this.stringifyPath(this.path)
+        let newPath = SVGPath.stringifyPath(this.path)
         this.pathData = newPath
         this.svg.setAttribute("d", newPath);
     }   

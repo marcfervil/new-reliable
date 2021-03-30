@@ -4,12 +4,14 @@
 
 
 
+
+
 hasDrawn = false;
 class Eraser extends Tool{
 
     constructor(){
         super("Eraser", "images/eraser.svg");
-        this.size = 40
+        this.size = 100;
         this.sizeOffset = new Vector2(this.size/2, this.size/2);
         
     }
@@ -70,49 +72,89 @@ class Eraser extends Tool{
         return (x > x1 && x < x2) && (y > y1 && y < y2);
     }
 
-    //[ 1 2 3 4 5 6]
-
     //returns the point the eraser made contact
     getEraserConnection(vec){
         let x = vec.x
         let y = vec.y
-        let r = parseInt(this.svgRect.size)/2
-        let rectCenterX = this.svgRect.pos.x + parseInt(this.svgRect.size)/2;
-        let rectCenterY = this.svgRect.pos.y + parseInt(this.svgRect.size)/2;
+
+        let r = this.svgRect.size/2
+        let rectCenterX = this.svgRect.pos.x + r;
+        let rectCenterY = this.svgRect.pos.y + r;
         x = x - rectCenterX
         y = y - rectCenterY
-        let theta = Math.atan2(y,x)
-        x = rectCenterX + (r* Math.cos(theta))
-        y = rectCenterY + (r* Math.sin(theta)) 
+        let theta = Math.atan2(y, x)
+        x = rectCenterX + (r * Math.cos(theta))
+        y = rectCenterY + (r * Math.sin(theta)) 
         //console.log("r: "+r+" theta: "+theta+" rectx: "+rectCenterX+" recty: "+rectCenterY+" x: "+ x+ " y: "+ y)
         return new Vector2(x, y);
 
     }
+    
 
-    insertMoveCuve(curvePoints, location){
+    insertMoveCurve(curvePoints, location){
+        let newEndVect = this.getEraserConnection(curvePoints[location-1].last())
+        let newStartVect = this.getEraserConnection(curvePoints[location].last())
 
+        let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
+        let newStartPos = new MoveCommand(newStartVect)
+        //curvePoints.splice(location, 0, newStartPos)
+
+        //debugRect2(newStartPos.last(),10,10, "black", "black")
+        //debugRect2(newEndVect,10,10, "blue", "blue")
+
+
+        
     }
     
 
     splitLine(curvePoints){
+        let newLines = []
         for(let i = 0 ; i < curvePoints.length; i++){
-            let endIndex = 0
-            while(i+endIndex<curvePoints.length && this.insideCursor(curvePoints[i+endIndex].last()))endIndex++;
+            let startIndex = i;
+            let endIndex = 0;
+            while(startIndex+endIndex<curvePoints.length && this.insideCursor(curvePoints[startIndex+endIndex].last()))endIndex++;
             if(endIndex > 0 ){
-                //curvePoints.splice(startIndex, endIndex)
                 
+                /*
                 let lst = curvePoints.slice(i, i+endIndex)
                 for(let i of lst){
                     
                     if(i.rect !== undefined){
                         i.rect.remove();
                     }
-                }
+                    
+                }*/
+                
+                curvePoints.splice(startIndex, endIndex)
 
-                //curvePoints = this.insertMoveCuve(curvePoints, i)
+                let newEndVect = this.getEraserConnection(curvePoints[startIndex-1].last())
+                let newStartVect = this.getEraserConnection(curvePoints[startIndex].last())
+        
+                let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
+                let newStartPos = new MoveCommand(newStartVect)
+
+                debugRect2(newStartPos.last(),10,10, "black", "black")
+                debugRect2(newEndVect,10,10, "blue", "blue")
+
+                let firstHalf = curvePoints.splice(0,startIndex)
+                let secondHalf = curvePoints.splice(-startIndex)
+
+                newLines.pop()
+
+                firstHalf.push(newEndPos)
+                secondHalf.unshift(newStartPos)
+                newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
+                newLines.push(secondHalf)
+                
+                curvePoints = secondHalf
+                i = 0;
+
 
             }
         }
+
+        newLines[newLines.length - 1] = newLines[newLines.length - 1].filter(command => !(command instanceof TemporaryCurveCommand));
+        return newLines;
     }
 
     
@@ -124,20 +166,21 @@ class Eraser extends Tool{
         }
         //console.log("split line")
         let newPaths = this.splitLine(this.curvePoints)
+        console.log(newPaths)
 
-        /*
+        svg.delete()
         for(let path of newPaths){
-            svg.delete()
-            let tempPath = SVGPath.makeSVGPath(path)
-            
+           
+            let tempPath = SVGPath.stringifyPath(path)
+            console.log(tempPath);
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: Reliable.makeId(10) ,
                 path: tempPath,
                 color: "#AAB2C0",
-                pos: path[0].toJSON(),
+                pos: tempPath,
             }, false)
-        }*/
+        }
     }
 
 
@@ -158,7 +201,7 @@ class BezierPointHelper{
 
  
     getCurvePoints(path){
-        let densitiy = 10;
+        let densitiy = 15;
         let curvePoints = []
         let c = 0;
         for(let i = 1; i <path.length; i++){
@@ -175,14 +218,14 @@ class BezierPointHelper{
                 
                 
 
-               new SVGText(app.canvas, curvePoint, Reliable.makeId(10)+"Text", c+"");
+            //   new SVGText(app.canvas, curvePoint, Reliable.makeId(10)+"Text", c+"");
                 c++;
 
                 let curvePointCommand = new TemporaryCurveCommand(curvePoint);
 
                 if(!hasDrawn){
                 
-                    curvePointCommand.rect = debugRect(curvePoint.x, curvePoint.y, 10, 10, "purple");
+                //    curvePointCommand.rect = debugRect(curvePoint.x, curvePoint.y, 10, 10, "purple");
                 }
          
                 curvePoints.push(curvePointCommand)
@@ -190,9 +233,9 @@ class BezierPointHelper{
             }
             curvePoints.push(path[i]);
             if(!hasDrawn){
-                debugRect2(point.handle1, 10,10, "green")
-                debugRect2(point.handle2, 10,10, "green")
-                debugRect2(point.end, 10,10, "red")
+                //debugRect2(point.handle1, 10,10, "green")
+                //debugRect2(point.handle2, 10,10, "green")
+                //debugRect2(point.end, 10,10, "red")
             }
         }
         hasDrawn = true;
