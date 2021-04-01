@@ -135,19 +135,22 @@ class Eraser extends Tool{
     splitLine(curvePoints){
         let newLines = []
         //goes through entire list of points on the line
+        let intersectedWithLine = false
         for(let i = 0 ; i < curvePoints.length; i++){
             let startIndex = i;
             let endIndex = 0;
+            intersectedWithLine = false
             //get start and end index of adjacent line segment points that the eraser is overlapping with
             while(startIndex+endIndex<curvePoints.length && this.insideCursor(curvePoints[startIndex+endIndex].position())){
                 endIndex++;
+                intersectedWithLine = true
             }
 
 
 
             //checks if eraser overlap is found then start splitting into two lines
-            if(endIndex > 0 ){
-              
+            if(intersectedWithLine){
+                              
                 
                 //splits curvePoints into first half and second half
                 let firstHalf = curvePoints.splice(0,startIndex)
@@ -158,7 +161,7 @@ class Eraser extends Tool{
                     let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
                     firstHalf.push(newEndPos)
                     //removes temporary curve points and pushes it to the list of split lines that we return
-                    newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
+                   
                 }
                 if(secondHalf.length > 0){
                    
@@ -170,17 +173,20 @@ class Eraser extends Tool{
                     firstCurve.points.handle1 = firstCurve.position();
                     firstCurve.points.handle2 = firstCurve.position();
                      //console.log(JSON.parse(JSON.stringify(deletem)))
-                     newLines.push(secondHalf)
+                     
                 }
 
-                console.log("endIndex", endIndex, curvePoints.length, curvePoints)
+                newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
+                newLines.push(secondHalf)
+
+                //console.log("endIndex", endIndex, curvePoints.length, curvePoints)
                 break;
 
 
             }
         }
-        let tolerance = 2;
-        if(newLines.length==0) return [curvePoints.filter(command => !(command instanceof TemporaryCurveCommand))]
+       
+        if(!intersectedWithLine) return [curvePoints.filter(command => !(command instanceof TemporaryCurveCommand))]
         newLines[newLines.length - 1] = newLines[newLines.length - 1].filter(command => !(command instanceof TemporaryCurveCommand));
         return newLines;
     }
