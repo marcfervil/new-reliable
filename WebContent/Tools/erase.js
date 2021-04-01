@@ -147,48 +147,40 @@ class Eraser extends Tool{
 
             //checks if eraser overlap is found then start splitting into two lines
             if(endIndex > 0 ){
-               
+              
                 
                 //splits curvePoints into first half and second half
                 let firstHalf = curvePoints.splice(0,startIndex)
                 let secondHalf = curvePoints.splice(endIndex, curvePoints.length)
-                
 
-                let newEndVect = this.getEraserConnection(firstHalf.last().position())
-                //same as above, but for the second half of the line
-                let newStartVect = this.getEraserConnection(secondHalf[0].position())
-              
-        
-                //create points from positions
-                let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
-                let newStartPos = new MoveCommand(newStartVect)
+                if(startIndex !=0){
+                    let newEndVect = this.getEraserConnection(firstHalf.last().position())
+                    let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
+                    firstHalf.push(newEndPos)
+                    //removes temporary curve points and pushes it to the list of split lines that we return
+                    newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
+                }
+                if(secondHalf.length > 0){
+                   
+                    let newStartVect = this.getEraserConnection(secondHalf[0].position())
+                    let newStartPos = new MoveCommand(newStartVect);
+                    secondHalf.unshift(newStartPos)
+                     //finds first cuvecommand and adjust the handles
+                    let firstCurve = this.getFirstCurveTo(secondHalf)
+                    firstCurve.points.handle1 = firstCurve.position();
+                    firstCurve.points.handle2 = firstCurve.position();
+                     //console.log(JSON.parse(JSON.stringify(deletem)))
+                     newLines.push(secondHalf)
+                }
 
-                //debugRect2(newStartPos.position(),10,10, "black", "black")
-                //debugRect2(newEndVect,10,10, "blue", "blue")
-                
-                //adds the points created above to the end of the firsthalf and the begining of the secondhalf
-                firstHalf.push(newEndPos)
-                secondHalf.unshift(newStartPos)
-
-                //finds first cuvecommand and adjust the handles
-                let firstCurve = this.getFirstCurveTo(secondHalf)
-                firstCurve.points.handle1 = firstCurve.position();
-                firstCurve.points.handle2 = firstCurve.position();
-
-                //removes temporary curve points and pushes it to the list of split lines that we return
-                newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
-                //console.log(JSON.parse(JSON.stringify(deletem)))
-                newLines.push(secondHalf)
-                
-
-                //newLines = newLines.concat(this.splitLine(secondHalf))
-
+                console.log("endIndex", endIndex, curvePoints.length, curvePoints)
                 break;
 
 
             }
         }
-        if(newLines.length==0) return [curvePoints]
+        let tolerance = 2;
+        if(newLines.length==0) return [curvePoints.filter(command => !(command instanceof TemporaryCurveCommand))]
         newLines[newLines.length - 1] = newLines[newLines.length - 1].filter(command => !(command instanceof TemporaryCurveCommand));
         return newLines;
     }
@@ -202,7 +194,6 @@ class Eraser extends Tool{
      //   }
         //console.log("split line")
         let newPaths = this.splitLine(this.curvePoints)
-        //console.log(newPaths)
 
         svg.delete()
         for(let path of newPaths){
