@@ -91,7 +91,7 @@ class MoveCommand extends SVGPathElement{
         super("M", {point});
     }
 
-    last(){
+    position(){
         return this.points.point
     }
 
@@ -103,7 +103,7 @@ class TemporaryCurveCommand extends SVGPathElement{
         super("T", {point});
     }
 
-    last(){
+    position(){
         return this.points.point
     }
 
@@ -116,7 +116,7 @@ class LineCommand extends SVGPathElement{
         super("L", {point});
     }
 
-    last(){
+    position(){
         return this.points.point
     }
 
@@ -128,7 +128,7 @@ class CurveCommand extends SVGPathElement{
         super("C", {handle1, handle2, end})
     }
 
-    last(){
+    position(){
         return this.points.end
     }
 

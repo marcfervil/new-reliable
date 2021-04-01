@@ -6,7 +6,6 @@
 
 
 
-hasDrawn = false;
 class Eraser extends Tool{
 
     constructor(){
@@ -92,8 +91,8 @@ class Eraser extends Tool{
     
 
     insertMoveCurve(curvePoints, location){
-        let newEndVect = this.getEraserConnection(curvePoints[location-1].last())
-        let newStartVect = this.getEraserConnection(curvePoints[location].last())
+        let newEndVect = this.getEraserConnection(curvePoints[location-1].position())
+        let newStartVect = this.getEraserConnection(curvePoints[location].position())
 
         let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
         let newStartPos = new MoveCommand(newStartVect)
@@ -105,54 +104,91 @@ class Eraser extends Tool{
 
         
     }
-    
+
+
+    getFirstCurveTo(curvePoints){
+        for(let point of curvePoints){
+            if(point instanceof CurveCommand){
+                return point;
+            }
+        }
+
+    }
+
+    getFirstTwoTempPoints(curvePoints){
+        let count = 0;
+        let tempPoints = []
+
+
+        for(let i = 0; i < curvePoints && count<2; i++){
+            if(curvePoints[i] instanceof TemporaryCurveCommand){
+                tempPoints.push(curvePoints[i])
+                count++;
+            }
+        }
+        if(true) return [curvePoints.last().position(), curvePoints.last().position()]
+        //if(count==1) return [tempPoints[0].position(), tempPoints[0].position()]
+        //if(count==2) return [tempPoints[0].position(), tempPoints[1].position()]
+        
+    }
 
     splitLine(curvePoints){
         let newLines = []
+        //goes through entire list of points on the line
         for(let i = 0 ; i < curvePoints.length; i++){
             let startIndex = i;
             let endIndex = 0;
-            while(startIndex+endIndex<curvePoints.length && this.insideCursor(curvePoints[startIndex+endIndex].last()))endIndex++;
-            if(endIndex > 0 ){
-                
-                /*
-                let lst = curvePoints.slice(i, i+endIndex)
-                for(let i of lst){
-                    
-                    if(i.rect !== undefined){
-                        i.rect.remove();
-                    }
-                    
-                }*/
-                
-                curvePoints.splice(startIndex, endIndex)
+            //get start and end index of adjacent line segment points that the eraser is overlapping with
+            while(startIndex+endIndex<curvePoints.length && this.insideCursor(curvePoints[startIndex+endIndex].position())){
+                endIndex++;
+            }
 
-                let newEndVect = this.getEraserConnection(curvePoints[startIndex-1].last())
-                let newStartVect = this.getEraserConnection(curvePoints[startIndex].last())
+
+
+            //checks if eraser overlap is found then start splitting into two lines
+            if(endIndex > 0 ){
+               
+                
+                //splits curvePoints into first half and second half
+                let firstHalf = curvePoints.splice(0,startIndex)
+                let secondHalf = curvePoints.splice(endIndex, curvePoints.length)
+                
+
+                let newEndVect = this.getEraserConnection(firstHalf.last().position())
+                //same as above, but for the second half of the line
+                let newStartVect = this.getEraserConnection(secondHalf[0].position())
+              
         
+                //create points from positions
                 let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
                 let newStartPos = new MoveCommand(newStartVect)
 
-                debugRect2(newStartPos.last(),10,10, "black", "black")
-                debugRect2(newEndVect,10,10, "blue", "blue")
-
-                let firstHalf = curvePoints.splice(0,startIndex)
-                let secondHalf = curvePoints.splice(-startIndex)
-
-                newLines.pop()
-
+                //debugRect2(newStartPos.position(),10,10, "black", "black")
+                //debugRect2(newEndVect,10,10, "blue", "blue")
+                
+                //adds the points created above to the end of the firsthalf and the begining of the secondhalf
                 firstHalf.push(newEndPos)
                 secondHalf.unshift(newStartPos)
+
+                //finds first cuvecommand and adjust the handles
+                let firstCurve = this.getFirstCurveTo(secondHalf)
+                firstCurve.points.handle1 = firstCurve.position();
+                firstCurve.points.handle2 = firstCurve.position();
+
+                //removes temporary curve points and pushes it to the list of split lines that we return
                 newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
+                //console.log(JSON.parse(JSON.stringify(deletem)))
                 newLines.push(secondHalf)
                 
-                curvePoints = secondHalf
-                i = 0;
+
+                //newLines = newLines.concat(this.splitLine(secondHalf))
+
+                break;
 
 
             }
         }
-
+        if(newLines.length==0) return [curvePoints]
         newLines[newLines.length - 1] = newLines[newLines.length - 1].filter(command => !(command instanceof TemporaryCurveCommand));
         return newLines;
     }
@@ -161,18 +197,18 @@ class Eraser extends Tool{
     //returns up to (2) new paths that are the result of eraseing [non refundable]
     createNewPaths(svg){
         let bezierHelper = new BezierPointHelper()//this.reliable.canvas, this.svgRect, svg.path);
-        if(!hasDrawn){
+      //  if(!hasDrawn){
             this.curvePoints = bezierHelper.getCurvePoints(svg.path);
-        }
+     //   }
         //console.log("split line")
         let newPaths = this.splitLine(this.curvePoints)
-        console.log(newPaths)
+        //console.log(newPaths)
 
         svg.delete()
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
-            console.log(tempPath);
+            //console.log(tempPath);
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: Reliable.makeId(10) ,
@@ -195,50 +231,34 @@ class Eraser extends Tool{
 }
 
 
-
-
 class BezierPointHelper{
-
  
     getCurvePoints(path){
+       
         let densitiy = 15;
         let curvePoints = []
-        let c = 0;
+        curvePoints.push(path[0]);
         for(let i = 1; i <path.length; i++){
             let point = path[i].points
 
-            let lastPoint = path[i-1].last();
-            curvePoints.push(path[i-1]);
+            let lastPoint = path[i-1].position();
+
             for(let j = 0; j<densitiy;j++){
                 let time = (j / (densitiy - 1));
 
                 let curvePoint = new Vector2(0,0);
                 curvePoint.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
                 curvePoint.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
-                
-                
-
-            //   new SVGText(app.canvas, curvePoint, Reliable.makeId(10)+"Text", c+"");
-                c++;
-
+            
                 let curvePointCommand = new TemporaryCurveCommand(curvePoint);
 
-                if(!hasDrawn){
-                
-                //    curvePointCommand.rect = debugRect(curvePoint.x, curvePoint.y, 10, 10, "purple");
-                }
          
                 curvePoints.push(curvePointCommand)
 
             }
             curvePoints.push(path[i]);
-            if(!hasDrawn){
-                //debugRect2(point.handle1, 10,10, "green")
-                //debugRect2(point.handle2, 10,10, "green")
-                //debugRect2(point.end, 10,10, "red")
-            }
+
         }
-        hasDrawn = true;
         return curvePoints
 
     }
@@ -268,9 +288,6 @@ class BezierPointHelper{
 
 }
 
-
-
-
     
 
 class Replace extends Action{
@@ -294,7 +311,6 @@ class Replace extends Action{
         tempSVG.replacePath(this.undoData.path)
     }
 }
-
 
 
 class DeleteSVGPath extends Action{
