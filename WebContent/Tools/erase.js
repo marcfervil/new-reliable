@@ -144,6 +144,40 @@ class Eraser extends Tool{
         }
     }
 
+    find_intersection( p0, p1, p2, p3 ) {
+
+        let s10_x = p1.x - p0.x
+        let s10_y = p1.y - p0.y
+        let s32_x = p3.x - p2.x
+        let s32_y = p3.y - p2.y
+    
+        let denom = s10_x * s32_y - s32_x * s10_y
+        
+        if (denom == 0) return null; // collinear
+        
+        let denom_is_positive = denom > 0
+    
+        let s02_x = p0.x - p2.x;
+        let s02_y = p0.y - p2.y;
+    
+        let s_numer = s10_x * s02_y - s10_y * s02_x
+     
+        if ((s_numer < 0) == denom_is_positive ) return null;
+        console.log("not null1");
+    
+        let t_numer = s32_x * s02_y - s32_y * s02_x
+    
+        if ((t_numer < 0) == denom_is_positive ) return null;
+    
+        if (((s_numer > denom) == denom_is_positive) || ((t_numer > denom) == denom_is_positive))  return null; // no collision
+
+        let t = t_numer / denom
+    
+        let intersection_point = new Vector2( p0.x + (t * s10_x), p0.x + (t * s10_y) );
+    
+        return intersection_point
+    }
+
     splitLine(curvePoints){
         let newLines = []
         //goes through entire list of points on the line
@@ -178,18 +212,11 @@ class Eraser extends Tool{
                     let newStartPos = new MoveCommand(newStartVect);
 
                     
-
                     let firstCurve = this.getFirstCurveTo(secondHalf)
                     let firstTempPoint = this.getFirstElement(secondHalf, TemporaryCurveCommand)
                     
                     secondHalf.unshift(new MoveCommand(firstTempPoint.position()))
-                    //secondHalf.unshift(new CurveCommand(firstTempPoint.position(),firstTempPoint.position(),firstTempPoint.position()))
-                    //secondHalf.unshift(newStartPos)
-                    //let unpack = this.getFirstTwoTempPoints(secondHalf)
-                    //firstCurve.points.handle1 = unpack[0]
-                    //firstCurve.points.handle2 = unpack[1]
-                    //finds first cuvecommand and adjust the handles
-                    
+
                     firstCurve.points.handle1 = firstCurve.position();
                     firstCurve.points.handle2 = firstCurve.position();
                    
@@ -200,7 +227,6 @@ class Eraser extends Tool{
 
                 //console.log("endIndex", endIndex, curvePoints.length, curvePoints)
                 break;
-
 
             }
         }
@@ -235,13 +261,23 @@ class Eraser extends Tool{
         }
     }
 
-
     erase(){
+        let line1 = new Vector2(0,0);
+        let line2 = new Vector2(1,1);
+        
+        let line3 = new Vector2(0,1);
+        let line4 = new Vector2(1,0);
+
+
+        let intersect = this.find_intersection(line1, line2, line3, line4);
+        console.log(intersect);
+        /*
         let collidedSVG = this.svgCollisions();
 
         for(let svg of collidedSVG){
             this.createNewPaths(svg);
         }
+        */
     }
 
 }

@@ -70,6 +70,9 @@ class SVGPath extends SVG{
         }
         return result;
     }
+
+ 
+ 
     
     generatePath(){
         
