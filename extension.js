@@ -5,6 +5,7 @@ const fs = require("fs");
 let vsls = require("vsls");
 let path = require('path');
 let handlebars = require("handlebars");
+const os = require('os');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -154,8 +155,15 @@ async function activate(context) {
 
 		function getWebviewContent() {
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
-
-			return handlebars.compile(file)({path: ("vscode-resource:/"+contentPath).replaceAll("\\","/")}) ;
+			
+			if(os.platform() == 'win32')return handlebars.compile(file)({displayName:liveshare.session.user.displayName, path: ("vscode-resource:/"+contentPath).replaceAll("\\","/")});
+			
+			return handlebars.compile(file)({displayName:liveshare.session.user.displayName, path: "vscode-resource://"+contentPath});
+			
+			
+			
+			
+			
 		}
 
 
