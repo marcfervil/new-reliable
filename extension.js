@@ -67,7 +67,7 @@ async function activate(context) {
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
 			
-			
+			//console.log("UFH:IOEWJFOJFEW");
 			
 			let serviceName = "newReliable";
 			
