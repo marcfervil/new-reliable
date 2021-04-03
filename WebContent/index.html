@@ -191,10 +191,13 @@
             if(event.key === 'r'){
                 refresh();
             }
+            if(event.key === 'c'){
+                clear();
+            }
             if(event.key === 'd'){
                 console.log(app.getState())
                 y = JSON.stringify(app.getState())
-                console.log(y);
+              //  console.log(y);
                 saveData(y, "board.rwb")
             }
             if(event.key === 't'){
@@ -224,6 +227,14 @@
         a.download = fileName;
         a.click();
         window.URL.revokeObjectURL(url);
+    }
+
+    function clear(){
+        app.commit({
+            action: "State",
+            clear: true,
+            state: []
+        });
     }
 
     function makeEaseInOut(timing) {
@@ -341,7 +352,7 @@ function preventDefaults (e) {
                     action: "State",
                     clear: true,
                     state: JSON.parse(e.target.result)
-                })
+                });
             };
         })(files[0]);
 
