@@ -99,8 +99,9 @@ class MoveCommand extends SVGPathElement{
 
 class TemporaryCurveCommand extends SVGPathElement{
 
-    constructor(point){
+    constructor(point, Tvalue){
         super("T", {point});
+        this.Tvalue = Tvalue;
     }
 
     position(){

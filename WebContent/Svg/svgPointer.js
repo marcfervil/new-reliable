@@ -6,6 +6,8 @@ class SVGPointer extends SVG{
         this.svg.style.stroke = "#AAB2C0"; 
         //this.svg.style.fill = "orange";
         this.size = size;
+        this.height = size;
+        this.width = size;
         this.svg.setAttributeNS(null, 'x', pos.x);
         this.svg.setAttributeNS(null, 'y', pos.y);
         this.svg.setAttributeNS(null, 'height', this.size);

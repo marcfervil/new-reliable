@@ -15,6 +15,11 @@ class Eraser extends Tool{
         
     }
 
+    getRect(){
+        //this.svgRect.pos.x;
+        return {"x":this.svgRect.pos.x+this.size/2, "y":this.svgRect.pos.y+this.size/2, "width":this.size, "height":this.size};
+    }
+
     activated(){
         console.log("OOOH WEE HE TRYNA ERASE")
     }
@@ -29,7 +34,6 @@ class Eraser extends Tool{
     }
 
     canvasDrag(pos){ 
-
         this.svgRect.updateLocation(new Vector2(pos.x, pos.y).subtract(this.sizeOffset));
         this.erase();
     }
@@ -72,7 +76,7 @@ class Eraser extends Tool{
     }
 
     //returns the point the eraser made contact
-    getEraserConnection(vec){
+    getEraserConnectionOLD(vec){
         let x = vec.x
         let y = vec.y
 
@@ -88,8 +92,17 @@ class Eraser extends Tool{
         return new Vector2(x, y);
 
     }
+
+    getEraserConnection(line1, line2){
+        let rect = this.getRect();
+        //adjust for eraser
+        rect.x = rect.x-this.size/2
+        rect.y = rect.y-this.size/2
+        return this.findRectIntersection(rect, line1, line2)
+    }
     
 
+    /*
     insertMoveCurve(curvePoints, location){
         let newEndVect = this.getEraserConnection(curvePoints[location-1].position())
         let newStartVect = this.getEraserConnection(curvePoints[location].position())
@@ -100,16 +113,23 @@ class Eraser extends Tool{
 
         //debugRect2(newStartPos.last(),10,10, "black", "black")
         //debugRect2(newEndVect,10,10, "blue", "blue")
-
-
-        
     }
+    */
 
+    getFirstCurveToIndex(curvePoints){
+        let index = 0;
+        for(let point of curvePoints){
+            if(point instanceof CurveCommand){
+                return index;
+            }
+            index++
+        }
+    }
 
     getFirstCurveTo(curvePoints){
         return this.getFirstElement(curvePoints, CurveCommand);
     }
-
+    
     getFirstElement(curvePoints, svgElementClass){
         for(let point of curvePoints){
             if(point instanceof svgElementClass){
@@ -144,7 +164,59 @@ class Eraser extends Tool{
         }
     }
 
-    find_intersection( p0, p1, p2, p3 ) {
+    //checks to see if c is on the line defined by a and b
+    isBetweenPoints(a, b, c){
+        let crossproduct = (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y - a.y)
+
+        //compare versus epsilon for floating point values, or != 0 if using integers
+        if(Math.abs(crossproduct) > 0) return false
+        
+    
+        let dotproduct = (c.x - a.x) * (b.x - a.x) + (c.y - a.y)*(b.y - a.y)
+        if (dotproduct < 0) return false
+    
+        let squaredlengthba = (b.x - a.x)*(b.x - a.x) + (b.y - a.y)*(b.y - a.y)
+        if (dotproduct > squaredlengthba) return false
+    
+        return true
+    }
+    //https://www.geeksforgeeks.org/program-for-point-of-intersection-of-two-lines/
+    find_intersection(A, B, C, D){
+       
+        let a1 = B.y - A.y
+        //a1*=-1
+        let b1 = A.x - B.x;
+        let c1 = a1*(A.x) + b1*(A.y);
+
+        // Line CD represented as a2x + b2y = c2
+        let a2 = D.y - C.y;
+        //a2*=-1
+        let b2 = C.x - D.x;
+        let c2 = a2*(C.x)+ b2*(C.y);
+        
+        let determinant = a1*b2 - a2*b1;
+        
+        if (determinant == 0)
+        {
+            // The lines are parallel. This is simplified
+            // by returning a pair of FLT_MAX
+            return null//new Point(Double.MAX_VALUE, Double.MAX_VALUE);
+        }
+        else
+        {
+            let x = (b2*c1 - b1*c2)/determinant;
+            let y = (a1*c2 - a2*c1)/determinant;
+            let point = new Vector2(x,y);
+            if(this.isBetweenPoints(C,D, point)) return point;
+
+            return null
+        }
+    }
+
+
+    oldfind_intersection( p0, p1, p2, p3 ) {
+        p1 = -1*p1
+        p3 = -1*p3
 
         let s10_x = p1.x - p0.x
         let s10_y = p1.y - p0.y
@@ -163,7 +235,6 @@ class Eraser extends Tool{
         let s_numer = s10_x * s02_y - s10_y * s02_x
      
         if ((s_numer < 0) == denom_is_positive ) return null;
-        console.log("not null1");
     
         let t_numer = s32_x * s02_y - s32_y * s02_x
     
@@ -176,6 +247,103 @@ class Eraser extends Tool{
         let intersection_point = new Vector2( p0.x + (t * s10_x), p0.x + (t * s10_y) );
     
         return intersection_point
+    }
+    /**
+     * returns the point that intersects with the line and rect.
+     * 
+     * @param {rect} rect
+     * @param {Vector2} point1 
+     * @param {Vector2} point2 
+     */
+    findRectIntersection(rect, point1, point2){
+        let xrect = rect.x//-50;
+        let yrect = rect.y//-50;
+        let xValues = [xrect, xrect+rect.width];
+        let yValues = [yrect, yrect+rect.height]
+        let corners = [] //0 is upper left, 1 is upper right, 2 is lower left, 3 is lower right
+        for(let x of xValues){
+            for(let y of yValues){
+                corners.push(new Vector2(x, y))
+                //debugRect2(new Vector2(x, y), 10,10, "black","black")
+            }
+        }
+
+        let intersectPoints = []
+        //don't match 0 and 3 or 1 and 2
+        intersectPoints.push(this.find_intersection(corners[0], corners[1], point1, point2))
+        intersectPoints.push(this.find_intersection(corners[0], corners[2], point1, point2))
+        intersectPoints.push(this.find_intersection(corners[1], corners[3], point1, point2))
+        intersectPoints.push(this.find_intersection(corners[2], corners[3], point1, point2))
+        console.log(intersectPoints)
+        let retpoint = null
+        for(let point of intersectPoints){
+            if(point !=null){
+                retpoint = point
+                //return point
+            }
+        }
+
+        return retpoint
+        
+        /*
+        let topLineP1 = new Vector2(rect.pos.x, rect.pos.y);
+        let topLineP2 = topLineP1+ new Vector2(rect.width, 0);
+
+        let bottomLineP1 = topLineP1+new Vector2(0, rect.height)
+        let bottomLineP2 = bottomLineP1+new Vector2(rect.width, 0)
+        */
+
+    }
+
+    //returns the first anchor left to the point
+    findLeftCurve(curvePoint, index){
+        for(var i = index; curvePoint[i] instanceof TemporaryCurveCommand; i--){}
+        return curvePoint[i];
+    }
+    //returns the first anchor right to the point
+    findRightCurve(curvePoint, index){
+        for(var i = index; curvePoint[i] instanceof TemporaryCurveCommand; i++){}
+        return curvePoint[i];       
+    }
+    //returns a point a T% down the straight line between A and B
+    findTPointStraightLine(A,B,T){
+        let x = A.x+T*(B.x-A.x)
+        let y = A.y+T*(B.y-A.y)
+
+        return new Vector2(x, y);
+    }
+
+    splitBezier(curvePoints, index){
+        let left = this.findLeftCurve(curvePoints,index)
+        let right = this.findRightCurve(curvePoints, index)
+
+        //time or the percentage down the line the point is on the bezier curve (assuming curvepoints[index] will return a temppoint)
+        let tPoint = curvePoints[index]
+        console.log("index ", index, " tPoint ", tPoint)
+        
+        //console.log("index ", index," curvepoint ", curvePoints)
+        //console.log(tPoint)
+        let T = tPoint.Tvalue
+
+        //A and D are endpoints. B and C are handles
+        let A = left.position()
+        let B = right.points.handle1
+        let C = right.points.handle2
+        let D = right.position()
+        
+        //
+        let E = this.findTPointStraightLine(A, B, T)
+        let F = this.findTPointStraightLine(B, C, T)
+        let G = this.findTPointStraightLine(C, D, T)
+        let H = this.findTPointStraightLine(E, F, T)
+        let J = this.findTPointStraightLine(F, G, T)
+        let K = this.findTPointStraightLine(H, J, T)
+
+        let leftCurveTo = new CurveCommand(E,H,K)
+        let rightMoveTo = new MoveCommand(K)
+        let rightCurveTo = new CurveCommand(J,G,D)
+
+        return [leftCurveTo,rightMoveTo, rightCurveTo]
     }
 
     splitLine(curvePoints){
@@ -194,36 +362,62 @@ class Eraser extends Tool{
 
             //checks if eraser overlap is found then start splitting into two lines
             if(intersectedWithLine){
-                
+
+
+                let newPoints = this.splitBezier(curvePoints, startIndex)
+                let newEndPos = newPoints[0]
+
+                //newPoints = this.splitBezier(curvePoints, endIndex)
+                let rightMoveTo = newPoints[1];
+                let rightCurveTo = newPoints[2];
+
                 //splits curvePoints into first half and second half
                 let firstHalf = curvePoints.splice(0,startIndex)
+                let firstHalfPoint = curvePoints[0].position()
                 let secondHalf = curvePoints.splice(endIndex, curvePoints.length)
+                let secondHalfPoint = curvePoints.last();
 
                 if(startIndex !=0){
-                    let newEndVect = this.getEraserConnection(firstHalf.last().position())
-                    let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
+
+                    //let newEndVect = this.getEraserConnection(firstHalf.last().position(), firstHalfPoint)
+                    //console.log(firstHalf.last().position(), firstHalfPoint, newEndVect)
+                    //let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
+
                     firstHalf.push(newEndPos)
                     //removes temporary curve points and pushes it to the list of split lines that we return
                    
                 }
                 if(secondHalf.length > 0){
-                   
-                    let newStartVect = this.getEraserConnection(secondHalf[0].position())
-                    let newStartPos = new MoveCommand(newStartVect);
 
-                    
-                    let firstCurve = this.getFirstCurveTo(secondHalf)
-                    let firstTempPoint = this.getFirstElement(secondHalf, TemporaryCurveCommand)
-                    
-                    secondHalf.unshift(new MoveCommand(firstTempPoint.position()))
 
-                    firstCurve.points.handle1 = firstCurve.position();
-                    firstCurve.points.handle2 = firstCurve.position();
+                    //secondHalf.unshift(rightCurveTo)
+                    
+
+                    //let newStartVect = this.getEraserConnection(secondHalf[0].position(), secondHalfPoint)
+                    //let newStartPos = new MoveCommand(newStartVect);
+                    
+                    let firstCurve = this.getFirstCurveToIndex(secondHalf)
+                    console.log("firstCurveIndex ", firstCurve, " second half ", secondHalf)
+                    //secondHalf.splice(firstCurve+1,1)
+                    secondHalf[firstCurve] = rightCurveTo
+                    //secondHalf.unshift(rightCurveTo)
+                    secondHalf.unshift(rightMoveTo)
+                    //let firstTempPoint = this.getFirstElement(secondHalf, TemporaryCurveCommand)
+                    
+                    //secondHalf.unshift(new MoveCommand(firstTempPoint.position()))
+                    
+                    //console.log("secondHalfPoint ",firstHalfPoint, " newStartPos ", newEndPos)
+
+                    //firstCurve.points.handle1 = firstCurve.position();
+                    //firstCurve.points.handle2 = firstCurve.position();
+                    
                    
                 }
 
                 newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
                 newLines.push(secondHalf)
+
+                
 
                 //console.log("endIndex", endIndex, curvePoints.length, curvePoints)
                 break;
@@ -262,22 +456,14 @@ class Eraser extends Tool{
     }
 
     erase(){
-        let line1 = new Vector2(0,0);
-        let line2 = new Vector2(1,1);
-        
-        let line3 = new Vector2(0,1);
-        let line4 = new Vector2(1,0);
 
-
-        let intersect = this.find_intersection(line1, line2, line3, line4);
-        console.log(intersect);
-        /*
         let collidedSVG = this.svgCollisions();
 
         for(let svg of collidedSVG){
             this.createNewPaths(svg);
         }
-        */
+        
+    
     }
 
 }
@@ -302,7 +488,7 @@ class BezierPointHelper{
                 curvePoint.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
                 curvePoint.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
             
-                let curvePointCommand = new TemporaryCurveCommand(curvePoint);
+                let curvePointCommand = new TemporaryCurveCommand(curvePoint, time);
 
          
                 curvePoints.push(curvePointCommand)
