@@ -319,7 +319,6 @@ class Eraser extends Tool{
 
         //time or the percentage down the line the point is on the bezier curve (assuming curvepoints[index] will return a temppoint)
         let tPoint = curvePoints[index]
-        console.log("index ", index, " tPoint ", tPoint)
         
         //console.log("index ", index," curvepoint ", curvePoints)
         //console.log(tPoint)
@@ -331,7 +330,7 @@ class Eraser extends Tool{
         let C = right.points.handle2
         let D = right.position()
         
-        //
+        //algorithm
         let E = this.findTPointStraightLine(A, B, T)
         let F = this.findTPointStraightLine(B, C, T)
         let G = this.findTPointStraightLine(C, D, T)
@@ -339,6 +338,7 @@ class Eraser extends Tool{
         let J = this.findTPointStraightLine(F, G, T)
         let K = this.findTPointStraightLine(H, J, T)
 
+        //the new bezier curve is A,E,H,K and K,J,G,D.
         let leftCurveTo = new CurveCommand(E,H,K)
         let rightMoveTo = new MoveCommand(K)
         let rightCurveTo = new CurveCommand(J,G,D)
@@ -378,38 +378,19 @@ class Eraser extends Tool{
                 let secondHalfPoint = curvePoints.last();
 
                 if(startIndex !=0){
-
-                    //let newEndVect = this.getEraserConnection(firstHalf.last().position(), firstHalfPoint)
-                    //console.log(firstHalf.last().position(), firstHalfPoint, newEndVect)
-                    //let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
-
                     firstHalf.push(newEndPos)
-                    //removes temporary curve points and pushes it to the list of split lines that we return
                    
                 }
                 if(secondHalf.length > 0){
 
-
-                    //secondHalf.unshift(rightCurveTo)
-                    
-
-                    //let newStartVect = this.getEraserConnection(secondHalf[0].position(), secondHalfPoint)
-                    //let newStartPos = new MoveCommand(newStartVect);
                     
                     let firstCurve = this.getFirstCurveToIndex(secondHalf)
-                    console.log("firstCurveIndex ", firstCurve, " second half ", secondHalf)
-                    //secondHalf.splice(firstCurve+1,1)
                     secondHalf[firstCurve] = rightCurveTo
-                    //secondHalf.unshift(rightCurveTo)
-                    secondHalf.unshift(rightMoveTo)
-                    //let firstTempPoint = this.getFirstElement(secondHalf, TemporaryCurveCommand)
                     
-                    //secondHalf.unshift(new MoveCommand(firstTempPoint.position()))
-                    
-                    //console.log("secondHalfPoint ",firstHalfPoint, " newStartPos ", newEndPos)
+                    let rightMove = new MoveCommand(secondHalf[0].position())
+                    secondHalf.unshift(rightMove)
+                    //secondHalf.unshift(rightMoveTo)
 
-                    //firstCurve.points.handle1 = firstCurve.position();
-                    //firstCurve.points.handle2 = firstCurve.position();
                     
                    
                 }
@@ -456,16 +437,12 @@ class Eraser extends Tool{
     }
 
     erase(){
-
         let collidedSVG = this.svgCollisions();
 
         for(let svg of collidedSVG){
             this.createNewPaths(svg);
         }
-        
-    
     }
-
 }
 
 
