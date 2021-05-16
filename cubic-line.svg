@@ -1,0 +1,12 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" 
+xmlns:xlink="http://www.w3.org/1999/xlink" >
+<script xlink:href="curve-line.js"  type="text/javascript"></script>
+
+<script type="text/javascript">
+     window.addEventListener('load',function(){
+        init();
+        })
+
+</script>
+</svg>
