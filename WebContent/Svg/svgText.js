@@ -16,6 +16,8 @@ class SVGText extends SVG{
         this.svg.setAttribute("x", pos.x);
         this.svg.setAttribute("y", pos.y);
 
+        this.moveTo(pos);
+
         //for some reason the selection can't pick up foreignObject...but it can pick up an invisible rectange
         let boundRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
         boundRect.setAttribute("width", this.span.innerWidth());
@@ -40,7 +42,7 @@ class SVGText extends SVG{
         */
 
 
-        this.moveTo(pos);
+        //this.moveTo(pos);
     
     }
 
