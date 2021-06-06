@@ -2,6 +2,9 @@
 //^^^^ a very important comment
 
 
+
+
+
 class Eraser extends Tool{
 
     constructor(){
@@ -349,6 +352,32 @@ class Eraser extends Tool{
 
     splitLine(curvePoints){
         let newLines = []
+
+        for(let i = 1; i<curvePoints.length; i++){
+            let bezierCurve = []
+            bezierCurve.push(curvePoints[i-1])
+            bezierCurve.push(curvePoints[i].points.handle1)
+            bezierCurve.push(curvePoints[i].points.handle2)
+            bezierCurve.push(curvePoints[i].position)
+            
+            let line = []
+            line.push(this.svgRect.pos)
+            line.push(new Vector2(this.svgRect.pos.x, this.svgRect.pos.y+this.svgRect.size))
+            //debugRect2(new Vector2(3222,3613),10,10,"black","black")
+            for(let linePoint of line){
+                debugRect2(linePoint,10,10,"black","black")
+            }
+
+            let intersection = computeIntersections(bezierCurve, line)
+            if(intersection != null){
+            console.log("intersection ", intersection)
+            debugRect2(intersection,10,10, "blue", "blue")
+            }else{
+                console.log("no intersection")
+            }
+        }
+
+        /*
         //goes through entire list of points on the line
         let intersectedWithLine = false
         for(let i = 0 ; i < curvePoints.length; i++){
@@ -356,6 +385,7 @@ class Eraser extends Tool{
             let endIndex = 0;
             intersectedWithLine = false
             //get start and end index of adjacent line segment points that the eraser is overlapping with
+            
             while(startIndex+endIndex<curvePoints.length && this.insideCursor(curvePoints[startIndex+endIndex].position())){
                 endIndex++;
                 intersectedWithLine = true
@@ -405,11 +435,14 @@ class Eraser extends Tool{
                 break;
 
             }
+            
         }
        
         if(!intersectedWithLine) return [curvePoints.filter(command => !(command instanceof TemporaryCurveCommand))]
         newLines[newLines.length - 1] = newLines[newLines.length - 1].filter(command => !(command instanceof TemporaryCurveCommand));
         return newLines;
+        */
+
     }
 
     
@@ -417,11 +450,12 @@ class Eraser extends Tool{
     createNewPaths(svg){
         let bezierHelper = new BezierPointHelper()//this.reliable.canvas, this.svgRect, svg.path);
       //  if(!hasDrawn){
-            this.curvePoints = bezierHelper.getCurvePoints(svg.path);
+            //this.curvePoints = bezierHelper.getCurvePoints(svg.path);
      //   }
         //console.log("split line")
-        let newPaths = this.splitLine(this.curvePoints)
+        let newPaths = this.splitLine(svg.path)
 
+        /*
         svg.delete()
         for(let path of newPaths){
            
@@ -435,6 +469,7 @@ class Eraser extends Tool{
                 pos: tempPath,
             }, false)
         }
+        */
     }
 
     erase(){
@@ -530,10 +565,24 @@ class Replace extends Action{
 
 //svg curve line compute intersection code ---------------------------------------------------
 
+function bezierCoeffs(P0,P1,P2,P3)
+{
+	var Z = Array();
+	Z[0] = -P0 + 3*P1 + -3*P2 + P3; 
+    Z[1] = 3*P0 - 6*P1 + 3*P2;
+    Z[2] = -3*P0 + 3*P1;
+    Z[3] = P0;
+	return Z;
+}
 
 /*computes intersection between a cubic spline and a line segment*/
-function computeIntersections(px,py,lx,ly)
+function computeIntersections(bezierCurve, line)
 {
+    let px,py,lx,ly
+    px = bezierCurve.map(pos => pos.x)
+    py = bezierCurve.map(pos => pos.y)
+    lx = line.map(pos => pos.y)
+    ly = line.map(pos => pos.y)
 
     //console.log("px ", px, " py ",py," lx ", lx," ly ", ly)
 
@@ -576,13 +625,16 @@ function computeIntersections(px,py,lx,ly)
         {
             X[0]=-100;  /*move off screen*/
             X[1]=-100;
+        }else{
+            return X;
         }
         
         /*move intersection point*/
-        console.log("point " ,X[0], "Point 2", X[1])
-        I[i].setAttributeNS(null,"cx",X[0]);
-        I[i].setAttributeNS(null,"cy",X[1]);
+        //console.log("point " ,X[0], "Point 2", X[1])
+        //I[i].setAttributeNS(null,"cx",X[0]);
+        //I[i].setAttributeNS(null,"cy",X[1]);
     }
+    return null;
     
 }
 
