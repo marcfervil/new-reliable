@@ -71,7 +71,7 @@ class Eraser extends Tool{
         let x2 = x1 + this.svgRect.size;
         let y2 = y1 + this.svgRect.size;
      
-        return (x > x1 && x < x2) && (y > y1 && y < y2);
+        return (x >= x1 && x <= x2) && (y >= y1 && y <= y2);
     }
 
     //returns the point the eraser made contact
@@ -314,26 +314,32 @@ class Eraser extends Tool{
     }
 
     //takes a svg path and a point that is on the lin
-    splitBezier(curvePoints, index){
-        let left = this.findLeftCurve(curvePoints,index)
-        let right = this.findRightCurve(curvePoints, index)
+    splitBezier(curvePoints, T){
+
+        //let left = this.findLeftCurve(curvePoints,index)
+        //let right = this.findRightCurve(curvePoints, index)
 
         //time or the percentage down the line the point is on the bezier curve (assuming curvepoints[index] will return a temppoint)
-        let tPoint = curvePoints[index]
+        //let tPoint = curvePoints[index]
         
         //console.log("index ", index," curvepoint ", curvePoints)
-        console.log(tPoint)
-        let T = tPoint.Tvalue
+        //let T = tPoint.Tvalue
         if(T==undefined){
             T = 0
         }
 
         //A and D are endpoints. B and C are handles
+        let A = curvePoints[0]
+        let B = curvePoints[1]
+        let C = curvePoints[2]
+        let D = curvePoints[3]
+        /*
         let A = left.position()
         let B = right.points.handle1
         let C = right.points.handle2
         let D = right.position()
-        
+        */
+
         //algorithm
         let E = this.findTPointStraightLine(A, B, T)
         let F = this.findTPointStraightLine(B, C, T)
@@ -350,98 +356,90 @@ class Eraser extends Tool{
         return [leftCurveTo,rightMoveTo, rightCurveTo]
     }
 
+    //returns lines that makes up eraser (probably a better way to write this but should be good enough)
+    getEraserLines(){
+        let lt = this.svgRect.pos
+        let lb = new Vector2(this.svgRect.pos.x, this.svgRect.pos.y+this.svgRect.size)
+        let rt = new Vector2(this.svgRect.pos.x+this.svgRect.size, this.svgRect.pos.y)
+        let rb = new Vector2(this.svgRect.pos.x+this.svgRect.size, this.svgRect.pos.y+this.svgRect.size)
+
+        let left = [lt, lb]
+        let right = [rt, rb]
+        let top = [lt,rt]
+        let bottom = [lb,rb]
+
+        let lines = [left,right,top,bottom]
+        return lines
+    }
+
+    removeOverlapLines(Lines){
+        let newLines = []
+        for(let line of Lines){
+            let inside = true;
+            for(let point of line){
+
+                //debugRect2(point.position(),10,10,"red","red")
+                if(!this.insideCursor(point.position())){
+                    //console.log("not inside!")
+                    inside = false
+                }
+            }
+            if(!inside) newLines.push(line)
+
+        }
+        return newLines
+    }
+
     splitLine(curvePoints){
         let newLines = []
 
-        for(let i = 1; i<curvePoints.length; i++){
-            let bezierCurve = []
-            bezierCurve.push(curvePoints[i-1])
-            bezierCurve.push(curvePoints[i].points.handle1)
-            bezierCurve.push(curvePoints[i].points.handle2)
-            bezierCurve.push(curvePoints[i].position)
-            
-            let line = []
-            line.push(this.svgRect.pos)
-            line.push(new Vector2(this.svgRect.pos.x, this.svgRect.pos.y+this.svgRect.size))
-            //debugRect2(new Vector2(3222,3613),10,10,"black","black")
-            for(let linePoint of line){
-                debugRect2(linePoint,10,10,"black","black")
-            }
 
-            let intersection = computeIntersections(bezierCurve, line)
-            if(intersection != null){
-            console.log("intersection ", intersection)
-            debugRect2(intersection,10,10, "blue", "blue")
-            }else{
-                console.log("no intersection")
-            }
-        }
+        let lines = this.getEraserLines()
 
-        /*
-        //goes through entire list of points on the line
-        let intersectedWithLine = false
-        for(let i = 0 ; i < curvePoints.length; i++){
-            let startIndex = i;
-            let endIndex = 0;
-            intersectedWithLine = false
-            //get start and end index of adjacent line segment points that the eraser is overlapping with
-            
-            while(startIndex+endIndex<curvePoints.length && this.insideCursor(curvePoints[startIndex+endIndex].position())){
-                endIndex++;
-                intersectedWithLine = true
-            }
-
-            //checks if eraser overlap is found then start splitting into two lines
-            if(intersectedWithLine){
+        for(let line of lines) {
+            for (let i = 1; i < curvePoints.length; i++) {
+                if(curvePoints[i] instanceof MoveCommand) continue
 
 
-                let newPoints = this.splitBezier(curvePoints, startIndex)
-                let newEndPos = newPoints[0]
+                let bezierCurve = []
+                bezierCurve.push(curvePoints[i - 1].position())
+                bezierCurve.push(curvePoints[i].points.handle1)
+                bezierCurve.push(curvePoints[i].points.handle2)
+                bezierCurve.push(curvePoints[i].position())
 
-                //newPoints = this.splitBezier(curvePoints, endIndex)
-                let rightMoveTo = newPoints[1];
-                let rightCurveTo = newPoints[2];
 
-                //splits curvePoints into first half and second half
-                let firstHalf = curvePoints.splice(0,startIndex)
-                let firstHalfPoint = curvePoints[0].position()
-                let secondHalf = curvePoints.splice(endIndex, curvePoints.length)
-                let secondHalfPoint = curvePoints.last();
-
-                if(startIndex !=0){
-                    firstHalf.push(newEndPos)
-                   
-                }
-                if(secondHalf.length > 0){
-
-                    
-                    let firstCurve = this.getFirstCurveToIndex(secondHalf) //needs to be repalced with point closer to eraser
-                    secondHalf[firstCurve] = rightCurveTo
-                    
-                    let rightMove = new MoveCommand(secondHalf[0].position())
-                    secondHalf.unshift(rightMove)
-                    //secondHalf.unshift(rightMoveTo)
-
-                    
-                   
+                let intersection = computeIntersections(bezierCurve, line)
+                if (intersection != null) {
+                    let newCurves = this.splitBezier(bezierCurve, intersection)
+                    curvePoints[i] = newCurves[0]
+                    curvePoints.splice(i+1,0,newCurves[2])
+                    curvePoints.splice(i+1,0,newCurves[1])
+                    i+=2
+                    //console.log("intersection")
+                } else {
+                    //console.log("no intersection")
                 }
 
-                newLines.push(firstHalf.filter(command => !(command instanceof TemporaryCurveCommand)))
-                newLines.push(secondHalf)
-
-                
-
-                //console.log("endIndex", endIndex, curvePoints.length, curvePoints)
-                break;
-
             }
-            
         }
-       
-        if(!intersectedWithLine) return [curvePoints.filter(command => !(command instanceof TemporaryCurveCommand))]
-        newLines[newLines.length - 1] = newLines[newLines.length - 1].filter(command => !(command instanceof TemporaryCurveCommand));
-        return newLines;
-        */
+        //console.log(curvePoints)
+
+        for(let i =1; i<curvePoints.length;i++){
+            if(curvePoints[i] instanceof MoveCommand){
+                //console.log("new line ",i)
+                newLines.push(curvePoints.splice(0,i))
+                i=1
+            }
+        }
+        newLines.push(curvePoints)
+
+
+
+
+        newLines = this.removeOverlapLines(newLines)
+        //console.log("new lines! ", newLines)
+        return newLines
+
 
     }
 
@@ -455,7 +453,7 @@ class Eraser extends Tool{
         //console.log("split line")
         let newPaths = this.splitLine(svg.path)
 
-        /*
+
         svg.delete()
         for(let path of newPaths){
            
@@ -469,7 +467,7 @@ class Eraser extends Tool{
                 pos: tempPath,
             }, false)
         }
-        */
+
     }
 
     erase(){
@@ -578,11 +576,13 @@ function bezierCoeffs(P0,P1,P2,P3)
 /*computes intersection between a cubic spline and a line segment*/
 function computeIntersections(bezierCurve, line)
 {
+   //console.log("Bezier curve ", bezierCurve)
     let px,py,lx,ly
     px = bezierCurve.map(pos => pos.x)
     py = bezierCurve.map(pos => pos.y)
-    lx = line.map(pos => pos.y)
+    lx = line.map(pos => pos.x)
     ly = line.map(pos => pos.y)
+
 
     //console.log("px ", px, " py ",py," lx ", lx," ly ", ly)
 
@@ -626,7 +626,11 @@ function computeIntersections(bezierCurve, line)
             X[0]=-100;  /*move off screen*/
             X[1]=-100;
         }else{
-            return X;
+            //console.log(t)
+            return t;
+            //return new Vector2(X[0], X[1])
+            //return {"x": X[0], "y": X[1]}
+            //return X;
         }
         
         /*move intersection point*/
@@ -637,6 +641,13 @@ function computeIntersections(bezierCurve, line)
     return null;
     
 }
+// sign of number
+function sgn( x )
+{
+    if (x < 0.0) return -1;
+    return 1;
+}
+
 
 /*based on http://mysite.verizon.net/res148h4j/javascript/script_exact_cubic.html#the%20source%20code*/
 function cubicRoots(P)
@@ -662,7 +673,6 @@ function cubicRoots(P)
     {
         var S = sgn(R + Math.sqrt(D))*Math.pow(Math.abs(R + Math.sqrt(D)),(1/3));
         var T = sgn(R - Math.sqrt(D))*Math.pow(Math.abs(R - Math.sqrt(D)),(1/3));
-
         t[0] = -A/3 + (S + T);                    // real root
         t[1] = -A/3 - (S + T)/2;                  // real part of complex root
         t[2] = -A/3 - (S + T)/2;                  // real part of complex root
@@ -685,6 +695,7 @@ function cubicRoots(P)
         t[2] = 2*Math.sqrt(-Q)*Math.cos((th + 4*Math.PI)/3) - A/3;
         Im = 0.0;
     }
+
     
     /*discard out of spec roots*/
 	for (var i=0;i<3;i++) 
@@ -692,8 +703,8 @@ function cubicRoots(P)
                 
 	/*sort but place -1 at the end*/
     t=sortSpecial(t);
-    
-	//console.log(t[0]+" "+t[1]+" "+t[2]);
+
+    //console.log(t[0]+" "+t[1]+" "+t[2]);
     return t;
 }
 

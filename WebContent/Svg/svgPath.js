@@ -12,7 +12,6 @@ class SVGPath extends SVG{
         this.pathData.trim()
         
         this.path = this.generatePath();
-        
 
         this.svg.setAttribute("d", this.pathData); 
         this.svg.style.stroke = "#AAB2C0"; 

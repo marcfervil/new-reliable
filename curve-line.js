@@ -242,6 +242,7 @@ function cubicRoots(P)
         var S = sgn(R + Math.sqrt(D))*Math.pow(Math.abs(R + Math.sqrt(D)),(1/3));
         var T = sgn(R - Math.sqrt(D))*Math.pow(Math.abs(R - Math.sqrt(D)),(1/3));
 
+
         t[0] = -A/3 + (S + T);                    // real root
         t[1] = -A/3 - (S + T)/2;                  // real part of complex root
         t[2] = -A/3 - (S + T)/2;                  // real part of complex root
