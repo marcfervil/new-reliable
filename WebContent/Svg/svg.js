@@ -56,7 +56,7 @@ class SVG{
                 anchorY: "top",
 
             }
-          
+        
             
 
      //   }, 0)
@@ -423,12 +423,9 @@ class SVG{
           
    
             
-            let moveRef = (e) => {moveEvent(e)};
-            let upRef = (e) => {upEvent(e)}
-            document.addEventListener('pointermove', moveRef);
-            document.addEventListener('pointerup', upRef);
+          
 
-            
+            console.log(this.transform.scale)
             let startScale = this.transform.scale.clone();
      
             this.scaleStart = this.transform.scale;
@@ -464,6 +461,11 @@ class SVG{
                 });   
             };
 
+            let moveRef = (e) => {moveEvent(e)};
+            let upRef = (e) => {upEvent(e)}
+            document.addEventListener('pointermove', moveRef);
+            document.addEventListener('pointerup', upRef);
+
         });
         return {svg: rightDrag, setSize};
     }
@@ -471,6 +473,7 @@ class SVG{
 
     
     select(reliable, mySelection){
+        this.mySelection = mySelection;
         this.reliable = reliable;
         if(this.isSelected) return;
         this.isSelected = true;

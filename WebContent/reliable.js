@@ -123,6 +123,7 @@ class Reliable {
                 args.push(svgData.args[key]);
             }
             let svg = new svgs[svgData.name](...args);
+            console.log(svgData.scale);
             svg.transform.scale = svgData.scale;
             let matrix = svgData.transform;
             svg.matrix.a = matrix.a;
@@ -136,8 +137,8 @@ class Reliable {
 
             if(addSVG)this.svgs.push(svg);
             if(svgData.selected){
-                svg.select(this, false);
-                this.toolbar[1].selected.push(svgData.id);
+                svg.select(this, true);
+                //this.toolbar[1].selected.push(svgData.id);
             }
            // svg.moveTo(new Vector2(svgData.pos.x, svgData.pos.y));
         }
@@ -168,6 +169,30 @@ class Reliable {
     }
 
     removeSVG(svg){
+        //console.log(svg.parent)
+        
+
+        let children = []
+        if(svg.parent.reliableSvg instanceof SVGGroup){
+            let group = svg.parent.reliableSvg;    
+            children = group.children.filter((child)=>child.id==svg.id);
+            
+            group.unselect(this);
+
+            /*
+            setTimeout(()=>{
+             
+                this.commit({
+         
+                    action: "Select",
+                    ids: children.map((child)=>child.id),
+                
+                }, true)
+            },1000 )*/
+           
+           //group.children = group.children.filter((child)=>child.id==svg.id);
+            //console.log(group.children)
+        }
         this.svgs.splice(this.svgs.indexOf(svg), 1);
     }
     

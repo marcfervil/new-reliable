@@ -147,7 +147,7 @@ class Select extends Action{
             SVG.forEachSVG(this.data.ids, (svg) => {
                children.push(svg.serialize());
             });
-            
+
             let selectionGroup = new SVGGroup(reliable.canvas, new Vector2(), this.data.groupId, children)
             selectionGroup.select(reliable, this.myAction);
           
@@ -178,6 +178,7 @@ class UnSelect extends Action{
 
         for(let id of this.data.ids){
             let elements = $(`#${id}`);
+           
             if(elements.length ==0) continue;
             elements[0].reliableSvg.unselect(reliable);
         }
@@ -204,7 +205,9 @@ class Drag extends Action{
 
 
     undo(){
+      
         let svg = SVG.getFromId(this.data.id);
+        console.log(this.data.start, svg);
     //    svg.select();
         svg.moveTo(new Vector2(this.data.start));
     }

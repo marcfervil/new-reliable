@@ -45,11 +45,14 @@ class SVGGroup extends SVG{
 
         //this.children = children;
         
+        //this.pos = this.initPos;
      
 
         this.moveDelta = new Vector2(0, 0);
         this.initPos = new Vector2(rect.x, rect.y);
         this.scaleDelta = new Vector2(0, 0);
+
+        this.transform.pos = this.initPos;
       //  this.moveTo(pos);
        
     }
@@ -91,14 +94,21 @@ class SVGGroup extends SVG{
         super.unselect(reliable);
         
        // console.log(this.scaleDelta)
+       
         for(let child of this.children){
+            //console.log(reliable.svgs, child.id)
+            /*
+            if(reliable.svgs.find((svg)=>svg.id==child.id)==undefined){
+                
+                continue;
+            }*/
             let childRect = child.group.getBoundingClientRect();
             let childpos = new Vector2(childRect.x, childRect.y);
 
             let newMatrix = child.matrix.multiply(this.matrix)
 
             reliable.canvas.appendChild(child.group);
-           
+            
            
  
            
@@ -107,8 +117,9 @@ class SVGGroup extends SVG{
             reliable.svgs.push(child);
         }
         this.delete();
+       
         reliable.removeSVG(this);
-        console.log("\n");
+       
     }
     
 

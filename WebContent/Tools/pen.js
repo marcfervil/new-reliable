@@ -50,15 +50,22 @@ class Draw extends Action{
         super.execute(reliable);
         //this.svgPath = new SVGPath(reliable.canvas, new Vector2(),this.data.id);
         this.svgPath = new SVGPath(reliable.canvas, this.pos, this.data.id, this.data.path);
-
+       
+        this.svgId = this.svgPath.id;
+        
        // this.svgPath.replacePath(this.data.path);
         this.svgPath.svg.style.stroke = this.data.color;
         reliable.addSVG(this.svgPath);
     }
 
     undo(){
-        this.reliable.removeSVG(this.svgPath);
-        this.svgPath.delete();
+        let undoSVG = SVG.getFromId(this.svgId);
+       // console.log(this.svgId);
+        
+       //this.reliable.removeSVG(this.svgPath);
+        //this.svgPath.delete();
+        this.reliable.removeSVG(undoSVG);
+        undoSVG.delete();
     }
 
 }
