@@ -207,7 +207,7 @@ class Drag extends Action{
     undo(){
       
         let svg = SVG.getFromId(this.data.id);
-        console.log(this.data.start, svg);
+       // console.log(this.data.start, svg);
     //    svg.select();
         svg.moveTo(new Vector2(this.data.start));
     }

@@ -123,7 +123,7 @@ class Reliable {
                 args.push(svgData.args[key]);
             }
             let svg = new svgs[svgData.name](...args);
-            console.log(svgData.scale);
+            //console.log(svgData.scale);
             svg.transform.scale = svgData.scale;
             let matrix = svgData.transform;
             svg.matrix.a = matrix.a;
@@ -175,20 +175,23 @@ class Reliable {
         let children = []
         if(svg.parent.reliableSvg instanceof SVGGroup){
             let group = svg.parent.reliableSvg;    
-            children = group.children.filter((child)=>child.id==svg.id);
+           // console.log(group.children)
+            children = group.children.filter((child)=>child.id!=svg.id)
+            children.forEach((child)=>child.parent.reliableSvg=null);
             
             group.unselect(this);
 
-            /*
-            setTimeout(()=>{
-             
+          //  console.log(SVG.getFromId(children[0].id))
+            
+        
+           
                 this.commit({
          
                     action: "Select",
                     ids: children.map((child)=>child.id),
                 
-                }, true)
-            },1000 )*/
+                }, true) 
+    
            
            //group.children = group.children.filter((child)=>child.id==svg.id);
             //console.log(group.children)

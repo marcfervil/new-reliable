@@ -189,9 +189,15 @@
         if(hotkeysEnabled){
             event.key = event.key.toLocaleLowerCase();
             if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
-                undo();
+                if(!event.shiftKey){
+                    undo();
+                }else{
+                    redo()
+                }
+                
             }
             if((event.metaKey && event.key === 'y') || (event.ctrlKey && event.key === 'y')){
+                
                 redo();
             }
             if(event.key === 'r'){
