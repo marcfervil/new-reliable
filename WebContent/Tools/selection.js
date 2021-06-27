@@ -101,9 +101,10 @@ class Selection extends Tool{
 
         this.selected = [];
         
-        for(let hit of hits){
         
-            if(hit.parentNode== null || hit.parentNode.reliableSvg===undefined)continue;
+        for(let hit of hits){
+            
+            if(hit.parentNode== null || hit.parentNode.reliableSvg===undefined || hit.parentNode.reliableSvg instanceof SVGGroup)continue;
             let id = hit.parentNode.id;
          
 
@@ -112,7 +113,7 @@ class Selection extends Tool{
                 this.selected.push(id);
             }
         }
-
+       // console.l
 
         Action.commit(this.reliable, {
             action: "Select",

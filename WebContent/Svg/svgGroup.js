@@ -118,7 +118,7 @@ class SVGGroup extends SVG{
         }
         this.delete();
        
-        reliable.removeSVG(this);
+        reliable.removeSVG(this, true);
        
     }
     

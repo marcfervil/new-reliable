@@ -189,6 +189,7 @@
         if(hotkeysEnabled){
             event.key = event.key.toLocaleLowerCase();
             if ((event.ctrlKey && event.key === 'z') || (event.metaKey && event.key === 'z')) {
+                event.preventDefault();
                 if(!event.shiftKey){
                     undo();
                 }else{

@@ -168,30 +168,35 @@ class Reliable {
         }
     }
 
-    removeSVG(svg){
+    removeSVG(svg, fromGroup=false){
         //console.log(svg.parent)
         
 
         let children = []
+     
         if(svg.parent.reliableSvg instanceof SVGGroup){
             let group = svg.parent.reliableSvg;    
            // console.log(group.children)
+            group.children.forEach((child)=>child.parent.reliableSvg=null);
             children = group.children.filter((child)=>child.id!=svg.id)
-            children.forEach((child)=>child.parent.reliableSvg=null);
+            
             
             group.unselect(this);
-
+          
           //  console.log(SVG.getFromId(children[0].id))
             
-        
-           
+            // console.log(svg)
+       //     if(!fromGroup){
+
+       /*
                 this.commit({
-         
+            
                     action: "Select",
                     ids: children.map((child)=>child.id),
                 
-                }, true) 
-    
+                }, true) */
+        //    }
+            this.svgs.splice(group, 1);
            
            //group.children = group.children.filter((child)=>child.id==svg.id);
             //console.log(group.children)
