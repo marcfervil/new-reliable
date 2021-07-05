@@ -11,6 +11,7 @@ class Reliable {
         this.redoActions = [];
         this.svgs = [];
         this.path = path;
+        this.toolsEnabled = true;
         //this.canvas.addEventListener("mousedown", (e) => this.mouseDownCanvas(e));
 
         if(!isTouchDevice()){
@@ -190,9 +191,13 @@ class Reliable {
         return new Vector2(pt.x, pt.y).multiply(zoom).add(pan);
     }
 
+    toggleTools(){
+        this.toolsEnabled = !this.toolsEnabled;
+    }
+
     mouseDownCanvas(e){
-      
-        if(this.getCurrentTool().eatCanvasDrag() && e.target.id!="backdrop") return;
+        console.log("down canvas")
+        if(!this.toolsEnabled || ( this.getCurrentTool().eatCanvasDrag() && e.target.id!="backdrop")) return;
 
 
         let mousePos = this.getMousPos(e);
@@ -221,12 +226,14 @@ class Reliable {
 
     mouseMoveCanvas(e){
         
+        if(!this.toolsEnabled)return;
         let pos = this.getMousPos(e);
-        //console.log(pos);
         this.getCurrentTool().canvasDrag(pos);
+        
     }
 
     mouseUpCanvas(e){
+        if(!this.toolsEnabled)return;
         this.canvasMouseDown = false;
         this.canvas.removeEventListener('pointermove', this.mouseMoveRef);
         this.canvas.removeEventListener('pointerup', this.mouseUpRef);

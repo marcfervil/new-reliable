@@ -1,4 +1,4 @@
-bend = 5;
+bend = 10;
 
 class SVGPath extends SVG{
 
@@ -31,6 +31,8 @@ class SVGPath extends SVG{
         this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
      
+        this.dragifies = [];
+        
     }
 
     
@@ -100,6 +102,10 @@ class SVGPath extends SVG{
     smootherfy(lineSegmentsOG, debug){
         this.drags = [];
         //console.log(lineSegmentsOG[0][0].distance(lineSegmentsOG.last().last()));
+        if(lineSegmentsOG[0]==undefined) {
+            this.delete();
+            return;
+        }
         if(lineSegmentsOG[0][0].distance(lineSegmentsOG.last().last()) < 50){
             //console.log("correct");
             let lastSeg = lineSegmentsOG[lineSegmentsOG.length - 1];
@@ -213,7 +219,27 @@ class SVGPath extends SVG{
         console.log(JSON.parse(JSON.stringify(lineSegments)));
        
         let end = lineSegments[0][0];
-        if(debug)this.dragify(debugRect2(end, 15, "green", "same"));
+        
+        
+        //if(debug)this.dragify(debugRect2(end, 15, "green", "same"));
+        let first = true;
+ 
+        let firstUpdate = null;
+        if(debug){
+            let myEnd = end.clone();
+            setTimeout(()=>{
+               // console.log(first)
+              // this.dragify(debugRect2(end, 15, "green", "same"), end, undefined, future);};
+                //this.dragify(debugRect2(myEnd, 15, "green", "same"), null, first, );
+               // console.log(first.svg)
+            },10)
+            
+            //this.dragify(debugRect2(end, 15, "red", "same"), end, undefined, future, undefined)
+          //  dragify(el, /pos/ , line, a1, a2){
+            //this.back2TheFuture = (future)=>{  this.dragify(debugRect2(end, 15, "green", "same"), end, undefined, future);};
+        }
+
+
         let svgData = "M "+end.toString()+" C ";
         this.path.push(end);
         //pick points that are same distance apart for the controls
@@ -255,7 +281,7 @@ class SVGPath extends SVG{
                let nextc1 = getControls(nextSegment)[0].rotateAround(nextEnd, (controlRot * nextSegment.dir));
                //setTimeout(()=>{new SVGPath(canvas, c2, "fewfeewf").addPoint(nextc1).svg.style.stroke="black"},20);
                
-                //Vector3 newSpot = oldSpotVector3 + (directionVector3.normalized * distanceFloat);
+                //Vector3 newSpot = o ldSpotVector3 + (directionVector3.normalized * distanceFloat);
                // c2 = c2.rotateAround(end, (controlRot * line.dir ));
            
                 let dist = c2.distance(end);
@@ -269,23 +295,38 @@ class SVGPath extends SVG{
 
           
           
-          
+        
 
             
          
 
             this.lastc2 = c2;
             this.lastc1 = c1;
+
+            /*
             if(debug){
                 
                 let _lastEnd = lastEnd.clone();
+                //if(first == true)_lastEnd = this.pos
                 let _end = end.clone();
+                //console.log("ends meet", _lastEnd, _end)
+                if(first==true){
+                   
+                }
                 setTimeout(()=>{
                     let p1 = new SVGPath(canvas, c1, "fewfeewf").addPoint(_lastEnd);
                     let p2 = new SVGPath(canvas, c2, "fewfeewf").addPoint(_end);
                     
+                    //console.log("SEE 1",c1)
                     let d1 = this.dragify(debugRect2(c1, 15, "yellow", "same"), c1, p1);
+
+                    
                     let d2 = this.dragify(debugRect2(c2, 15, "blue", "same"), c2, p2);
+
+                    if(first==true){
+                        first = p1
+                        firstUpdate = d1;
+                    }
                     if(this.back2TheFuture!==undefined)this.back2TheFuture(d1);
                     
                     this.back2TheFuture = (future)=>{ this.dragify(debugRect2(_end, 15, "red", "same"), _end, undefined, future, d2)};
@@ -295,7 +336,7 @@ class SVGPath extends SVG{
                 },0);
                 
                 
-            }
+            }*/
 
             svgData += `${c1} ${c2} ${end} `;
             this.path.push(c1);
@@ -305,12 +346,87 @@ class SVGPath extends SVG{
             //let c1 = line[ Math.floor(midpoint/2)].rotateAround(start, -anchorRot);
         }
         
-        
+        if(debug){
+            let handlePaths = this.path.map((vec)=>vec.clone());
+            let pathRects = []
+            let index = 0;
+            while(handlePaths.length>0){
+                let point = handlePaths.pop();
+                let c1 =  handlePaths.pop();
+                let c2 = handlePaths.pop();
+                let pointRect = debugRect2(point, 15, "red", "same");
+ 
+
+                let c1Rect = debugRect2(c1, 15, "yellow", "same")
+                let c2Rect = debugRect2(c2, 15, "blue", "same")
+                pathRects.push(pointRect, c1Rect, c2Rect)
+                
+            }
+            //let reds = pathRects.filter((rect)=>rect.fill=="red")
+            for(let i = 0; i<pathRects.length; i+=3){
+                let point = pathRects[i];
+               // let c1 = (i>0) ? pathRects[i-1] : undefined;
+             
+                let c1 = pathRects[i-1];
+                let d1 = null;
+                if(c1!=null){
+                    let p1 = new SVGPath(canvas, c1.pos, "fewfeewf").addPoint(point.pos);
+                    d1 = this.dragify(c1, p1)
+                }
+
+                let c2 = pathRects[i+1];
+                let d2 = null;
+                if(c2!=null){
+
+                    let p2 = new SVGPath(canvas, c2.pos, "fewfeewf").addPoint(point.pos);
+                    d2 = this.dragify(c2, p2)
+                }
+                
+                this.dragify(point, null, d1, d2)
+            }
+
+        }
 
         console.log(svgData);
         this.replacePath(svgData);
+
+
+        //console.log("dragif",this.dragifies)
+        
+
+        this.createRotHandle();
+
+
         return this;
        // this.svg.style.transform = "translate(500, 0)"
+    }
+
+    createRotHandle(){
+        let r = this.svg.getBoundingClientRect();
+        let svgPos = new Vector2(r.x, r.y);
+        let rot = debugRect2(svgPos.add(new Vector2(r.width+50, 0)), 15, "purple", "same");
+        //let x  = () =>{ };
+       // x.dd = "fewf"
+        //console.log(x.dd)
+        $(rot).on("pointerdown", (e)=>{
+            e.stopPropagation()
+           // console.log(this.dragifies.map((m)=>m.color));
+           let dir = new Vector2(0, 100);
+            for(let drag of this.dragifies.filter((drag)=>["red", "green"].includes(drag.color))){
+               
+                let f = drag.pos.add(dir);
+                drag(f)
+                drag(f);
+            }
+            
+            
+            //setTimeout(()=>{
+                for(let drag of this.dragifies.filter((drag)=>drag.color!="red"))drag(drag.pos.add(dir))
+            //},1000)
+            
+
+
+        });
     }
 
     //M 3211.0 2968.0C 3041.8 3306.4 3133.6 3752.8 3299.2 3765.4 L3238.0 2933.8L3020.2 3589.0L3027.4 3625.0L3133.6 3752.8L3178.6 3770.8L3333.4 3747.4L3403.6 3682.6
@@ -334,62 +450,70 @@ class SVGPath extends SVG{
         
     }
 
-    dragify(el, pos , line, a1, a2){
+    dragify(el , line, a1, a2){
         el.style.opacity=0.3;
         //this.group.append(el);
+        //console.log("dragified", arguments)
         
-        let linePos = (line!==undefined) ? line.path[1] : null;
-        if(line!==undefined)line.svg.style.opacity = 0.3;
+        let linePos = (line!=null) ? line.path[1] : null;
+        if(line!=null)line.svg.style.opacity = 0.3;
         let updateLinePos = (newPos)=>{
             linePos = newPos;
             update(new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y"))));
         };
-
+        //updateLinePos.pos = linePos;
+        let lastTool = app.currentTool;
         let update = (newPos)=>{
-          
+            update.pos = newPos;
             let cpos = new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y")));
-      
+            //console.log("few", a1, a2)
             
             this.pathData = this.pathData.replace(cpos.toString(), newPos.toString());
             this.replacePath(this.pathData);
            
             el.setAttribute("x", newPos.x);
-            el.setAttribute("y", newPos.y)
+            el.setAttribute("y", newPos.y);
             
-            if(line!==undefined){
+            if(line!=null){
                 //console.log(line);
                 line.delete();
                 line = new SVGPath(app.canvas, linePos, "foekf");
                 line.addPoint(newPos);
             }
+           // if(el.style.fill=="red")console.log(Math.random(),"few",a1,a2,"end")
 
-            if(a1 !==undefined)a1(cpos);
+            if(a1 !=null)a1(cpos);
                 
-            if(a2 !==undefined)a2(cpos);
-            
+            if(a2 !=null)a2(cpos);
+            $(document).one("mouseup.up", (e)=>{
+               // if(a1 !==undefined && )
+                $(document).off("mousemove.drag");
+                $(document).off("mousemove.up");
+                app.currentTool = lastTool;
+                if(line!=null)line.svg.style.opacity = 0.3;
+                canvas.appendChild(el);
+            });
         };
-
+        update.pos = new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y")));
+        //el.style.fill = "black"
         $(el).on("mousedown",(e)=>{
-            let lastTool = app.currentTool;
+            lastTool = app.currentTool;
             app.currentTool = -69;
             
-            console.log("LINE POS");
-            console.log(line);
-            console.log("END LINE POS");
-            if(line!==undefined) line.svg.style.opacity = 0.5;
+            //console.log("LINE POS");
+            //console.log(line);
+            //console.log("END LINE POS");
+            if(line!=null) line.svg.style.opacity = 0.5;
             $(document).on("mousemove.drag",(e)=>{
                 e.stopPropagation();
                 e.preventDefault();
                 update(getMousePos());
             });
-            $(document).on("mouseup.up",(e)=>{
-                $(document).off("mousemove.drag");
-                $(document).off("mousemove.up");
-                app.currentTool = lastTool;
-                if(line!==undefined)line.svg.style.opacity = 0.3;
-                canvas.appendChild(el);
-            });
+           
         });
+       
+        update.color = el.style.fill
+        this.dragifies.push(update)
         return updateLinePos;
     }
     

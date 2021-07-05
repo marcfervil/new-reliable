@@ -263,6 +263,7 @@
         debug.setAttribute("y", y);
         debug.setAttribute("width", w);
         debug.setAttribute("height", h);
+        debug.pos = new Vector2(x,y)
         debug.style.stroke = color;
         debug.style.fill = (fill!="same") ? fill : color;
         canvas.appendChild(debug);
