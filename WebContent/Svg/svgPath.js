@@ -1,3 +1,5 @@
+
+
 bend = 10;
 
 class SVGPath extends SVG{
@@ -32,7 +34,8 @@ class SVGPath extends SVG{
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
      
         this.dragifies = [];
-        
+
+       
     }
 
     
@@ -303,41 +306,6 @@ class SVGPath extends SVG{
             this.lastc2 = c2;
             this.lastc1 = c1;
 
-            /*
-            if(debug){
-                
-                let _lastEnd = lastEnd.clone();
-                //if(first == true)_lastEnd = this.pos
-                let _end = end.clone();
-                //console.log("ends meet", _lastEnd, _end)
-                if(first==true){
-                   
-                }
-                setTimeout(()=>{
-                    let p1 = new SVGPath(canvas, c1, "fewfeewf").addPoint(_lastEnd);
-                    let p2 = new SVGPath(canvas, c2, "fewfeewf").addPoint(_end);
-                    
-                    //console.log("SEE 1",c1)
-                    let d1 = this.dragify(debugRect2(c1, 15, "yellow", "same"), c1, p1);
-
-                    
-                    let d2 = this.dragify(debugRect2(c2, 15, "blue", "same"), c2, p2);
-
-                    if(first==true){
-                        first = p1
-                        firstUpdate = d1;
-                    }
-                    if(this.back2TheFuture!==undefined)this.back2TheFuture(d1);
-                    
-                    this.back2TheFuture = (future)=>{ this.dragify(debugRect2(_end, 15, "red", "same"), _end, undefined, future, d2)};
-                    
-
-                  //  new SVGText(canvas, _end.add(new Vector2(10,10)), "fijew", line.dir)
-                },0);
-                
-                
-            }*/
-
             svgData += `${c1} ${c2} ${end} `;
             this.path.push(c1);
             this.path.push(c2);
@@ -362,10 +330,10 @@ class SVGPath extends SVG{
                 pathRects.push(pointRect, c1Rect, c2Rect)
                 
             }
-            //let reds = pathRects.filter((rect)=>rect.fill=="red")
+
             for(let i = 0; i<pathRects.length; i+=3){
                 let point = pathRects[i];
-               // let c1 = (i>0) ? pathRects[i-1] : undefined;
+
              
                 let c1 = pathRects[i-1];
                 let d1 = null;
@@ -405,25 +373,46 @@ class SVGPath extends SVG{
         let r = this.svg.getBoundingClientRect();
         let svgPos = new Vector2(r.x, r.y);
         let rot = debugRect2(svgPos.add(new Vector2(r.width+50, 0)), 15, "purple", "same");
-        //let x  = () =>{ };
-       // x.dd = "fewf"
-        //console.log(x.dd)
+        
+
+        let center = new Vector2(r.x + (r.width/2), r.y + (r.height/2))
+       
+        //debugRect2(center, 15, "black", "same");
+        $(rot).on("mousedown", (e)=>e.stopPropagation());
+       
+        this.dragifies.forEach((drag)=>drag(drag.pos))
         $(rot).on("pointerdown", (e)=>{
             e.stopPropagation()
            // console.log(this.dragifies.map((m)=>m.color));
-           let dir = new Vector2(0, 100);
-            for(let drag of this.dragifies.filter((drag)=>["red", "green"].includes(drag.color))){
-               
-                let f = drag.pos.add(dir);
-                drag(f)
-                drag(f);
+           
+           let rotate = (drag, deg)=> {
+                let dir = new Vector2(0, 100);
+                //let newPos = drag.pos.add(dir);
+                //
+                let newPos = drag.pos.rotateAround(center, deg, false);
+                //lastRot = newRot
+
+
+                drag(newPos)
+                //drag(newPos);
             }
-            
-            
-            //setTimeout(()=>{
-                for(let drag of this.dragifies.filter((drag)=>drag.color!="red"))drag(drag.pos.add(dir))
-            //},1000)
-            
+          
+            let lastRot = 0;
+            $(document).on("pointermove.rotSvg", (e)=>{
+                //console.log()
+                
+                let deg = getMousePos().angle(rot.pos)
+                let newRot = lastRot - deg;
+                //console.log(newRot)
+                this.dragifies.filter((drag)=>["red", "green"].includes(drag.color)).forEach((drag)=>rotate(drag, newRot))
+                this.dragifies.filter((drag)=>drag.color!="red").forEach((drag)=>rotate(drag, newRot))
+                lastRot = deg;
+            });
+
+            $(document).one("pointerup",()=>{
+                e.stopPropagation();
+                $(document).off(".rotSvg")
+            })
 
 
         });
@@ -463,7 +452,7 @@ class SVGPath extends SVG{
         };
         //updateLinePos.pos = linePos;
         let lastTool = app.currentTool;
-        let update = (newPos)=>{
+        let update = (newPos, color)=>{
             update.pos = newPos;
             let cpos = new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y")));
             //console.log("few", a1, a2)
@@ -482,9 +471,9 @@ class SVGPath extends SVG{
             }
            // if(el.style.fill=="red")console.log(Math.random(),"few",a1,a2,"end")
 
-            if(a1 !=null)a1(cpos);
+            if(a1 !=null)a1(cpos, el.style.fill == "red");
                 
-            if(a2 !=null)a2(cpos);
+            if(a2 !=null)a2(cpos,  el.style.fill == "red");
             $(document).one("mouseup.up", (e)=>{
                // if(a1 !==undefined && )
                 $(document).off("mousemove.drag");
@@ -503,7 +492,7 @@ class SVGPath extends SVG{
             //console.log("LINE POS");
             //console.log(line);
             //console.log("END LINE POS");
-            if(line!=null) line.svg.style.opacity = 0.5;
+           // if(line!=null) line.svg.style.opacity = 0.5;
             $(document).on("mousemove.drag",(e)=>{
                 e.stopPropagation();
                 e.preventDefault();

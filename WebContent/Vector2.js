@@ -115,6 +115,7 @@ Vector2.prototype = {
 		return vector;
 	},
 
+    
 
 	rotateAround: function(pivot, angle) {
 		if(pivot==null) return new Vector2(this.x, this.y);
@@ -122,6 +123,7 @@ Vector2.prototype = {
         let cy = pivot.y;
         let x = this.x; 
         let y = this.y;
+
         let radians = (Math.PI / 180) * angle,
         cos = Math.cos(radians),
         sin = Math.sin(radians),
