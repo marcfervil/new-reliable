@@ -35,7 +35,7 @@ class SVGPath extends SVG{
      
         this.dragifies = [];
 
-       
+      // console.log(this.svg)
     }
 
     
@@ -394,7 +394,7 @@ class SVGPath extends SVG{
 
 
                 drag(newPos)
-                //drag(newPos);
+                drag(newPos);
             }
           
             let lastRot = 0;
@@ -443,7 +443,13 @@ class SVGPath extends SVG{
         el.style.opacity=0.3;
         //this.group.append(el);
         //console.log("dragified", arguments)
-        
+        if(line!=null){
+            console.log(line.svg)
+            setTimeout(()=>{
+                line.svg.style.opacity = 0.5;
+            },0)
+            
+        }
         let linePos = (line!=null) ? line.path[1] : null;
         if(line!=null)line.svg.style.opacity = 0.3;
         let updateLinePos = (newPos)=>{
@@ -492,7 +498,8 @@ class SVGPath extends SVG{
             //console.log("LINE POS");
             //console.log(line);
             //console.log("END LINE POS");
-           // if(line!=null) line.svg.style.opacity = 0.5;
+           if(line!=null) line.svg.style.opacity = 0.5;
+       
             $(document).on("mousemove.drag",(e)=>{
                 e.stopPropagation();
                 e.preventDefault();

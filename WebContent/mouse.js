@@ -350,7 +350,7 @@ function smoothLerp(lerpListOG, debug){
 
 
       //  path.svg.setAttribute('transform','translate(1000,0)')
-      
+      /*
         for(let lerp of smoothLerp2){
             if(lerp.key){
                 xx+=1;
@@ -364,7 +364,7 @@ function smoothLerp(lerpListOG, debug){
            //     debugRect(lerp.pos.x, lerp.pos.y, 10, 10, "red");
                
             }
-        }
+        }*/
        
        
      
