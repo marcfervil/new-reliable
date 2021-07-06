@@ -34,7 +34,7 @@ class SVGPath extends SVG{
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
      
         this.dragifies = [];
-
+        this.things = [];
       // console.log(this.svg)
     }
 
@@ -314,6 +314,24 @@ class SVGPath extends SVG{
             //let c1 = line[ Math.floor(midpoint/2)].rotateAround(start, -anchorRot);
         }
         
+        this.createPointHandles();
+
+      
+        this.replacePath(svgData);
+
+
+        //console.log("dragif",this.dragifies)
+        
+
+        this.createRotHandle(true);
+
+
+        this.smoothed = true;
+        return this;
+       // this.svg.style.transform = "translate(500, 0)"
+    }
+
+    createPointHandles(debug=true){
         if(debug){
             let handlePaths = this.path.map((vec)=>vec.clone());
             let pathRects = []
@@ -327,10 +345,25 @@ class SVGPath extends SVG{
 
                 let c1Rect = debugRect2(c1, 15, "yellow", "same")
                 let c2Rect = debugRect2(c2, 15, "blue", "same")
+                this.things.push(c1Rect)
+                this.things.push(c2Rect)
+                this.things.push(pointRect)
                 pathRects.push(pointRect, c1Rect, c2Rect)
-                
+                pathRects = pathRects.filter((item)=>item!=null)
             }
-
+            console.log("rects",pathRects)
+            for(let i = pathRects.length-3; i>=1; i--){
+                //console.log("rwg",i,pathRects)
+                let lastPoint = pathRects[i+1];
+                let nextPoint = pathRects[i-1];
+                
+                pathRects[i].prev = (lastPoint!=null)?lastPoint : "root";
+                pathRects[i].next = (nextPoint!=null)?nextPoint : "root";
+            }
+            
+            //pathRects[pathRects.length-1].next =  pathRects[pathRects.length-2]
+            pathRects[0].prev =  pathRects[1]
+            console.log("fpoekweow", pathRects[pathRects.length-1].next)
             for(let i = 0; i<pathRects.length; i+=3){
                 let point = pathRects[i];
 
@@ -339,6 +372,8 @@ class SVGPath extends SVG{
                 let d1 = null;
                 if(c1!=null){
                     let p1 = new SVGPath(canvas, c1.pos, "fewfeewf").addPoint(point.pos);
+                  
+                    this.things.push(p1.svg)
                     d1 = this.dragify(c1, p1)
                 }
 
@@ -347,6 +382,7 @@ class SVGPath extends SVG{
                 if(c2!=null){
 
                     let p2 = new SVGPath(canvas, c2.pos, "fewfeewf").addPoint(point.pos);
+                    this.things.push(p2.svg)
                     d2 = this.dragify(c2, p2)
                 }
                 
@@ -354,19 +390,6 @@ class SVGPath extends SVG{
             }
 
         }
-
-        console.log(svgData);
-        this.replacePath(svgData);
-
-
-        //console.log("dragif",this.dragifies)
-        
-
-        this.createRotHandle();
-
-
-        return this;
-       // this.svg.style.transform = "translate(500, 0)"
     }
 
     createRotHandle(){
@@ -439,12 +462,18 @@ class SVGPath extends SVG{
         
     }
 
+    getPercentageChange(oldNumber, newNumber){
+        var decreaseValue = oldNumber - newNumber;
+    
+        return (decreaseValue / oldNumber) ;
+    }
+
     dragify(el , line, a1, a2){
         el.style.opacity=0.3;
         //this.group.append(el);
         //console.log("dragified", arguments)
         if(line!=null){
-            console.log(line.svg)
+           // console.log(line.svg)
             setTimeout(()=>{
                 line.svg.style.opacity = 0.5;
             },0)
@@ -458,8 +487,13 @@ class SVGPath extends SVG{
         };
         //updateLinePos.pos = linePos;
         let lastTool = app.currentTool;
-        let update = (newPos, color)=>{
+        let update = (newPos, organic)=>{
+            
             update.pos = newPos;
+            if(organic){
+               // update.ogPos = update.pos.clone()
+               // el.ogPos = update.pos.clone()
+            }
             let cpos = new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y")));
             //console.log("few", a1, a2)
             
@@ -473,25 +507,23 @@ class SVGPath extends SVG{
                 //console.log(line);
                 line.delete();
                 line = new SVGPath(app.canvas, linePos, "foekf");
+                //console.log("move rig",this.svg)
+                if(this.isRiggged)line.svg.style.opacity=0;
                 line.addPoint(newPos);
             }
            // if(el.style.fill=="red")console.log(Math.random(),"few",a1,a2,"end")
 
-            if(a1 !=null)a1(cpos, el.style.fill == "red");
+            if(a1 !=null)a1(cpos, el.style.fill == "red", organic);
                 
-            if(a2 !=null)a2(cpos,  el.style.fill == "red");
-            $(document).one("mouseup.up", (e)=>{
-               // if(a1 !==undefined && )
-                $(document).off("mousemove.drag");
-                $(document).off("mousemove.up");
-                app.currentTool = lastTool;
-                if(line!=null)line.svg.style.opacity = 0.3;
-                canvas.appendChild(el);
-            });
+            if(a2 !=null)a2(cpos,  el.style.fill == "red", organic);
+            
         };
         update.pos = new Vector2(parseFloat(el.getAttribute("x")), parseFloat(el.getAttribute("y")));
+        update.ogPos = update.pos.clone()
         //el.style.fill = "black"
-        $(el).on("mousedown",(e)=>{
+        update.id=Math.random();
+        $(el).on("pointerdown",(e)=>{
+            e.stopPropagation();
             lastTool = app.currentTool;
             app.currentTool = -69;
             
@@ -499,15 +531,90 @@ class SVGPath extends SVG{
             //console.log(line);
             //console.log("END LINE POS");
            if(line!=null) line.svg.style.opacity = 0.5;
-       
+           console.log(el.next, el.prev)
+            let lastRot = update.pos.angle(el.prev?.update.pos || el.next.update.pos)
+          
+            $(document).on("mouseup.up", (e)=>{
+                // if(a1 !==undefined && )
+                 $(document).off("mousemove.drag");
+                 $(document).off("mousemove.up");
+                 app.currentTool = lastTool;
+                 if(line!=null)line.svg.style.opacity = 0.3;
+                 canvas.appendChild(el);
+                 if(this.isBonerig){
+                    Line.frame[update] = update.pos;
+                 }
+             });
+            
             $(document).on("mousemove.drag",(e)=>{
                 e.stopPropagation();
                 e.preventDefault();
-                update(getMousePos());
+               // console.log(this.isBonerig)
+                if(!e.shiftKey && !this.isBonerig){
+                    update(getMousePos(),true);
+                
+                }else{
+                   // update(getMousePos());
+                    //rotateAround()
+                    //el.prev
+
+                    let pivot = el.prev?.update.pos ||  el.next.update.pos
+                    let deg = getMousePos().angle(pivot)
+                    let newRot = lastRot - deg;
+
+                    let change = this.getPercentageChange(lastRot, newRot)
+                   // console.log(update.pos.rotateAround(el.prev.update.pos, newRot))
+                    update(update.pos.rotateAround(pivot, newRot))
+                    let line = el.next;
+                    //console.log(line)
+                    let dist = 1;
+                    let sig = Math.random()
+                    while(line!=null){
+                        let newUpdate = line.update;
+                        if(newUpdate == null)break;
+                        //if(dist>1)break;
+                        newUpdate(newUpdate.pos.rotateAround(pivot, newRot))
+                        //newRot*=-0.9;
+                       // console.log(newRot)
+                        line = newUpdate.el.next
+                        
+                        
+                       // console.log("----------------------")
+                        if(this.bones!=null){
+                            this.bones.dragifies.filter((drag)=>drag.el.ogPos.distance(newUpdate.ogPos)< 300).forEach((drag)=>{
+                               
+                                //console.log(drag.dragId)
+                                window.requestAnimationFrame(()=>{
+                                    if(drag.sig ==sig){
+                                      //  console.log("no sig")
+                                        return;
+                                    }
+                                    drag.sig = sig;
+                                    
+                                    //drag(drag.pos.rotateAround(pivot, newRot), null)
+                                   // if(drag.lastRot==null)drag.lastRot = pivot.angle()
+                                //   console.log(newRot/dist)
+                                    drag(drag.pos.rotateAround(pivot, newRot), null)
+                                })
+                                
+                            })
+                        }
+                        dist +=1;
+                       // dist+=1;
+                    //    console.log("----------------------")
+                    }
+                  //  console.log(dist)
+                    
+                   
+
+                    lastRot = deg;
+                }
+                
             });
            
         });
-       
+        el.update = update;
+        update.el = el;
         update.color = el.style.fill
         this.dragifies.push(update)
         return updateLinePos;

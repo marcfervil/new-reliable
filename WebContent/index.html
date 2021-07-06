@@ -141,9 +141,11 @@
 <script src="{{path}}/Svg/svgText.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgImage.js" type="text/javascript"></script>
 <script src="{{path}}/Svg/svgPointer.js" type="text/javascript"></script>
+
 <script src="{{path}}/tools/tools.js" type="text/javascript"></script>
 <script src="{{path}}/reliable.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/pen.js" type="text/javascript"></script>
+<script src="{{path}}/Tools/line.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/shape.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/selection.js" type="text/javascript"></script>
 <script src="{{path}}/Tools/text.js" type="text/javascript"></script>
@@ -224,11 +226,14 @@
 
 
     var app = new Reliable(canvas, "{{path}}", [
+        
         new Pen(),
+        new Line(),
         new Selection(),
         new Eraser(),
         new Pan(),
-        new TextTool()
+        new TextTool(),
+        
     ]);
     
 
@@ -264,6 +269,7 @@
         debug.setAttribute("width", w);
         debug.setAttribute("height", h);
         debug.pos = new Vector2(x,y)
+        debug.ogPos = debug.pos.clone();
         debug.style.stroke = color;
         debug.style.fill = (fill!="same") ? fill : color;
         canvas.appendChild(debug);
