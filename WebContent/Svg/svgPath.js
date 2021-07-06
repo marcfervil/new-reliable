@@ -544,7 +544,7 @@ class SVGPath extends SVG{
                  if(this.isBonerig){
                     Line.frame[update] = update.pos;
                  }
-             });
+             });  
             
             $(document).on("mousemove.drag",(e)=>{
                 e.stopPropagation();

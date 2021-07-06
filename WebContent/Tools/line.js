@@ -1,7 +1,4 @@
 
-Line.keys = []
-Line.frame = []
-
 class Line extends Tool{
 
     constructor(){
@@ -67,3 +64,6 @@ class Line extends Tool{
 }
 
 
+
+Line.keys = []
+Line.frame = []
