@@ -422,27 +422,23 @@ class Eraser extends Tool{
 
             }
         }
-        //console.log(curvePoints)\
+        //console.log(curvePoints)
 
-        let counter = 0;
         for(let i =1; i<curvePoints.length;i++){
 
             if(curvePoints[i] instanceof MoveCommand){
-                counter++;
-                console.log("Counter ",counter)
                 //console.log("new line ",i)
                 newLines.push(curvePoints.splice(0,i))
                 i=1
             }
-            if(counter>1) break;
         }
         newLines.push(curvePoints)
 
 
 
-
+        console.log("old lines! ", newLines.length)
         newLines = this.removeOverlapLines(newLines)
-        //console.log("new lines! ", newLines)
+        console.log("new lines! ", newLines.length)
         return newLines
 
 
