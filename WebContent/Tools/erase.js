@@ -422,14 +422,19 @@ class Eraser extends Tool{
 
             }
         }
-        //console.log(curvePoints)
+        //console.log(curvePoints)\
 
+        let counter = 0;
         for(let i =1; i<curvePoints.length;i++){
+
             if(curvePoints[i] instanceof MoveCommand){
+                counter++;
+                console.log("Counter ",counter)
                 //console.log("new line ",i)
                 newLines.push(curvePoints.splice(0,i))
                 i=1
             }
+            if(counter>1) break;
         }
         newLines.push(curvePoints)
 
@@ -459,6 +464,7 @@ class Eraser extends Tool{
            
             let tempPath = SVGPath.stringifyPath(path)
             //console.log(tempPath);
+            
             Action.commit(this.reliable, {
                 action: "Draw",
                 id: Reliable.makeId(10) ,
@@ -466,6 +472,7 @@ class Eraser extends Tool{
                 color: "#AAB2C0",
                 pos: tempPath,
             }, false)
+            
         }
 
     }
