@@ -352,8 +352,14 @@ class Eraser extends Tool{
         let leftCurveTo = new CurveCommand(E,H,K)
         let rightMoveTo = new MoveCommand(K)
         let rightCurveTo = new CurveCommand(J,G,D)
+        if(E.isValid() && H.isValid() && K.isValid() && J.isValid() && G.isValid() && D.isValid()){
+            //console.log(E,H,K,J,G,D)
+            return [leftCurveTo,rightMoveTo, rightCurveTo]
+        }
+        return null
 
-        return [leftCurveTo,rightMoveTo, rightCurveTo]
+
+        
     }
 
     //returns lines that makes up eraser (probably a better way to write this but should be good enough)
@@ -380,7 +386,6 @@ class Eraser extends Tool{
 
                 //debugRect2(point.position(),10,10,"red","red")
                 if(!this.insideCursor(point.position())){
-                    console.log("not inside!")
                     inside = false
                     break;
                 }
@@ -412,10 +417,12 @@ class Eraser extends Tool{
                 let intersection = computeIntersections(bezierCurve, line)
                 if (intersection != null) {
                     let newCurves = this.splitBezier(bezierCurve, intersection)
-                    curvePoints[i] = newCurves[0]
-                    curvePoints.splice(i+1,0,newCurves[2])
-                    curvePoints.splice(i+1,0,newCurves[1])
-                    i+=2
+                    if(newCurves!=null){
+                        curvePoints[i] = newCurves[0]
+                        curvePoints.splice(i+1,0,newCurves[2])
+                        curvePoints.splice(i+1,0,newCurves[1])
+                        i+=2
+                    }
                     //console.log("intersection")
                 } else {
                     //console.log("no intersection")
@@ -427,7 +434,6 @@ class Eraser extends Tool{
         for(let i =1; i<curvePoints.length;i++){
 
             if(curvePoints[i] instanceof MoveCommand){
-                //console.log("new line ",i)
                 newLines.push(curvePoints.splice(0,i))
                 i=1
             }

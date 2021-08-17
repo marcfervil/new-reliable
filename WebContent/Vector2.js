@@ -10,6 +10,7 @@ function Vector2(x, y) {
 		this.x = 0;
 		this.y = 0;
 	}
+
 }
 
 Vector2.prototype = {
@@ -17,7 +18,10 @@ Vector2.prototype = {
 		this.x = x || 0;
 		this.y = y || 0;
 	},
-
+	//please don't ever use this. If you think you need to. you don't. and if you REALLY need to, here's my number: 800-273-8255.
+	isValid: function(){
+		return this.x && this.y
+	},
 	clone: function() {
 		return new Vector2(this.x, this.y)
 	},
