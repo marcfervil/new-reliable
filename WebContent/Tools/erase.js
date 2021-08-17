@@ -63,15 +63,16 @@ class Eraser extends Tool{
     
         return lineHits;
     }
+
     insideCursor(point){
-        let x = point.x
-        let y = point.y
-        let x1 = this.svgRect.pos.x;
-        let y1 = this.svgRect.pos.y;
-        let x2 = x1 + this.svgRect.size;
-        let y2 = y1 + this.svgRect.size;
-     
-        return (x >= x1 && x <= x2) && (y >= y1 && y <= y2);
+
+        
+        let svgPoint = canvas.createSVGPoint();
+        svgPoint.x = point.x
+        svgPoint.y = point.y
+        return this.svgRect.svg.isPointInFill(svgPoint)
+
+        
     }
 
     //returns the point the eraser made contact
@@ -273,7 +274,6 @@ class Eraser extends Tool{
         intersectPoints.push(this.find_intersection(corners[0], corners[2], point1, point2))
         intersectPoints.push(this.find_intersection(corners[1], corners[3], point1, point2))
         intersectPoints.push(this.find_intersection(corners[2], corners[3], point1, point2))
-        console.log(intersectPoints)
         let retpoint = null
         for(let point of intersectPoints){
             if(point !=null){
@@ -372,16 +372,17 @@ class Eraser extends Tool{
         return lines
     }
 
-    removeOverlapLines(Lines){
+    removeOverlapLines(lines){
         let newLines = []
-        for(let line of Lines){
+        for(let line of lines){
             let inside = true;
             for(let point of line){
 
                 //debugRect2(point.position(),10,10,"red","red")
                 if(!this.insideCursor(point.position())){
-                    //console.log("not inside!")
+                    console.log("not inside!")
                     inside = false
+                    break;
                 }
             }
             if(!inside) newLines.push(line)
@@ -422,14 +423,12 @@ class Eraser extends Tool{
 
             }
         }
-        //console.log(curvePoints)\
+
 
         let counter = 0;
         for(let i =1; i<curvePoints.length;i++){
 
             if(curvePoints[i] instanceof MoveCommand){
-                counter++;
-                console.log("Counter ",counter)
                 //console.log("new line ",i)
                 newLines.push(curvePoints.splice(0,i))
                 i=1
@@ -437,8 +436,6 @@ class Eraser extends Tool{
             if(counter>1) break;
         }
         newLines.push(curvePoints)
-
-
 
 
         newLines = this.removeOverlapLines(newLines)
