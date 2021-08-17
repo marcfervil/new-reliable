@@ -424,8 +424,6 @@ class Eraser extends Tool{
             }
         }
 
-
-        let counter = 0;
         for(let i =1; i<curvePoints.length;i++){
 
             if(curvePoints[i] instanceof MoveCommand){
@@ -433,13 +431,10 @@ class Eraser extends Tool{
                 newLines.push(curvePoints.splice(0,i))
                 i=1
             }
-            if(counter>1) break;
         }
         newLines.push(curvePoints)
 
-
         newLines = this.removeOverlapLines(newLines)
-        //console.log("new lines! ", newLines)
         return newLines
 
 
