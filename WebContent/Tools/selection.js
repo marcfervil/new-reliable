@@ -208,6 +208,7 @@ class Scale extends Action{
 
 }
 
+
 class Delete extends Action{
     
     constructor(data){
@@ -219,7 +220,7 @@ class Delete extends Action{
 
     execute(reliable){
         this.reliable = reliable;
-        SVG.forEachSVG(this.data.ids, (svg) => {d
+        SVG.forEachSVG(this.data.ids, (svg) => {
             this.saves.push(svg.serialize());
             reliable.removeSVG(svg);
             svg.delete();

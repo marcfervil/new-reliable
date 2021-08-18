@@ -449,15 +449,21 @@ class Eraser extends Tool{
     
     //returns up to (2) new paths that are the result of eraseing [non refundable]
     createNewPaths(svg){
-        let bezierHelper = new BezierPointHelper()//this.reliable.canvas, this.svgRect, svg.path);
-      //  if(!hasDrawn){
-            //this.curvePoints = bezierHelper.getCurvePoints(svg.path);
-     //   }
-        //console.log("split line")
+       
         let newPaths = this.splitLine(svg.path)
 
 
-        svg.delete()
+        //svg.delete()
+        
+        Action.commit(this.reliable, {
+            action: "Delete",
+            id: Reliable.makeId(10) ,
+            path: tempPath,
+            color: "#AAB2C0",
+            pos: tempPath,
+        }, false)
+
+
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
@@ -485,62 +491,6 @@ class Eraser extends Tool{
 }
 
 
-class BezierPointHelper{
- 
-    getCurvePoints(path){
-       
-        let densitiy = 15;
-        let curvePoints = []
-        curvePoints.push(path[0]);
-        for(let i = 1; i <path.length; i++){
-            let point = path[i].points
-
-            let lastPoint = path[i-1].position();
-
-            for(let j = 0; j<densitiy;j++){
-                let time = (j / (densitiy - 1));
-
-                let curvePoint = new Vector2(0,0);
-                curvePoint.x = this.BezierCubic(lastPoint.x, point.handle1.x, point.handle2.x, point.end.x, time);
-                curvePoint.y = this.BezierCubic(lastPoint.y, point.handle1.y, point.handle2.y, point.end.y, time);
-            
-                let curvePointCommand = new TemporaryCurveCommand(curvePoint, time);
-
-         
-                curvePoints.push(curvePointCommand)
-
-            }
-            curvePoints.push(path[i]);
-
-        }
-        return curvePoints
-
-    }
-
-    mix(a, b, t)
-    {
-        // degree 1
-        return a * (1 - t) + b*t;
-    }
-
-    BezierQuadratic(A, B, C, t)
-    {
-        // degree 2
-        let AB = this.mix(A, B, t);
-        let BC = this.mix(B, C, t);
-        return this.mix(AB, BC, t);
-    }
-
-    BezierCubic(A, B, C, D, t)
-    {
-        // degree 3
-        let ABC = this.BezierQuadratic(A, B, C, t);
-        let BCD = this.BezierQuadratic(B, C, D, t);
-        return this.mix(ABC, BCD, t);
-    }
-
-
-}
 
     
 
