@@ -1,6 +1,6 @@
 # new-reliable README
 
-This is the README for your extension "new-reliable". After writing up a brief description, we recommend including the following sections.
+This is a test description
 
 ## Features
 

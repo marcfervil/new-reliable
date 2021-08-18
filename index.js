@@ -29,7 +29,7 @@ class Room {
             console.log(`Hi, dad 💦. Your ID is ${socket.id}`)
         }
         
-        if(this.state!=null){
+        if(this.state!=null ){
             
             socket.emit("data", {action: "State", state: this.state});
         }
@@ -117,7 +117,6 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     try{
 
-        
 
         let roomSlug = socket.request.headers.referer.replace("http://","").replace("https://","").replace("/","").replace(socket.request.headers.host,"");
        // console.log("HEY, GET A LOAD OF THIS GUY "+roomSlug);
@@ -132,6 +131,9 @@ io.on('connection', (socket) => {
             if(msg.action == "State"){
                 //console.log(msg);
                 room.updateState(socket, msg.data);
+                if(msg.clear == true){
+                    socket.to(roomSlug).emit("data", msg);
+                }
             }else if(!ignoredActions.includes(msg.action)){
                 socket.to(roomSlug).emit("data", msg);
             }
