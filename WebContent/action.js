@@ -154,10 +154,17 @@ class Undo extends Action{
 class State extends Action{
     
     constructor(data){
+
         super(data);
     }
 
     execute(reliable){
+        if(this.data.clear==true){
+            for(let svg of reliable.svgs){
+                svg.delete();
+            }
+            reliable.svgs = []
+        }
         reliable.setState(this.data.state);
     }
 

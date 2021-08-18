@@ -5,11 +5,15 @@ const fs = require("fs");
 let vsls = require("vsls");
 let path = require('path');
 let handlebars = require("handlebars");
+const os = require('os');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
-
+String.prototype.replaceAll = function(str1, str2, ignore) 
+{
+    return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+} 
 
 class ReliableTreeItem {
 	
@@ -67,12 +71,14 @@ async function activate(context) {
 
 		let disposable2 = vscode.commands.registerCommand('new-reliable.start', async () => {
 			
-			
+			//console.log("UFH:IOEWJFOJFEW");
 			
 			let serviceName = "newReliable";
-			
-			
 
+
+			
+			console.log(vscode.Uri.file(contentPath));
+			console.log(contentPath);
 			currentPanel = vscode.window.createWebviewPanel(
 				'newReliable', // Identifies the type of the webview. Used internally
 				'New Reliable', // Title of the panel displayed to the user
@@ -85,36 +91,26 @@ async function activate(context) {
 			
 			);
 
+
 			let timer = null;
 			let service = undefined;
 			//vscode.window.showInformationMessage("Session Chage");
 			if (liveshare.session.role === vsls.Role.Host) {
 				service = await liveshare.shareService(serviceName);
-				
 				vscode.window.showInformationMessage("Starting as host");
 				service.onRequest("state", () => {
 					return new Promise(resolve => {
 						resolve(state);
 					});
-				});
+				}); 
 				currentPanel.webview.postMessage({
 					action: "State",
 					state : state
 				});
 			}else if (liveshare.session.role === vsls.Role.Guest) {
 				service = await liveshare.getSharedService(serviceName);
-				for(let i=0; i<10; i++)console.log("HERE!")
-				console.log("service")
-				console.log(service);
-				console.log("vsls")
-				console.log(vsls);
-				console.log("share")
-				console.log(liveshare);
-				
-				
 				vscode.window.showInformationMessage("Starting as guest");
 				let data = await service.request("state", []);
-				console.log(data);
 				currentPanel.webview.postMessage({
 					action: "State",
 					state : data
@@ -159,9 +155,15 @@ async function activate(context) {
 
 		function getWebviewContent() {
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
-			//console.log("name");
-			//console.log(liveshare.session.user.displayName);
-			return handlebars.compile(file)({displayName:liveshare.session.user.displayName, path: "vscode-resource://"+contentPath}) ;
+			
+			if(os.platform() == 'win32')return handlebars.compile(file)({displayName:liveshare.session.user.displayName, path: ("vscode-resource:/"+contentPath).replaceAll("\\","/")});
+			
+			return handlebars.compile(file)({displayName:liveshare.session.user.displayName, path: "vscode-resource://"+contentPath});
+			
+			
+			
+			
+			
 		}
 
 
@@ -172,7 +174,6 @@ async function activate(context) {
 	}catch(e){
 		console.error(e);
 	}
-	
 }
 exports.activate = activate;
 
