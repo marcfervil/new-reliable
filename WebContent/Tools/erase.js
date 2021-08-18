@@ -453,17 +453,7 @@ class Eraser extends Tool{
         let newPaths = this.splitLine(svg.path)
 
 
-        //svg.delete()
-        
-        Action.commit(this.reliable, {
-            action: "Delete",
-            id: Reliable.makeId(10) ,
-            path: tempPath,
-            color: "#AAB2C0",
-            pos: tempPath,
-        }, false)
-
-
+        svg.delete()
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
