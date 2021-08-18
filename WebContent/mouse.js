@@ -293,7 +293,7 @@ function smoothLerp(lerpListOG, debug){
                         lineSegment.avg = avg;
                         lineSegments.push(lineSegment);
                        
-                  
+                        
 
                         lineSegment=[];
                         sample=[];

@@ -96,6 +96,7 @@ Vector2.prototype = {
 
 	angle: function(vector) {
 		//return Math.atan2(this.y, this.x);
+        if(vector==null)return null;
 		return Math.atan2(vector.y - this.y, vector.x - this.x) * 180 / Math.PI;
 	},
 

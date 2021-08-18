@@ -41,6 +41,25 @@ class Line extends Tool{
         //console.log(riggedSvg.reliableSvg);
     }
 
+    setFrame(num){
+        console.log("playing frame with ",  Object.entries(Line.keys[num]).length, "keys")
+        for(let keyId in Line.keys[num]){
+            console.log(keyId)
+            Line.keys[num][keyId].frame();
+            Line.keys[num][keyId].frame();
+           // Line.keys[0][keyId].update.updateRig(Line.keys[0][keyId].pos)
+        }
+    }
+
+    play(){
+        Line.frameNum = 0
+        this.setFrame( Line.frameNum);
+        setInterval(() => {
+            this.setFrame( Line.frameNum);
+            Line.frameNum +=1; 
+        }, 1000);
+    }
+
     canvasDragStart(pos){
         if(this.svgPath==null){
             this.svgPath = new SVGPath(this.reliable.canvas, pos);
@@ -48,7 +67,22 @@ class Line extends Tool{
                if(e.key=="Enter"){
                   
                     this.rig();
+                    app.toggleTools();
                }
+               if(e.key=="k"){
+                   //let x = Line.frame;
+                   let frame = Object.assign({}, Line.frame);
+                   console.log(Object.entries(frame).length)
+                   Line.keys.push(frame)
+
+                   Line.frame = {};
+               }
+               //console.log(e.key)
+               if(e.key==" "){
+                    console.log(Line.keys[0])
+                   //this.play();
+                   this.setFrame(0)
+               }    
             })
         }else{
             this.svgPath.addPoint(new Vector2(pos.x, pos.y));
@@ -64,6 +98,6 @@ class Line extends Tool{
 }
 
 
-
+Line.frameNum = 0;
 Line.keys = []
-Line.frame = []
+Line.frame = {}
