@@ -37,6 +37,7 @@ class SVGPath extends SVG{
         this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
 
         
+        //svg sync familiy start
 
         this.targetProxy = new Proxy(this, {
             set: function (target, key, value) {
@@ -57,10 +58,24 @@ class SVGPath extends SVG{
     }
 
     
+    
+    moveTo(pos){
+        //let lastPos = this.transform.pos
+        //let change = pos.subtract(lastPos)
+        super.moveTo(pos)
+        //this.pathData =
+
+    }
+
+    //sync family end
 
     getSerializableProperties(){
         return ["pathData"]
     }
+
+
+        
+    
 
     static stringifyPath(svgElementPath){
         let result = ""
@@ -78,9 +93,9 @@ class SVGPath extends SVG{
         let svgElementList = [];
         //map that creates the right svgElement based on a letter
         let svgCommands = {
-            "M" : (point) => new MoveCommand(point),
-            "L" : (point) => new LineCommand(point),
-            "C" : (handle1, handle2, end) => new CurveCommand(handle1, handle2, end)
+            "M" : (point) => new MoveCommand(point, this),
+            "L" : (point) => new LineCommand(point, this),
+            "C" : (handle1, handle2, end) => new CurveCommand(handle1, handle2, end,this)
         }
 
         //turns a list of points into a list of vector2
@@ -110,6 +125,7 @@ class SVGPath extends SVG{
         
     }
 
+
     updatePath(){   
         let newPath = SVGPath.stringifyPath(this.path)
         this.pathData = newPath
@@ -117,7 +133,7 @@ class SVGPath extends SVG{
     }   
 
     addPoint(pos){
-        this.path = this.path.concat(new LineCommand(pos));
+        this.path = this.path.concat(new LineCommand(pos,this));
         //this.updatePath()
         
     }
@@ -129,7 +145,7 @@ class SVGPath extends SVG{
         let pathList = [this.path.splice(0,1)[0]]
         while(this.path.length>3){
             //grabbing first 3 elements to create a curve. Appending curve to path.
-            pathList.push(new CurveCommand( ...SVGPathElement.toArray(this.path.splice(0,3)) ))
+            pathList.push(new CurveCommand( ...SVGPathElement.toArray(this.path.splice(0,3)),this))
         }
         this.path = pathList
       

@@ -31,18 +31,47 @@
 
 class SVGPathElement{
 
-    constructor(prefix, points){
+    constructor(prefix, points, parent){
         this.prefix = prefix;
-        this.points = points
+        this.pointStorage = points
+        this.parent = parent;
+        
     }
+
+    get points(){
+        
+        function translate(point, move){
+            let val = point.subtract(move)
+            return val
+        }
+
+        if(this.parent == null){
+            return this.pointStorage}
+        else{
+            let altered = {}
+            for (var point in this.pointStorage) {
+                
+                let val = this.pointStorage[point]
+                let startPos = this.parent.transform.startPos;
+                let pos = this.parent.transform.pos;
+                let translateOffset = startPos.subtract(pos)
+                let alteredPoint = translate(val,translateOffset)
+                altered[point] = alteredPoint
+                
+
+            }
+            return altered
+        }
+        
+        
+    }
+
 
     stringify(){
        // console.log("stringiyyyyyh")
         let result = this.prefix+ " ";
         for (let point of this.toArray()) {
-            //if (this.points.hasOwnProperty(key)) {
                 result += point + " ";
-           // }
         }
         return result
     }
@@ -87,8 +116,8 @@ class SVGPathElement{
 
 class MoveCommand extends SVGPathElement{
 
-    constructor(point){
-        super("M", {point});
+    constructor(point,parent){
+        super("M", {point},parent);
     }
 
     position(){
@@ -99,8 +128,8 @@ class MoveCommand extends SVGPathElement{
 
 class TemporaryCurveCommand extends SVGPathElement{
 
-    constructor(point, Tvalue){
-        super("T", {point});
+    constructor(point, Tvalue,parent){
+        super("T", {point},parent);
         this.Tvalue = Tvalue;
     }
 
@@ -113,8 +142,8 @@ class TemporaryCurveCommand extends SVGPathElement{
 
 class LineCommand extends SVGPathElement{
 
-    constructor(point){
-        super("L", {point});
+    constructor(point,parent){
+        super("L", {point},parent);
     }
 
     position(){
@@ -125,8 +154,8 @@ class LineCommand extends SVGPathElement{
 
 class CurveCommand extends SVGPathElement{
 
-    constructor(handle1, handle2, end){
-        super("C", {handle1, handle2, end})
+    constructor(handle1, handle2, end,parent){
+        super("C", {handle1, handle2, end},parent)
     }
 
     position(){

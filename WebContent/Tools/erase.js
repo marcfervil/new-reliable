@@ -29,16 +29,17 @@ class Eraser extends Tool{
 
     canvasDragStart(pos){
         this.svgRect = new SVGPointer(this.reliable.canvas, this.size, pos.subtract(this.sizeOffset))
-        this.erase();
+        this.erase(false);
     }
 
     canvasDrag(pos){ 
         this.svgRect.updateLocation(new Vector2(pos.x, pos.y).subtract(this.sizeOffset));
-        this.erase();
+        this.erase(false);
     }
 
     canvasDragEnd(){
         this.svgRect.delete();
+        this.erase(true);
     }
 
     //returns a list of svgs colliding with the eraser.
@@ -88,7 +89,6 @@ class Eraser extends Tool{
         let theta = Math.atan2(y, x)
         x = rectCenterX + (r * Math.cos(theta))
         y = rectCenterY + (r * Math.sin(theta)) 
-        //console.log("r: "+r+" theta: "+theta+" rectx: "+rectCenterX+" recty: "+rectCenterY+" x: "+ x+ " y: "+ y)
         return new Vector2(x, y);
 
     }
@@ -306,7 +306,6 @@ class Eraser extends Tool{
     }
     //returns a point a T% down the straight line between A and B
     findTPointStraightLine(A,B,T){
-        //console.log("A ",A, " B ", B," T ",T)
         let x = A.x+T*(B.x-A.x)
         let y = A.y+T*(B.y-A.y)
 
@@ -322,7 +321,6 @@ class Eraser extends Tool{
         //time or the percentage down the line the point is on the bezier curve (assuming curvepoints[index] will return a temppoint)
         //let tPoint = curvePoints[index]
         
-        //console.log("index ", index," curvepoint ", curvePoints)
         //let T = tPoint.Tvalue
         if(T==undefined){
             T = 0
@@ -353,7 +351,6 @@ class Eraser extends Tool{
         let rightMoveTo = new MoveCommand(K)
         let rightCurveTo = new CurveCommand(J,G,D)
         if(E.isValid() && H.isValid() && K.isValid() && J.isValid() && G.isValid() && D.isValid()){
-            //console.log(E,H,K,J,G,D)
             return [leftCurveTo,rightMoveTo, rightCurveTo]
         }
         return null
@@ -423,10 +420,8 @@ class Eraser extends Tool{
                         curvePoints.splice(i+1,0,newCurves[1])
                         i+=2
                     }
-                    //console.log("intersection")
-                } else {
-                    //console.log("no intersection")
-                }
+                   
+                } 
 
             }
         }
@@ -448,16 +443,17 @@ class Eraser extends Tool{
 
     
     //returns up to (2) new paths that are the result of eraseing [non refundable]
-    createNewPaths(svg){
+    createNewPaths(svg,broadcast){
        
         let newPaths = this.splitLine(svg.path)
 
-
-        svg.delete()
+        Action.commit(this.reliable, {
+            action: "Delete",
+            ids: [svg.id]
+        },broadcast);
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
-            //console.log(tempPath);
             
             Action.commit(this.reliable, {
                 action: "Draw",
@@ -465,17 +461,17 @@ class Eraser extends Tool{
                 path: tempPath,
                 color: "#AAB2C0",
                 pos: tempPath,
-            }, false)
+            }, broadcast)
             
         }
 
     }
 
-    erase(){
+    erase(broadcast){
         let collidedSVG = this.svgCollisions();
 
         for(let svg of collidedSVG){
-            this.createNewPaths(svg);
+            this.createNewPaths(svg,broadcast);
         }
     }
 }
@@ -521,7 +517,7 @@ function bezierCoeffs(P0,P1,P2,P3)
 /*computes intersection between a cubic spline and a line segment*/
 function computeIntersections(bezierCurve, line)
 {
-   //console.log("Bezier curve ", bezierCurve)
+
     let px,py,lx,ly
     px = bezierCurve.map(pos => pos.x)
     py = bezierCurve.map(pos => pos.y)
@@ -529,7 +525,6 @@ function computeIntersections(bezierCurve, line)
     ly = line.map(pos => pos.y)
 
 
-    //console.log("px ", px, " py ",py," lx ", lx," ly ", ly)
 
     var X=Array();
     
@@ -571,17 +566,8 @@ function computeIntersections(bezierCurve, line)
             X[0]=-100;  /*move off screen*/
             X[1]=-100;
         }else{
-            //console.log(t)
             return t;
-            //return new Vector2(X[0], X[1])
-            //return {"x": X[0], "y": X[1]}
-            //return X;
         }
-        
-        /*move intersection point*/
-        //console.log("point " ,X[0], "Point 2", X[1])
-        //I[i].setAttributeNS(null,"cx",X[0]);
-        //I[i].setAttributeNS(null,"cy",X[1]);
     }
     return null;
     
@@ -649,7 +635,6 @@ function cubicRoots(P)
 	/*sort but place -1 at the end*/
     t=sortSpecial(t);
 
-    //console.log(t[0]+" "+t[1]+" "+t[2]);
     return t;
 }
 

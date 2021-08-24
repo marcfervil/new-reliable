@@ -52,7 +52,7 @@ class SVG{
             this.transform = {
                 startPos : new Vector2(this.canvasRect.x, this.canvasRect.y),
                 pos:   new Vector2(this.canvasRect.x, this.canvasRect.y),
-                translatedPos: new Vector2(0, 0),
+                translatedPos: new Vector2(0, 0), //shouldn't do this - marco (author of this line)
                 startMatrix: this.group.transform.baseVal.consolidate().matrix,
                 scale: new Vector2(1, 1),
                 anchorX: "left",
@@ -61,7 +61,6 @@ class SVG{
             }
           
             
-
      //   }, 0)
      
         this.updateAnchor = false; 
@@ -86,7 +85,11 @@ class SVG{
     getSelectMargin(){
         return 10;
     }
-    
+
+    /**
+     * takes a vector, moves it to said vector
+     * @param {Vector2} pos will move svg to this position
+    */
     moveTo(pos){
         
         //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
@@ -119,7 +122,13 @@ class SVG{
         this.pos = pos;
     }
 
-
+    /**
+     * scales the svg
+     * 
+     * @param {Vector2} scale will scale the svg by the svg ie: vector(2,2) will double the size
+     * @param {string} anchorX left or right
+     * @param {string} anchorY top or bottom 
+    */
     scaleTo(scale, anchorX, anchorY){
         
        //if not selected, create fake selection box so un/redos still work 
@@ -169,7 +178,6 @@ class SVG{
     }
 
     updateTransform(){
-        
         this.group.transform.baseVal.consolidate().setMatrix(this.matrix)
         
     }
