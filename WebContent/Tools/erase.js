@@ -29,6 +29,7 @@ class Eraser extends Tool{
 
     canvasDragStart(pos){
         this.svgRect = new SVGPointer(this.reliable.canvas, this.size, pos.subtract(this.sizeOffset))
+        
         this.erase(true);
     }
 

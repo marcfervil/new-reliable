@@ -49,7 +49,7 @@ class SVGPathElement{
         //console.log("ogpoing ",this.pointStorage)
 
         
-
+        /*
         let translate = (point)=> {
             //console.log("recT ",this.parent.group.getBoundingClientRect());
             //let width = this.parent.group.getBoundingClientRect().width
@@ -73,6 +73,18 @@ class SVGPathElement{
             point = point.subtract(offset)
             return point
         }
+        */
+
+        let applyMatrixTransform = (point)=>{
+            let scale = new Vector2(this.parent.matrix.a, this.parent.matrix.d)
+            let transform = new Vector2(this.parent.matrix.e, this.parent.matrix.f)
+
+            let retPoint = new Vector2(0,0)
+            retPoint.x = point.x*scale.x + transform.x
+            retPoint.y = point.y*scale.y + transform.y
+
+            return retPoint
+        }
 
 
         if(this.parent == null){
@@ -83,9 +95,11 @@ class SVGPathElement{
             for (var point in this.pointStorage) {
                 
                 let alteredPoint = this.pointStorage[point]
+
+                alteredPoint = applyMatrixTransform(alteredPoint)
                 //console.log("transform ", this.parent.pTransform())
-                alteredPoint = scale(alteredPoint)
-                alteredPoint = translate(alteredPoint)
+                //alteredPoint = scale(alteredPoint)
+                //alteredPoint = translate(alteredPoint)
                 altered[point] = alteredPoint
                 
 
