@@ -35,34 +35,65 @@ class SVGPathElement{
         this.prefix = prefix;
         this.pointStorage = points
         this.parent = parent;
+        //console.log("og transform ", parent.transform)
         
     }
 
+    set points(val){
+        this.pointStorage = val
+    }
+
+
     get points(){
+        //console.log("start")
+        //console.log("ogpoing ",this.pointStorage)
+
         
-        function translate(point, move){
-            let val = point.subtract(move)
+
+        let translate = (point)=> {
+            //console.log("recT ",this.parent.group.getBoundingClientRect());
+            //let width = this.parent.group.getBoundingClientRect().width
+            //let height = this.parent.group.getBoundingClientRect().height;
+
+            let startPos = this.parent.transform.startPos;
+            let pos = this.parent.transform.pos;//getPos();0.
+            let translateOffset = startPos.subtract(pos)
+            //translateOffset = translateOffset.subtract(new Vector2(width, height))
+            let val = point.subtract(translateOffset)
             return val
         }
+
+        let scale = (point)=>{
+            //console.log("point ", point,"delta scale ", this.parent.transform.deltaScale)
+            
+            let multiplier = this.parent.transform.scale
+            let offset = this.parent.transform.deltaScale
+
+            point = point.multiply(multiplier)
+            point = point.subtract(offset)
+            return point
+        }
+
 
         if(this.parent == null){
             return this.pointStorage}
         else{
+            //console.log("transform ", this.parent.transform)
             let altered = {}
             for (var point in this.pointStorage) {
                 
-                let val = this.pointStorage[point]
-                let startPos = this.parent.transform.startPos;
-                let pos = this.parent.transform.pos;
-                let translateOffset = startPos.subtract(pos)
-                let alteredPoint = translate(val,translateOffset)
+                let alteredPoint = this.pointStorage[point]
+                //console.log("transform ", this.parent.pTransform())
+                alteredPoint = scale(alteredPoint)
+                alteredPoint = translate(alteredPoint)
                 altered[point] = alteredPoint
                 
 
             }
+            //console.log("altered ", altered)
+            //console.log("end")
             return altered
         }
-        
         
     }
 
@@ -83,6 +114,7 @@ class SVGPathElement{
             }
         }
     }
+
     
     
 
@@ -95,6 +127,8 @@ class SVGPathElement{
         }
         return points
     }
+
+
     
     //pointElements = moveto linecommand, linecommand
 

@@ -55,6 +55,7 @@ class SVG{
                 translatedPos: new Vector2(0, 0), //shouldn't do this - marco (author of this line)
                 startMatrix: this.group.transform.baseVal.consolidate().matrix,
                 scale: new Vector2(1, 1),
+                deltaScale: new Vector2(0,0), //the amount the svg was offset after scaling
                 anchorX: "left",
                 anchorY: "top",
 
@@ -77,6 +78,27 @@ class SVG{
 
         
     }
+    /*
+
+    get transform(){
+
+        return this.transformStorage
+
+    }
+
+    set transform(data){
+        console.log("setter ",this.transformStorage)
+        this.transformStorage = data
+
+    }
+    */
+
+
+    pTransform(){
+        let temp = JSON.stringify(this.transform)
+        temp = JSON.parse(temp)
+        return temp
+    }
 
     setContent(){
 
@@ -91,7 +113,6 @@ class SVG{
      * @param {Vector2} pos will move svg to this position
     */
     moveTo(pos){
-        
         //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
         let selectMargin = new Vector2(5+this.getSelectMargin(), 5+this.getSelectMargin());
         if(this.isSelected)pos = pos.subtract(selectMargin);
@@ -125,11 +146,14 @@ class SVG{
     /**
      * scales the svg
      * 
-     * @param {Vector2} scale will scale the svg by the svg ie: vector(2,2) will double the size
+     * @param {Vector2} scale will scale the svg by the svg ie: vector(2,2) will double the original size
      * @param {string} anchorX left or right
      * @param {string} anchorY top or bottom 
     */
     scaleTo(scale, anchorX, anchorY){
+        this.transform.anchorX = anchorX;
+        this.transform.anchorY = anchorY;
+        //scale = new Vector2(2,2)
         
        //if not selected, create fake selection box so un/redos still work 
         let fakeSelect = this.isSelected;
@@ -162,7 +186,10 @@ class SVG{
  
         //the amount to offset the svg so it scales relative to the anchor is the difference between the orgin pre-scale and post-scale [the orgin being the anchor]
         let transPos = pos.subtract(getPos()).divide(scale);
-        
+        //console.log("translatepos ", transPos)
+        //console.log("pos ", pos, " newPos ", getPos())
+        this.transform.deltaScale = this.transform.deltaScale.subtract( pos.subtract(getPos()))//.multiply(scale)
+        //console.log("deltaScape ",this.transform.deltaScale)
 
         //translate the matrix by our offset and update the transformation matrix
         this.matrix = this.matrix.translate(transPos.x, transPos.y);
@@ -171,6 +198,7 @@ class SVG{
         //update the scale of our svg
         this.transform.scale = scale;
         if(!fakeSelect)this.unselect();
+        //console.log("transform ",this)
     }
 
     rotateTo(){

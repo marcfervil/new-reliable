@@ -29,6 +29,7 @@ class Pen extends Tool{
        
         let smoothed = this.svgPath.smoothify();
         //smootify may return false if the path was too small...we don't want tiny invisible paths 
+        
         if(smoothed){  
             Action.commit(this.reliable, {
                 action: "Draw",
@@ -60,6 +61,7 @@ class Draw extends Action{
     execute(reliable){
         super.execute(reliable);
         //this.svgPath = new SVGPath(reliable.canvas, new Vector2(),this.data.id);
+        
         this.svgPath = new SVGPath(reliable.canvas, this.pos, this.data.id, this.data.path);
 
        // this.svgPath.replacePath(this.data.path);
@@ -71,6 +73,7 @@ class Draw extends Action{
             this.svgPath.matrix = this.data.transform;
             this.svgPath.updateTransform()
         }
+        //console.log("svgPath ", this.svgPath)
 
 
     }

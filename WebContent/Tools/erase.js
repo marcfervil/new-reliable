@@ -29,12 +29,12 @@ class Eraser extends Tool{
 
     canvasDragStart(pos){
         this.svgRect = new SVGPointer(this.reliable.canvas, this.size, pos.subtract(this.sizeOffset))
-        this.erase(false);
+        this.erase(true);
     }
 
     canvasDrag(pos){ 
         this.svgRect.updateLocation(new Vector2(pos.x, pos.y).subtract(this.sizeOffset));
-        this.erase(false);
+        this.erase(true);
     }
 
     canvasDragEnd(){
@@ -460,7 +460,9 @@ class Eraser extends Tool{
                 id: Reliable.makeId(10) ,
                 path: tempPath,
                 color: "#AAB2C0",
-                pos: tempPath,
+                pos: {
+                    doo: "doo"
+                },
             }, broadcast)
             
         }

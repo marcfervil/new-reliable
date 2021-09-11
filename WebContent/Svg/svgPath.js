@@ -32,11 +32,19 @@ class SVGPath extends SVG{
         /*this.svg.setAttribute("stroke-line-join", "square")
         this.svg.setAttribute("stroke-line-cap", "round")
         this.svg.setAttribute("stroke-miterlimit", 8)*/
-        this.canvasRect = this.group.getBoundingClientRect();
-        this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-        this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
-
+        setTimeout(() => {
+            this.canvasRect = this.group.getBoundingClientRect();
+            this.transform.startPos = new Vector2(this.canvasRect.x, this.canvasRect.y);
+            this.transform.pos = new Vector2(this.canvasRect.x, this.canvasRect.y);
+            //console.log("new start ", this.transform.startPos)
+        }, 0);
+       
         
+        //this.transform.startPos =new Vector2(0,0)
+        //this.transform.pos = new Vector2(0,0)
+        //console.log("copnstruct transform ", this.pTransform())
+        //console.log("svg transform", this.transform)
+
         //svg sync familiy start
 
         this.targetProxy = new Proxy(this, {
@@ -57,15 +65,57 @@ class SVGPath extends SVG{
        
     }
 
+
+
     
-    
+    /**
+     * takes a vector, moves it to said vector
+     * @param {Vector2} pos will move svg to this position
+    */
+   /*
     moveTo(pos){
-        //let lastPos = this.transform.pos
-        //let change = pos.subtract(lastPos)
-        super.moveTo(pos)
-        //this.pathData =
+        //super.moveTo(pos)
+
+
+        
+        //our desired location is going to be the distance between our current position (pos), and our orgin (startPos)
+        let selectMargin = new Vector2(5+this.getSelectMargin(), 5+this.getSelectMargin());
+        if(this.isSelected)pos = pos.subtract(selectMargin);
+        let newPos = pos.subtract(this.transform.startPos);
+       
+        
+        //get the actual position of our svg 
+        let svgBounds = this.group.getBoundingClientRect();
+        let svgPos = new Vector2(svgBounds.x, svgBounds.y);
+
+        
+        //offset the position of the svg by the distance between our desired position and our actual position, then update the transformation matrix.
+        //This is done because we always want the svg to be moved by the top left coordinate (the orgin), and when we scale an svg by a different anchor/orgin
+        //our svg's actual position has been augmented and we need the position that we're dragging it to to reflect that
+        //console.log("old path ", this.path)
+        
+        let dist = pos.subtract(svgPos);
+        console.log("dist ", dist)
+        for(let element of this.path){
+            for(let point of element){
+                let pp = point.add(dist)
+                point.x = pp.x
+                point.y = pp.y
+            }
+        }
+        //console.log("new path ", this.path)
+        
+        //update the position of our svg
+        if(this.isSelected)pos = pos.add(selectMargin);
+        this.startPos = pos
+        this.transform.pos = pos;
+        this.pos = pos;
+
+        this.updatePath()
+        
 
     }
+    */
 
     //sync family end
 
