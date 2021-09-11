@@ -15,7 +15,6 @@ class Eraser extends Tool{
     }
 
     getRect(){
-        //this.svgRect.pos.x;
         return {"x":this.svgRect.pos.x+this.size/2, "y":this.svgRect.pos.y+this.size/2, "width":this.size, "height":this.size};
     }
 
@@ -77,93 +76,6 @@ class Eraser extends Tool{
         
     }
 
-    //returns the point the eraser made contact
-    getEraserConnectionOLD(vec){
-        let x = vec.x
-        let y = vec.y
-
-        let r = this.svgRect.size/2
-        let rectCenterX = this.svgRect.pos.x + r;
-        let rectCenterY = this.svgRect.pos.y + r;
-        x = x - rectCenterX
-        y = y - rectCenterY
-        let theta = Math.atan2(y, x)
-        x = rectCenterX + (r * Math.cos(theta))
-        y = rectCenterY + (r * Math.sin(theta)) 
-        return new Vector2(x, y);
-
-    }
-
-    getEraserConnection(line1, line2){
-        let rect = this.getRect();
-        //adjust for eraser
-        rect.x = rect.x-this.size/2
-        rect.y = rect.y-this.size/2
-        return this.findRectIntersection(rect, line1, line2)
-    }
-    
-
-    /*
-    insertMoveCurve(curvePoints, location){
-        let newEndVect = this.getEraserConnection(curvePoints[location-1].position())
-        let newStartVect = this.getEraserConnection(curvePoints[location].position())
-
-        let newEndPos = new CurveCommand(newEndVect, newEndVect, newEndVect)
-        let newStartPos = new MoveCommand(newStartVect)
-        //curvePoints.splice(location, 0, newStartPos)
-
-        //debugRect2(newStartPos.last(),10,10, "black", "black")
-        //debugRect2(newEndVect,10,10, "blue", "blue")
-    }
-    */
-
-    getFirstCurveToIndex(curvePoints){
-        let index = 0;
-        for(let point of curvePoints){
-            if(point instanceof CurveCommand){
-                return index;
-            }
-            index++
-        }
-    }
-
-    getFirstCurveTo(curvePoints){
-        return this.getFirstElement(curvePoints, CurveCommand);
-    }
-    
-    getFirstElement(curvePoints, svgElementClass){
-        for(let point of curvePoints){
-            if(point instanceof svgElementClass){
-                return point;
-            }
-        }
-    }
-
-    getFirstTwoTempPoints(curvePoints){
-        let count = 0;
-        let tempPoints = []
-
-        for(let i = 0; i < curvePoints.length && count<2; i++){
-            if(curvePoints[i] instanceof TemporaryCurveCommand){
-                tempPoints.push(curvePoints[i])
-                count++;
-            }
-        }
-
-        if(count ==0) {
-            //debugRect2(curvePoints.last().position(),10,10, "black", "black")
-            return [curvePoints.last().position(), curvePoints.last().position()]
-        }
-        if(count==1){
-            //debugRect2(tempPoints[0].position(),10,10, "purple", "purple")
-            return [tempPoints[0].position(), tempPoints[0].position()]
-        }
-        if(count==2){
-            //debugRect2(tempPoints[0].position(),10,10, "red", "red")
-            //debugRect2(tempPoints[1].position(),10,10, "green", "green")
-            return [tempPoints[0].position(), tempPoints[1].position()]
-        }
-    }
 
     //checks to see if c is on the line defined by a and b
     isBetweenPoints(a, b, c){
@@ -214,86 +126,6 @@ class Eraser extends Tool{
         }
     }
 
-
-    oldfind_intersection( p0, p1, p2, p3 ) {
-        p1 = -1*p1
-        p3 = -1*p3
-
-        let s10_x = p1.x - p0.x
-        let s10_y = p1.y - p0.y
-        let s32_x = p3.x - p2.x
-        let s32_y = p3.y - p2.y
-    
-        let denom = s10_x * s32_y - s32_x * s10_y
-        
-        if (denom == 0) return null; // collinear
-        
-        let denom_is_positive = denom > 0
-    
-        let s02_x = p0.x - p2.x;
-        let s02_y = p0.y - p2.y;
-    
-        let s_numer = s10_x * s02_y - s10_y * s02_x
-     
-        if ((s_numer < 0) == denom_is_positive ) return null;
-    
-        let t_numer = s32_x * s02_y - s32_y * s02_x
-    
-        if ((t_numer < 0) == denom_is_positive ) return null;
-    
-        if (((s_numer > denom) == denom_is_positive) || ((t_numer > denom) == denom_is_positive))  return null; // no collision
-
-        let t = t_numer / denom
-    
-        let intersection_point = new Vector2( p0.x + (t * s10_x), p0.x + (t * s10_y) );
-    
-        return intersection_point
-    }
-    /**
-     * returns the point that intersects with the line and rect.
-     * 
-     * @param {rect} rect
-     * @param {Vector2} point1 
-     * @param {Vector2} point2 
-     */
-    findRectIntersection(rect, point1, point2){
-        let xrect = rect.x//-50;
-        let yrect = rect.y//-50;
-        let xValues = [xrect, xrect+rect.width];
-        let yValues = [yrect, yrect+rect.height]
-        let corners = [] //0 is upper left, 1 is upper right, 2 is lower left, 3 is lower right
-        for(let x of xValues){
-            for(let y of yValues){
-                corners.push(new Vector2(x, y))
-                //debugRect2(new Vector2(x, y), 10,10, "black","black")
-            }
-        }
-
-        let intersectPoints = []
-        //don't match 0 and 3 or 1 and 2
-        intersectPoints.push(this.find_intersection(corners[0], corners[1], point1, point2))
-        intersectPoints.push(this.find_intersection(corners[0], corners[2], point1, point2))
-        intersectPoints.push(this.find_intersection(corners[1], corners[3], point1, point2))
-        intersectPoints.push(this.find_intersection(corners[2], corners[3], point1, point2))
-        let retpoint = null
-        for(let point of intersectPoints){
-            if(point !=null){
-                retpoint = point
-                //return point
-            }
-        }
-
-        return retpoint
-        
-        /*
-        let topLineP1 = new Vector2(rect.pos.x, rect.pos.y);
-        let topLineP2 = topLineP1+ new Vector2(rect.width, 0);
-
-        let bottomLineP1 = topLineP1+new Vector2(0, rect.height)
-        let bottomLineP2 = bottomLineP1+new Vector2(rect.width, 0)
-        */
-
-    }
 
     //returns the first anchor left to the point
     findLeftCurve(curvePoint, index){
@@ -486,32 +318,7 @@ class Eraser extends Tool{
 
 
 
-    
-
-class Replace extends Action{
-
-    constructor(data){
-        super(data)
-    }
-
-    execute(reliable){
-        super.execute(reliable)
-        let tempSvg = SVG.getFromId(this.data.SVGID)
-        this.undoData = {
-            id: this.data.SVGID,
-            path: tempSvg.pathData
-        }
-        tempSvg.replacePath(this.data.newPath);   
-    }
-
-    undo(){
-        let tempSVG = SVG.getFromId(this.undoData.id)
-        tempSVG.replacePath(this.undoData.path)
-    }
-}
-
 //svg curve line compute intersection code ---------------------------------------------------
-
 function bezierCoeffs(P0,P1,P2,P3)
 {
 	var Z = Array();
@@ -670,6 +477,27 @@ function sortSpecial(a)
 	return a;
 }
 
+class Replace extends Action{
+
+    constructor(data){
+        super(data)
+    }
+
+    execute(reliable){
+        super.execute(reliable)
+        let tempSvg = SVG.getFromId(this.data.SVGID)
+        this.undoData = {
+            id: this.data.SVGID,
+            path: tempSvg.pathData
+        }
+        tempSvg.replacePath(this.data.newPath);   
+    }
+
+    undo(){
+        let tempSVG = SVG.getFromId(this.undoData.id)
+        tempSVG.replacePath(this.undoData.path)
+    }
+}
 
 
 class DeleteSVGPath extends Action{
