@@ -442,16 +442,21 @@ class Eraser extends Tool{
 
     }
 
+    deleteLine(svgID,broadcast){
+        Action.commit(this.reliable, {
+            action: "Delete",
+            ids: [svgID]
+        },broadcast);
+
+    }
+
     
     //returns up to (2) new paths that are the result of eraseing [non refundable]
     createNewPaths(svg,broadcast){
        
         let newPaths = this.splitLine(svg.path)
 
-        Action.commit(this.reliable, {
-            action: "Delete",
-            ids: [svg.id]
-        },broadcast);
+        this.deleteLine(svg.id, broadcast)
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
