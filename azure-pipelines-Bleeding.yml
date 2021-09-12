@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- Dev
+- Bleeding-Edge
 
 variables:
 
@@ -12,10 +12,10 @@ variables:
   azureSubscription: 'fa0b4d0c-c1fd-4d73-b3c4-2cd67e2983eb'
   
   # Web app name
-  webAppName: 'newreliable'
+  webAppName: 'BleedingEdgeDev'
   
   # Environment name
-  environmentName: 'newreliable'
+  environmentName: 'BleedingEdgeDev'
 
   # Agent VM image name
   vmImageName: 'windows-latest'
@@ -68,11 +68,10 @@ stages:
         deploy:
           steps:            
           - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: newreliable'
+            displayName: 'Azure Web App Deploy: BleedingEdgeDev'
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(webAppName)
               runtimeStack: 'NODE|10.10'
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
               startUpCommand: 'npm run start'
-          - task: PublishBuildArtifacts@1

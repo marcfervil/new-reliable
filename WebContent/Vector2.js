@@ -1,6 +1,16 @@
 function Vector2(x, y) {
-	this.x = (x === undefined) ? 0 : x;
-	this.y = (y === undefined) ? 0 : y;
+	
+	if(x !== undefined && y !== undefined){
+		this.x = x;
+		this.y = y;
+	}else if(x !==undefined && y===undefined){
+		this.x = x.x;
+		this.y = x.y;
+	}else{
+		this.x = 0;
+		this.y = 0;
+	}
+
 }
 
 Vector2.prototype = {
@@ -8,7 +18,10 @@ Vector2.prototype = {
 		this.x = x || 0;
 		this.y = y || 0;
 	},
-
+	//please don't ever use this. If you think you need to. you don't. and if you REALLY need to, here's my number: 800-273-8255.
+	isValid: function(){
+		return this.x && this.y
+	},
 	clone: function() {
 		return new Vector2(this.x, this.y)
 	},
@@ -24,6 +37,14 @@ Vector2.prototype = {
 
 	subtract: function(vector) {
 		return new Vector2(this.x - vector.x, this.y - vector.y);
+	},
+
+	divide: function(vector) {
+		return new Vector2(this.x / vector.x, this.y / vector.y);
+	},
+
+	multiply: function(vector) {
+		return new Vector2(this.x * vector.x, this.y * vector.y);
 	},
 
 	scale: function(scalar) {
@@ -60,6 +81,10 @@ Vector2.prototype = {
 		return (deltaX * deltaX + deltaY * deltaY);
 	},
 
+	equals: function (o) {
+		return o.x === this.x && o.y === this.y;
+	},
+
 	normalize: function() {
 		var mag = this.magnitude();
 		var vector = this.clone();
@@ -73,8 +98,9 @@ Vector2.prototype = {
 		return vector;
 	},
 
-	angle: function() {
-		return Math.atan2(this.y, this.x);
+	angle: function(vector) {
+		//return Math.atan2(this.y, this.x);
+		return Math.atan2(vector.y - this.y, vector.x - this.x) * 180 / Math.PI;
 	},
 
 	rotate: function(alpha) {
