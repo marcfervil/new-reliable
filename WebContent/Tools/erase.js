@@ -11,6 +11,8 @@ class Eraser extends Tool{
         super("Eraser", "images/eraser.svg");
         this.size = 100;
         this.sizeOffset = new Vector2(this.size/2, this.size/2);
+        this.deletedSVG = {}
+        this.createdSVG = {}
         
     }
 
@@ -29,17 +31,18 @@ class Eraser extends Tool{
     canvasDragStart(pos){
         this.svgRect = new SVGPointer(this.reliable.canvas, this.size, pos.subtract(this.sizeOffset))
         
-        this.erase(true);
+        this.erase();
     }
 
     canvasDrag(pos){ 
         this.svgRect.updateLocation(new Vector2(pos.x, pos.y).subtract(this.sizeOffset));
-        this.erase(true);
+        this.erase();
     }
 
     canvasDragEnd(){
         this.svgRect.delete();
-        this.erase(true);
+        this.erase();
+        this.broadCastEraserChanges()
     }
 
     //returns a list of svgs colliding with the eraser.
@@ -208,8 +211,10 @@ class Eraser extends Tool{
         return lines
     }
 
+    //will remove overlap lines. returns true if no lines removed
     removeOverlapLines(lines){
         let newLines = []
+        let removedOverlap = false
         for(let line of lines){
             let inside = true;
             for(let point of line){
@@ -220,16 +225,23 @@ class Eraser extends Tool{
                     break;
                 }
             }
-            if(!inside) newLines.push(line)
+            if(!inside) {
+                newLines.push(line)
+            }else{
+                removedOverlap = true
+            }
 
         }
+
+        if(!removedOverlap) return true
+
         return newLines
     }
 
     splitLine(curvePoints){
         let newLines = []
 
-
+        let change = false;
         let lines = this.getEraserLines()
 
         for(let line of lines) {
@@ -248,13 +260,14 @@ class Eraser extends Tool{
                 if (intersection != null) {
                     let newCurves = this.splitBezier(bezierCurve, intersection)
                     if(newCurves!=null){
+                        change = true
                         curvePoints[i] = newCurves[0]
                         curvePoints.splice(i+1,0,newCurves[2])
                         curvePoints.splice(i+1,0,newCurves[1])
                         i+=2
                     }
                    
-                } 
+                }
 
             }
         }
@@ -262,19 +275,36 @@ class Eraser extends Tool{
         for(let i =1; i<curvePoints.length;i++){
 
             if(curvePoints[i] instanceof MoveCommand){
+                change = true
                 newLines.push(curvePoints.splice(0,i))
                 i=1
             }
         }
+
+
         newLines.push(curvePoints)
 
         newLines = this.removeOverlapLines(newLines)
+        
+        if(change==false && newLines == true) return true
+        
+
         return newLines
 
 
     }
+    
+    
+    broadCastEraserChanges(){
+
+    }
+
+
 
     deleteLine(svgID,broadcast){
+        if(!this.createdSVG.hasOwnProperty(svgID)){
+            this.deletedSVG[svgID] = svgID   
+        }
         Action.commit(this.reliable, {
             action: "Delete",
             ids: [svgID]
@@ -282,36 +312,46 @@ class Eraser extends Tool{
 
     }
 
+    createLine(svgPath, broadcast){
+        let svgId = Reliable.makeId(10)
+        this.createdSVG[svgId];
+        Action.commit(this.reliable, {
+            action: "Draw",
+            id:  svgId,
+            path: svgPath,
+            color: "#AAB2C0",
+            pos: {
+                doo: "doo"
+            },
+        }, false)
+
+    }
     
     //returns up to (2) new paths that are the result of eraseing [non refundable]
-    createNewPaths(svg,broadcast){
+    createNewPaths(svg){
        
         let newPaths = this.splitLine(svg.path)
+        
 
-        this.deleteLine(svg.id, broadcast)
+        if(newPaths == true){
+            return
+        }
+        this.deleteLine(svg.id, false)
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
-            
-            Action.commit(this.reliable, {
-                action: "Draw",
-                id: Reliable.makeId(10) ,
-                path: tempPath,
-                color: "#AAB2C0",
-                pos: {
-                    doo: "doo"
-                },
-            }, broadcast)
+            this.createLine(tempPath, false)
+
             
         }
 
     }
 
-    erase(broadcast){
+    erase(){
         let collidedSVG = this.svgCollisions();
 
         for(let svg of collidedSVG){
-            this.createNewPaths(svg,broadcast);
+            this.createNewPaths(svg);
         }
     }
 }
