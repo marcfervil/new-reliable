@@ -285,7 +285,7 @@ class Eraser extends Tool{
 
         newLines = this.removeOverlapLines(newLines)
 
-        //if(change==false && newLines == true) return true
+        if(change==false && newLines == true) return true
         
 
         return newLines
@@ -358,7 +358,7 @@ class Eraser extends Tool{
 
         
     broadCastEraserChanges(){
-        //hello
+        //hello marco my old frienddddd
         
 
     }
