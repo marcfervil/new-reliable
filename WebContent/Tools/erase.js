@@ -40,6 +40,7 @@ class Eraser extends Tool{
     }
 
     canvasDragEnd(){
+        alert("hello marco")
         this.svgRect.delete();
         this.broadCastEraserChanges()
     }
@@ -358,7 +359,7 @@ class Eraser extends Tool{
 
         
     broadCastEraserChanges(){
-        //hello
+        //hello marco my old frienddddd
         
 
     }
