@@ -17,7 +17,6 @@ class SVGPath extends SVG{
         this.svg.style.stroke = "#AAB2C0"; 
         this.svg.style.fill = "transparent";
         this.svg.style.strokeWidth = 3;
-
         
         this.svg.style.strokeLinejoin = "round";
         this.svg.style.strokeLinecap = "round";

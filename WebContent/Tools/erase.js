@@ -41,7 +41,6 @@ class Eraser extends Tool{
 
     canvasDragEnd(){
         this.svgRect.delete();
-        this.erase();
         this.broadCastEraserChanges()
     }
 
@@ -285,8 +284,8 @@ class Eraser extends Tool{
         newLines.push(curvePoints)
 
         newLines = this.removeOverlapLines(newLines)
-        
-        if(change==false && newLines == true) return true
+
+        //if(change==false && newLines == true) return true
         
 
         return newLines
@@ -294,16 +293,15 @@ class Eraser extends Tool{
 
     }
     
-    
-    broadCastEraserChanges(){
-
-    }
 
 
 
     deleteLine(svgID,broadcast){
         if(!this.createdSVG.hasOwnProperty(svgID)){
-            this.deletedSVG[svgID] = svgID   
+            this.deletedSVG[svgID] = svgID
+
+        }else{
+            delete this.createdSVG[svgID]
         }
         Action.commit(this.reliable, {
             action: "Delete",
@@ -323,12 +321,12 @@ class Eraser extends Tool{
             pos: {
                 doo: "doo"
             },
-        }, false)
+        }, broadcast)
 
     }
     
     //returns up to (2) new paths that are the result of eraseing [non refundable]
-    createNewPaths(svg){
+    createNewPaths(svg, broadcast){
        
         let newPaths = this.splitLine(svg.path)
         
@@ -336,24 +334,36 @@ class Eraser extends Tool{
         if(newPaths == true){
             return
         }
-        this.deleteLine(svg.id, false)
+        this.deleteLine(svg.id, broadcast)
         for(let path of newPaths){
            
             let tempPath = SVGPath.stringifyPath(path)
-            this.createLine(tempPath, false)
+            this.createLine(tempPath, broadcast)
 
             
         }
 
     }
 
-    erase(){
+
+
+    erase(broadcast = true){
         let collidedSVG = this.svgCollisions();
 
         for(let svg of collidedSVG){
-            this.createNewPaths(svg);
+            this.createNewPaths(svg, broadcast);
         }
     }
+
+
+        
+    broadCastEraserChanges(){
+        //hello
+        
+
+    }
+
+
 }
 
 
