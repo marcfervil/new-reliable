@@ -42,9 +42,9 @@ async function activate(context) {
 		let currentPanel = undefined;
 	//	let service = undefined;
 	
-		console.log("activate");
+		
 		const liveshare = await vsls.getApi("phylum.new-reliable");
-
+      
 		
 		liveshare.registerTreeDataProvider(vsls.View.Session, new ReliableTreeItem());
 		
@@ -148,9 +148,10 @@ async function activate(context) {
 
 
 		function getWebviewContent() {
+            
 			let file = fs.readFileSync(contentPath+"/index.html").toString();
-			//
-			return handlebars.compile(file)({path: "vscode-resource://"+contentPath}) ;
+			
+			return handlebars.compile(file)({path: "vscode-resource:"+contentPath}) ;
 		}
 
 
